@@ -1,0 +1,12 @@
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\bin\Debug\netcoreapp2.2\EmpyrealV2.Entities.deps.json
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\bin\Debug\netcoreapp2.2\EmpyrealV2.Entities.dll
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\bin\Debug\netcoreapp2.2\EmpyrealV2.Models.dll
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\bin\Debug\netcoreapp2.2\EmpyrealV2.Models.pdb
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\obj\Debug\netcoreapp2.2\EmpyrealV2.Entities.csprojAssemblyReference.cache
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\obj\Debug\netcoreapp2.2\EmpyrealV2.Entities.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\obj\Debug\netcoreapp2.2\EmpyrealV2.Entities.AssemblyInfoInputs.cache
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\obj\Debug\netcoreapp2.2\EmpyrealV2.Entities.AssemblyInfo.cs
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\obj\Debug\netcoreapp2.2\EmpyrealV2.Entities.csproj.CopyComplete
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\bin\Debug\netcoreapp2.2\EmpyrealV2.Entities.pdb
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\obj\Debug\netcoreapp2.2\EmpyrealV2.Entities.dll
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Entities\obj\Debug\netcoreapp2.2\EmpyrealV2.Entities.pdb

@@ -1,0 +1,109 @@
+﻿@model Empyreal.ViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "Đăng ký";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-4 content-left">
+            <h4>Đăng ký</h4>
+            <p>Trở thành thành viên của Empyreal ngay hôm nay để nhận nhiều ưu đãi hấp dẫn<br> Còn chần chờ gì nữa. Đăng ký ngay!</p>
+            <img src="~/images/login.png">
+        </div>
+        <div class="account">
+            <div class="col-lg-7 col-md-7 col-xs-12 content-right">
+                <ul class="tab-nav">
+                    <li class="active"><a data-toggle="tab" href="#loginform">Đăng ký</a></li>
+                    <li class="li-register">Đã có tài khoản? <a class="link-blue" asp-controller="Login" asp-action="SignIn">Đăng nhập ngay</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="registerform" class="tab-pane fade active in">
+                        <div class="account-profile">
+                            <form class="profile-form" method="post" asp-controller="User" asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="HoTen">Họ tên *</label>
+                                    <div class="input-wrap">
+                                        <input asp-for="HoTen" type="text" class="form-control" placeholder="Nhập họ tên của bạn" />
+                                        <span asp-validation-for="HoTen" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="PhoneNumber">Số điện thoại *</label>
+                                    <div class="input-wrap">
+                                        <input asp-for="PhoneNumber" type="text" class="form-control" placeholder="Nhập số điện thoai của bạn" />
+                                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="Email">Email *</label>
+                                    <div class="input-wrap">
+                                        <input asp-for="Email" type="email" class="form-control" placeholder="Nhập email của bạn" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="Password">Mật khẩu *</label>
+                                    <div class="input-wrap">
+                                        <input asp-for="Password" class="form-control" placeholder="Vui lòng nhập mật khẩu" />
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" asp-for="ConfirmPassword">Xác nhận mật khẩu *</label>
+                                    <div class="input-wrap">
+                                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu của bạn" />
+                                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Giới tính</label>
+                                    <div class="input-wrap">
+                                        <div class="row">
+                                            @*<label class="col-xs-3 radio-wrap">
+                                                    Nam
+                                                    <input type="radio" asp-for="Sex" value="Nam" checked />
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                                <label class="col-xs-3 radio-wrap">
+                                                    Nữ
+                                                    <input type="radio" asp-for="Sex" value="Nữ" />
+                                                    <span class="checkmark" style="left: -2px;"></span>
+                                                </label>*@
+                                            @*@foreach (var item in Model.SexList)
+                                            {
+                                                <label class="col-xs-3 radio-wrap">
+                                                    @item.Text
+                                                    <input type="radio" asp-for="Sex" value="@item.Value" />
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            }*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Ngày sinh</label>
+                                    <div class="input-wrap">
+                                        <div class="birthday-picker">
+                                            @*<select class="form-control" asp-for="DateOfBirth" asp-items="Model.Dates"></select>
+                                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                            <select class="form-control" asp-for="MonthOfBirth" asp-items="Model.Months"></select>
+                                            <span asp-validation-for="MonthOfBirth" class="text-danger"></span>
+                                            <select class="form-control" asp-for="YearOfBirth" asp-items="Model.Years"></select>
+                                            <span asp-validation-for="YearOfBirth" class="text-danger"></span>*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button class="primary-btn" type="submit">Đăng ký</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

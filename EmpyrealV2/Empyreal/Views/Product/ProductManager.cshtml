@@ -1,0 +1,96 @@
+﻿@using PagedList.Core
+@model Empyreal.ViewModels.Manager.ProductManagerViewModel;
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+}
+
+<!-- BREADCRUMB -->
+<div id="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a href="#">Trang chủ</a></li>
+            <li class="active">Quản lý sản phẩm</li>
+        </ul>
+    </div>
+</div>
+
+<div class="section-grey">
+    <div class="container">
+        <div class="row account">
+            @await Html.PartialAsync("Manager\\_MenuLeftAdminPartial")
+            <div class="col-lg-9 col-xs-12 content-right" id="content-right">
+                <h4>Danh sách sản phẩm</h4>
+
+                <div class="account-profile">
+                    <a style="margin-bottom:20px" class="primary-btn" asp-controller="Product" asp-action="ProductUpdate" asp-route-isUpdate="false"><i class="fas fa-plus"></i> Thêm mới sản phẩm</a>
+                    <br />
+                    <form id="selectByCatalogForm" method="get" asp-controller="Product" asp-action="ProductManager">
+
+                        <div class="header-search" style="width:200px;float:right">
+                            <select class="form-control" name="catalogSelect" asp-for="Catalog" asp-items="Model.CbbCatalog"></select>
+                            <span asp-validation-for="Catalog" class="text-danger"></span>
+                            @*<button type="submit" title="Tìm kiếm" class="search-btn"><i class="fas fa-search"></i></button>*@
+
+                        </div>
+                        <div class="header-search">
+                            @*<form method="get" asp-controller="Product" asp-action="ProductManager">*@
+                            <input style="width:300px" class="input search-input" type="text" asp-for="Keyword" asp-route-keySearch="@Model.Keyword" value="@Model.Keyword" name="keySearch" placeholder="Từ khóa" />
+                            <button type="submit" title="Tìm kiếm" class="search-btn"><i class="fas fa-search"></i></button>
+
+                        </div>
+                    </form>
+
+
+                    @if (Model.PagedProductModel != null)
+                    {
+
+                        <table class="table table-bordered table-hover">
+                            <thead class="active">
+                                <tr>
+                                    <th style="width: 50px; text-align: center;">STT</th>
+                                    <th style="display: none;">Id</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Người đăng</th>
+                                    <th>Chỉnh sửa</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            @{ int k = 1;
+                                <tbody>
+                                    @foreach (var product in Model.PagedProductModel)
+                                    {
+                                        <tr>
+                                            <td style="text-align: center;">@k </td>
+                                            <td style="display: none;">@product.Id</td>
+                                            <td>@product.Name</td>
+                                            <td>@product.UserName</td>
+                                            <td style="text-align: center; width: 145px;">
+                                                <a class="main-btn" title="Chỉnh sửa sản phẩm" asp-controller="Product" asp-action="ProductUpdate" asp-route-productID="@product.Id" asp-route-isUpdate="true"><i class="far fa-edit"></i> Chỉnh sửa</a>
+                                            </td>
+                                            <td style="text-align: center; width: 145px;">
+                                                <a class="main-btn" title="Xóa sản phẩm" asp-controller="Product" asp-action="DeleteProduct" asp-route-productID="@product.Id"><i class="far fa-trash-alt"></i> Xóa</a>
+                                            </td>
+                                        </tr>
+                                        k++;
+                                    }
+
+                                    <tr>
+                                        <td colspan="10">
+                                            <pager list="@Model.PagedProductModel"
+                                                   asp-controller="Product"
+                                                   asp-action="ProductManager"
+                                                   asp-route-keySearch="@Model.Keyword"
+                                                   asp-route-selectByCatalog="@Model.Catalog" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            }
+                        </table>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

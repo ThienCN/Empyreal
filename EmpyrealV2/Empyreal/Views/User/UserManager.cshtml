@@ -1,0 +1,119 @@
+﻿@using PagedList.Core
+@model Empyreal.ViewModels.Manager.UserDisplayViewModel
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+}
+
+<!-- BREADCRUMB -->
+<div id="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a href="#">Trang chủ</a></li>
+            <li class="active">Quản lý người dùng</li>
+        </ul>
+    </div>
+</div>
+
+<div class="section-grey">
+    <div class="container">
+        <div class="row account">
+            @await Html.PartialAsync("Manager\\_MenuLeftAdminPartial")
+            <div class="col-lg-9 col-xs-12 content-right" id="content-right">
+                <h4>Danh sách người dùng</h4>
+                <div class="account-profile">
+                    @*<div class="header-filter">
+                            <form>
+                                <div class="input-wrap">
+                                    <div class="birthday-picker">
+                                        <select class="form-control" asp-for="M" asp-items="Model.Dates"></select>
+                                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                        <select class="form-control" asp-for="MonthOfBirth" asp-items="Model.Months"></select>
+                                        <span asp-validation-for="MonthOfBirth" class="text-danger"></span>
+                                        <select class="form-control" asp-for="YearOfBirth" asp-items="Model.Years"></select>
+                                        <span asp-validation-for="YearOfBirth" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>*@
+                    <div class="header-search" style="max-width: 600px;">
+                        <form method="get" asp-controller="User" asp-action="UserManager">
+                            <input class="input search-input" type="text" name="keySearch" placeholder="Nhập tên người dùng" />
+                            <button type="submit" title="Tìm kiếm" class="search-btn"><i class="fas fa-search"></i></button>
+                        </form>
+                    </div>
+                    <a class="primary-btn" asp-controller="User" asp-action="AddUser"><i class="fas fa-plus"></i> Thêm người dùng</a>
+
+                    @if (Model.PagedUserModel != null)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="active">
+                                    <tr>
+                                        <th style="width: 50px; text-align: center;">STT</th>
+                                        <th style="display: none;">Id</th>
+                                        <th>Thao tác</th>
+                                        <th>Họ tên</th>
+                                        <th>Phân quyền</th>
+                                        <th>Email</th>
+                                        <th>SĐT</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                @{ int k = 1;
+                                    <tbody>
+                                        @foreach (var user in Model.PagedUserModel)
+                                        {
+                                            <tr>
+                                                <td style="text-align: center;">@k </td>
+                                                <td style="display: none;">@user.ID</td>
+                                                <td style="text-align: center;">
+                                                    <a class="main-btn" style="width: 30px; height: 30px; padding: 6px;" title="Chỉnh sửa sản phẩm" asp-controller="User" asp-action="UpdateUser" asp-route-id="@user.ID"><i class="far fa-edit"></i></a> |
+                                                    @if (user.State == 1)
+                                                    {
+                                                        <a class="main-btn" style="width: 30px; height: 30px; padding: 6px;" title="Ngưng hoạt động" asp-controller="User" asp-action="DisableUser" asp-route-id="@user.ID"><i class="fas fa-lock"></i></a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="main-btn" style="width: 30px; height: 30px; padding: 6px;" title="Cho phép hoạt động" asp-controller="User" asp-action="EnableUser" asp-route-id="@user.ID"><i class="fas fa-unlock-alt"></i></a>
+                                                    }
+                                                </td>
+                                                <td>@user.HoTen</td>
+                                                <td>
+                                                    @foreach (var role in user.Roles)
+                                                    {
+                                                        @role
+                                                    }
+                                                </td>
+                                                <td>@user.Email</td>
+                                                <td>@user.PhoneNumber</td>
+                                                @if (user.State == 1)
+                                                {
+                                                    <td>Hoạt động</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>Ngưng hoạt động</td>
+                                                }
+                                            </tr>
+                                            k++;
+                                        }
+
+                                        <tr>
+                                            <td colspan="10">
+                                                <pager list="@Model.PagedUserModel"
+                                                       asp-controller="User"
+                                                       asp-action="UserManager"
+                                                       asp-route-keyword="@Model.Keyword" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                }
+                            </table>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

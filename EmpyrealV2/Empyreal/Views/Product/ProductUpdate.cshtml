@@ -1,0 +1,176 @@
+﻿@using Empyreal.ViewModels.Manager;
+@model ProductUpdateViewModel;
+<!-- BREADCRUMB -->
+<div id="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a href="#">Trang chủ</a></li>
+            <li class="active">@ViewData["Title"]</li>
+        </ul>
+    </div>
+</div>
+<!-- /BREADCRUMB -->
+<div class="section-grey">
+    <div class="container">
+        <div class="row account">
+            @await Html.PartialAsync("Manager\\_MenuLeftAdminPartial")
+
+            <div class="col-lg-9 col-xs-12 content-right" id="content-right">
+                @if (!Model.IsHidden)
+                {
+                    @if (!Model.IsError)
+                    {
+                        <div>
+                            <div class="alert alert-success">@ViewData["Title"] thành công</div>
+                            @*<div style="text-align: center; width: 145px;">
+                                    <a class="main-btn" title="Quay lại" asp-controller="Product" asp-action="ProductManager"><i class="far fa-the-red-yeti"></i>Quay lại</a>
+                                </div>*@
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <div class="alert alert-danger">
+                                @ViewData["Title"] thất bại
+                                <div style="text-align: left; width: 145px;">
+                                    <a class="message" title="Error">@Model.Message</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                @if (Model.IsError)
+                {
+
+                    <h4>@ViewData["Title"]</h4>
+                    <div class="account-profile">
+                        <form class="product-form" method="post" asp-controller="Product" asp-action="UpdateProduct" id="ProductFormSubmit" enctype="multipart/form-data">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input type="hidden" asp-for="ProductId" />
+                            <input type="hidden" asp-for="IsUpdate" />
+                            <input type="hidden" asp-for="IsError" />
+
+                            <h4 class="title-shadow">Thông tin cơ bản</h4>
+                            <div class="form-group" style="margin-top: 3px;">
+                                <label class="control-label" asp-for="ProductName">Tên sản phẩm</label>
+                                <div class="input-wrap">
+                                    <input class="form-control" asp-for="ProductName" placeholder="Nhập tên sản phẩm" />
+                                    <span asp-validation-for="ProductName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Danh mục</label>
+                                <div class="input-wrap">
+                                    <div class="birthday-picker">
+                                        <select class="form-control" asp-for="Catalog" asp-items="Model.Catalogs"></select>
+                                        <span asp-validation-for="Catalog" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label" asp-for="Description">Mô tả sản phẩm</label>
+                                <div>
+                                    <textarea class="form-control" asp-for="Description" placeholder="Mô tả sản phẩm ở đây" rows="5"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <h4 class="title-shadow">Thông tin chi tiết</h4>
+                            <div class="add-product-detail ">
+                                <div class="product-detail ">
+
+                                    @foreach (var item in Model.ProductDetails)
+                                    {
+
+                                        <div class="product-detail-group">
+                                            <div class="form-group">
+                                                <input type="hidden" asp-for="@item.ID" id="ID" name="ProductDetailID" />
+                                                <label class="small-label">Kích thước</label>
+                                                <div class="select-wrap">
+                                                    <select class="form-control" asp-for="@item.Size" id="Size" name="Size" asp-items="Model.Sizes"></select>
+                                                    <span asp-validation-for="@item.Size" class="text-danger"></span>
+                                                </div>
+                                                <label class="small-label">Màu sắc</label>
+                                                <div class="select-wrap">
+                                                    <select class="form-control" asp-for="@item.Color" id="Color" name="Color" asp-items="Model.Colors"></select>
+                                                    <span asp-validation-for="@item.Color" class="text-danger"></span>
+                                                </div>
+                                                <div class="icon-padding">
+                                                    <button class="main-btn icon-btn-edit-small" title="Xóa chi tiết sản phẩm" type="button"><i class="fas fa-minus"></i></button>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="small-label">Số lượng</label>
+                                                <div class="select-wrap">
+                                                    <input type="number" class="form-control" asp-for="@item.Quantity" id="Quantity" name="Quantity" value="@item.Quantity" />
+                                                    <span asp-validation-for="@item.Quantity" class="text-danger"></span>
+                                                </div>
+                                                <label class="small-label">Đơn giá (đồng)</label>
+                                                <input type="hidden"  class="form-control" asp-for="@item.PriceID" id="PriceID" name="PriceID" onkeyup="splitInDots(this)" />
+
+                                                <div class="select-wrap">
+                                                    <input type="text" class="form-control" asp-for="@item.PriceText" id="PriceText" name="PriceText" onkeyup="splitInDots(this)" />
+                                                    <span asp-validation-for="@item.PriceText" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                </div>
+                                <div class="form-group btn-right">
+                                    <button type="button" class="main-btn icon-btn" id="btnDetail" title="Thêm sản phẩm" style="width: 200px; font-weight: 500;"><i class="fas fa-plus" style="margin-right: 3px;"></i> Thêm chi tiết sản phẩm</button>
+                                </div>
+                                <div class="form-group">
+                                    <label class="large-label">Hình ảnh sản phẩm</label>
+                                    <div class="input-wrap">
+                                        <h4 class="title-shadow">Hình ảnh có sẵn</h4>
+                                        <div class="gallery-index">
+
+                                            @foreach (var img in Model.Images)
+                                            {
+                                                <div class="galleryused">
+
+
+                                                    <img src="@img.Url" />
+                                                    <div class="icon-padding">
+                                                        <button value="@img.ID" class="main-btn icon-btn-edit-image-small" title="Xóa hình ảnh" type="button"><i class="fas fa-minus"></i></button>
+                                                    </div>
+
+                                                </div>
+                                            }
+
+                                        </div>
+                                        <br />
+                                        <h4 class="title-shadow">Thêm hình ảnh</h4>
+                                        <div class="galleryindex">
+                                            <input type="file" multiple class="form-control" asp-for="Files" accept="image/gif,image/png,image/jpg,image/jpeg" />
+                                            <div class="gallery"></div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button class="primary-btn" type="button" id="btnSubmitProductForm" style="width: 170px;">@ViewData["Title"]</button>
+                            </div>
+                        </form>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/js/Manager/ProductUpdate.js"></script>
+
+@section ckeditor {
+
+    <script src="~/lib/ckeditor/ckeditor.js"></script>
+    <script src="~/lib/ckeditor/adapters/jquery.js"></script>
+    <script>
+        $("#Description").ckeditor();
+    </script>
+}

@@ -1,0 +1,14 @@
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\bin\Debug\netcoreapp2.2\EmpyrealV2.Interfaces.deps.json
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\bin\Debug\netcoreapp2.2\EmpyrealV2.Interfaces.dll
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\bin\Debug\netcoreapp2.2\EmpyrealV2.Interfaces.pdb
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\obj\Debug\netcoreapp2.2\EmpyrealV2.Interfaces.csprojAssemblyReference.cache
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\obj\Debug\netcoreapp2.2\EmpyrealV2.Interfaces.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\obj\Debug\netcoreapp2.2\EmpyrealV2.Interfaces.AssemblyInfoInputs.cache
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\obj\Debug\netcoreapp2.2\EmpyrealV2.Interfaces.AssemblyInfo.cs
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\obj\Debug\netcoreapp2.2\EmpyrealV2.Interfaces.dll
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\obj\Debug\netcoreapp2.2\EmpyrealV2.Interfaces.pdb
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\bin\Debug\netcoreapp2.2\EmpyrealV2.Models.dll
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\bin\Debug\netcoreapp2.2\Microsoft.Extensions.Identity.Stores.dll
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\bin\Debug\netcoreapp2.2\EmpyrealV2.Models.pdb
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\bin\Debug\netcoreapp2.2\Microsoft.Extensions.Identity.Stores.xml
+C:\Users\Admin\Desktop\EmpyrealV2\EmpyrealV2.Interfaces\obj\Debug\netcoreapp2.2\EmpyrealV2.Interfaces.csproj.CopyComplete

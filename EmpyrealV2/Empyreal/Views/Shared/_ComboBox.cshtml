@@ -1,0 +1,12 @@
+﻿@using Empyreal.ViewModels;
+
+@model ComboBoxViewModel;
+
+<div class="">
+    @*<input type="hidden" asp-for="@Model.ProductDetailID" id="ID" name="ProductDetailID" />*@
+    <label class="small-label">@Model.Tilte</label>
+    <div class="select-wrap">
+        <select class="form-control" id="@Model.Name" name="@Model.Name" asp-items="@Model.Items"></select>
+        <span asp-validation-for="@Model.Name" class="text-danger"></span>
+    </div>
+</div>
