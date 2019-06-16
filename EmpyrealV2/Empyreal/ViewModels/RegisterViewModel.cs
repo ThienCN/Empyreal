@@ -21,14 +21,14 @@ namespace Empyreal.ViewModels
         public string ConfirmPassword { get; set; }
 
         [Required(ErrorMessage = "Vui lòng chọn ngày sinh")]
-        public String DateOfBirth { get; set; }
+        public string DateOfBirth { get; set; }
 
         [Required(ErrorMessage = "Vui lòng chọn tháng sinh")]
-        public String MonthOfBirth { get; set; }
+        public string MonthOfBirth { get; set; }
 
         [Required(ErrorMessage = "Vui lòng chọn năm sinh")]
-        public String YearOfBirth { get; set; }
+        public string YearOfBirth { get; set; }
 
-        public String Sex { get; set; }
+        public string Sex { get; set; }
     }
 }

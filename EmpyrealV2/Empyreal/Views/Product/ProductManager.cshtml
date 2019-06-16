@@ -19,7 +19,8 @@
         <div class="row account">
             @await Html.PartialAsync("Manager\\_MenuLeftAdminPartial")
             <div class="col-lg-9 col-xs-12 content-right" id="content-right">
-                <h4>Danh sách sản phẩm</h4>
+                <h4 style="display: inline-block;">Danh sách sản phẩm</h4>
+                <button type="button" class="btn btn-info" id="historyPopup" style="float: right;"><i class="fas fa-search"></i> Lịch sử</button>
 
                 <div class="account-profile">
                     <a style="margin-bottom:20px" class="primary-btn" asp-controller="Product" asp-action="ProductUpdate" asp-route-isUpdate="false"><i class="fas fa-plus"></i> Thêm mới sản phẩm</a>
@@ -91,6 +92,27 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="historyModal" role="dialog">
+            <div class="modal-dialog modal-lg">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Lịch sử chỉnh sửa</h4>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
+<script type="text/javascript" src="~/js/Manager/productManager.js"></script>
 

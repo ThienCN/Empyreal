@@ -105,8 +105,8 @@
                         <li class="header-account dropdown default-dropdown" style="width: 210px;">
                             <div class="login-signin">
                                 @*<div class="header-btns-icon">
-                                        <img id="avatar_user" style="width:40px;border-radius:50%;" alt="avatar" src="~/images/bo.jpg" />
-                                    </div>*@
+                <img id="avatar_user" style="width:40px;border-radius:50%;" alt="avatar" src="~/images/bo.jpg" />
+            </div>*@
                                 <strong class="text-uppercase" id="taikh">Tài khoản</strong>
                             </div>
                             @if (SignInManager.IsSignedIn(User))
@@ -144,11 +144,13 @@
                             {
                                 <a asp-controller="Login" asp-action="SignIn" class="text-uppercase">Đăng nhập</a><span> / </span>
                                 <a asp-controller="Login" asp-action="Register" class="text-uppercase">Đăng ký</a>
+                                @*<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>*@
                             }
-                           
 
 
-                            <li> 
+
+<li> 
                             @*<!-- Modal -->
                                 <div class="modal fade" id="login-modal" role="dialog">
                                     <div class="modal-dialog">
@@ -1078,11 +1080,11 @@
                                     <li><span>00 M</span></li>
                                     <li><span>00 S</span></li>
                             </ul>*@
-                            <a asp-controller="Home" asp-action="Products" asp-route-id="@productHOT.Id" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</a>
+                            <a asp-controller="Home" asp-action="Product" asp-route-productID="@productHOT.Id" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</a>
                             <img src="@productHOT.Images[0].Url" alt="">
                         </div>
                         <div class="product-body">
-                            <h2 class="product-name"><a asp-controller="Home" asp-action="Products" asp-route-id="@productHOT.Id">@productHOT.Name</a></h2>
+                            <h2 class="product-name"><a asp-controller="Home" asp-action="Product" asp-route-productID="@productHOT.Id">@productHOT.Name</a></h2>
                             <div class="product-rating">
                                 <p class="rating">
                                     <i class="fas fa-star"></i>
@@ -1121,11 +1123,11 @@
                                                 <li><span>00 M</span></li>
                                                 <li><span>00 S</span></li>
                                             </ul>*@
-                                        <a asp-controller="Home" asp-action="Products" asp-route-id="@product.Id" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</a>
+                                        <a asp-controller="Home" asp-action="Product" asp-route-productID="@product.Id" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</a>
                                         <img src="@product.Images[0].Url" alt="">
                                     </div>
                                     <div class="product-body">
-                                        <h2 class="product-name"><a asp-controller="Home" asp-action="Products" asp-route-id="@product.Id">@product.Name</a></h2>
+                                        <h2 class="product-name"><a asp-controller="Home" asp-action="Product" asp-route-productID="@product.Id">@product.Name</a></h2>
                                         <div class="product-rating">
                                             <p class="rating">
                                                 <i class="fas fa-star"></i>
@@ -1292,11 +1294,11 @@
                     <div class="col-md-3 col-sm-6 col-xs-6">
                         <div class="product product-single" title="@product.Name">
                             <div class="product-thumb">
-                                <a asp-controller="Home" asp-action="Products" asp-route-id="@product.Id" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</a>
+                                <a asp-controller="Home" asp-action="Product" asp-route-productID="@product.Id" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</a>
                                 <img src="@product.Images[0].Url" alt="">
                             </div>
                             <div class="product-body">
-                                <h2 class="product-name"><a asp-controller="Home" asp-action="Products" asp-route-id="@product.Id">@product.Name</a></h2>
+                                <h2 class="product-name"><a asp-controller="Home" asp-action="Products" asp-route-productID="@product.Id">@product.Name</a></h2>
                                 <div class="product-rating">
                                     <p class="rating">
                                         <i class="fas fa-star"></i>

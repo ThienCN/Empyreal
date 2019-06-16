@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Empyreal.Interfaces.Services;
 using Empyreal.Models;
 using Empyreal.ServiceLocators;
 using Empyreal.ViewModels.Display;
 using Empyreal.ViewModels.Manager;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.FileProviders;
-using PagedList.Core;
 
 namespace Empyreal.Controllers.Manager
 {
+    [Authorize(Roles = "SuperAdmin, Admin")]
     public class ProductController : Controller
     {
         #region --- Variables ---
@@ -505,6 +502,12 @@ namespace Empyreal.Controllers.Manager
 
         }
         //end GetDataFromSevice
+
+        [HttpPost]
+        public IActionResult EditHistoryPartial()
+        {
+            return PartialView("_EditHistoryPartial");
+        }
 
         #endregion --- Method ---
 

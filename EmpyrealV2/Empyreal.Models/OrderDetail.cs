@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Empyreal.Models
+﻿namespace Empyreal.Models
 {
     public partial class OrderDetail
     {

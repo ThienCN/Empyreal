@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>@ViewData["Title"]</title>
+
+
+    <!-- jQuery Plugins -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Hind:400,700" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" href="~/css/bootstrap.min.css" />
+
+    <!-- Custom stylesheet -->
+    <link type="text/css" rel="stylesheet" href="~/css/style.css" />
+
+    @RenderSection("Styles", required: false)
+</head>
+
+<body>
+    @{ 
+        var string1 = "active";
+        var string2 = "disabled";
+        var string3 = "disabled";
+        if (ViewBag.Step == 2)
+        {
+            string1 = "complete";
+            string2 = "active";
+            string3 = "disabled";
+        }
+        else if (ViewBag.Step == 3)
+        {
+            string1 = "complete";
+            string2 = "complete";
+            string3 = "active";
+        }
+    }
+    <div class="shipping-header">
+        <div class="container">
+            <div class="row row-style-1">
+                <div class="col-lg-2 visible-lg-block">
+                    <a asp-controller="Home" asp-action="Index"><h1 style="margin: 10px;">Empyreal!</h1></a>
+                </div>
+                <div class="col-lg-8" style="padding: 0;">
+                    <div class="row bs-wizard">
+
+                        <div class="col-lg-4 col-md-4 col-xs-4 col-sm-4 bs-wizard-step @string1">
+                            <div class="text-center bs-wizard-stepnum">
+                                <span>Đăng Nhập</span>
+                            </div>
+                            <div class="bs-progress"><div class="bs-progress-bar"></div></div>
+                            <span class="bs-wizard-dot">1</span>
+                        </div>
+
+                        <div class="col-lg-4 col-md-4 col-xs-4 col-sm-4 bs-wizard-step @string2">
+                            <div class="text-center bs-wizard-stepnum">
+                                <span class="hidden-xs">Địa Chỉ Giao Hàng</span>
+                                <span class="visible-xs-inline-block">Địa Chỉ</span>
+                            </div>
+                            <div class="bs-progress"><div class="bs-progress-bar"></div></div>
+                            <span class="bs-wizard-dot">2</span>
+                        </div>
+
+                        <div class="col-lg-4 col-md-4 col-xs-4 col-sm-4 bs-wizard-step @string3">
+                            <div class="text-center bs-wizard-stepnum">
+                                <span class="hidden-xs">Thanh Toán &amp; Đặt Mua</span>
+                                <span class="visible-xs-inline-block">Thanh Toán</span>
+                            </div>
+                            <div class="bs-progress"><div class="bs-progress-bar"></div></div>
+                            <span class="bs-wizard-dot">3</span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-2 visible-lg-block hotline" style="margin-top: 15px;">
+                    <img src="https://salt.tikicdn.com/assets/img/hotline.png" height="42" width="176" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @RenderBody()
+
+    <!-- FOOTER -->
+    <footer id="footer" class="section section-grey">
+        <!-- container -->
+        <div class="container">
+            <!-- row -->
+            <div class="row">
+                <!-- footer widget -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="footer">
+                        <!-- footer logo -->
+                        <div class="footer-logo">
+                            @*<a class="logo" href="#">
+                                    <img src="~/images/logo.png" alt="">
+                                </a>*@
+                            <h2>Empyreal!</h2>
+                        </div>
+                        <!-- /footer logo -->
+                        <!-- footer social -->
+                        <ul class="footer-social">
+                            <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>
+                            <li><a href="#"><i class="fab fa-pinterest-p"></i></a></li>
+                        </ul>
+                        <!-- /footer social -->
+                    </div>
+                </div>
+                <!-- /footer widget -->
+                <!-- footer widget -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-header">Về Empyreal</h3>
+                        <ul class="list-links">
+                            <li><a href="#">Giới thiệu Empyreal</a></li>
+                            <li><a href="#">Chính sách giải quyết khiếu nại</a></li>
+                            <li><a href="#">Điều khoản sử dụng</a></li>
+                            <li><a href="#">Empyreal tư vấn</a></li>
+                            <li><a href="#">Ưu đãi</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /footer widget -->
+
+                <div class="clearfix visible-sm visible-xs"></div>
+
+                <!-- footer widget -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="footer">
+                        <h4 class="footer-header">Hỗ trợ khách hàng</h4>
+                        <ul class="list-links">
+                            <li><a href="#">Các câu hỏi thường gặp</a></li>
+                            <li><a href="#">Gửi yêu cầu hỗ trợ</a></li>
+                            <li><a href="#">Hướng dẫn đặt hàng</a></li>
+                            <li><a href="#">Phương thức vận chuyển</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /footer widget -->
+                @*<!-- footer subscribe -->
+                    <div class="col-md-3 col-sm-6 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-header">Stay Connected</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
+                            <form>
+                                <div class="form-group">
+                                    <input class="input" placeholder="Enter Email Address">
+                                </div>
+                                <button class="primary-btn">Join Newslatter</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /footer subscribe -->*@
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </footer>
+    <!-- /FOOTER -->
+</body>
+</html>

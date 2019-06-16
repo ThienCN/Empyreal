@@ -1,9 +1,11 @@
 ﻿using Empyreal.Models;
+using Empyreal.Models.BaseModel;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 
@@ -40,9 +42,11 @@ namespace Empyreal.Entities
         #endregion --- Init ---
 
         #region --- DbSet ---
+        public DbSet<Answer> Answer { get; set; }
         public DbSet<Cart> Cart { get; set; }
         public DbSet<CartDetail> CartDetail { get; set; }
         public DbSet<Catalog> Catalog { get; set; }
+        public DbSet<Comment> Comment { get; set; }
         public DbSet<Image> Image { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderDetail> OrderDetail { get; set; }
@@ -50,6 +54,10 @@ namespace Empyreal.Entities
         public DbSet<ProductDetail> ProductDetail { get; set; }
         public DbSet<ProductType> ProductType { get; set; }
         public DbSet<ProductPrice> ProductPrice { get; set; }
+        public DbSet<Rate> Rate { get; set; }
+        public DbSet<Province> Province { get; set; }
+        public DbSet<Ward> Ward { get; set; }
+        public DbSet<District> District { get; set; }
 
         #endregion --- DbSet ---
 
@@ -238,6 +246,21 @@ namespace Empyreal.Entities
                 entity.Property(e => e.UserId).HasMaxLength(450);
             });
 
+            modelBuilder.Entity<District>(entity =>
+            {
+                entity.Property(e => e.LatiLongTude).HasMaxLength(50);
+
+                entity.Property(e => e.Name).HasMaxLength(250);
+
+                entity.Property(e => e.Type).HasMaxLength(50);
+
+                entity.HasOne(d => d.Province)
+                    .WithMany(p => p.District)
+                    .HasForeignKey(d => d.ProvinceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_District_Province");
+            });
+
             modelBuilder.Entity<Image>(entity =>
             {
                 entity.Property(e => e.Id).HasColumnName("ID");
@@ -389,6 +412,19 @@ namespace Empyreal.Entities
                 entity.Property(e => e.Type).HasMaxLength(50);
             });
 
+            modelBuilder.Entity<Province>(entity =>
+            {
+                entity.Property(e => e.CountryCode).HasMaxLength(2);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.Type).HasMaxLength(20);
+
+                entity.Property(e => e.ZipCode).HasMaxLength(20);
+            });
+
             modelBuilder.Entity<Rate>(entity =>
             {
                 entity.Property(e => e.Id).HasColumnName("ID");
@@ -404,6 +440,31 @@ namespace Empyreal.Entities
                 entity.Property(e => e.UserId)
                     .HasColumnName("UserID")
                     .HasMaxLength(450);
+            });
+
+            modelBuilder.Entity<Ward>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.DistrictId).HasColumnName("DistrictID");
+
+                entity.Property(e => e.IsPublished).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.LatiLongTude).HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.SortOrder).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.Type).HasMaxLength(50);
+
+                entity.HasOne(d => d.District)
+                    .WithMany(p => p.Ward)
+                    .HasForeignKey(d => d.DistrictId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Ward_District");
             });
         }
 

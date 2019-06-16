@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Empyreal.Models
 {
@@ -13,5 +14,7 @@ namespace Empyreal.Models
         public DateTime? CreateDate { get; set; }
         public string Tilte { get; set; }
         public int? State { get; set; }
+
+        public virtual User RateUser { get; set; }
     }
 }

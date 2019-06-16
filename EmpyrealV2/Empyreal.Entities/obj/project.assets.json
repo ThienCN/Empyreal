@@ -4414,11 +4414,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\BoJiJi\\KLTN\\My\\EmpyrealV2\\EmprealV2\\EmpyrealV2\\Empyreal.Entities\\Empyreal.Entities.csproj",
+      "projectUniqueName": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Entities\\Empyreal.Entities.csproj",
       "projectName": "Empyreal.Entities",
-      "projectPath": "D:\\BoJiJi\\KLTN\\My\\EmpyrealV2\\EmprealV2\\EmpyrealV2\\Empyreal.Entities\\Empyreal.Entities.csproj",
+      "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Entities\\Empyreal.Entities.csproj",
       "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-      "outputPath": "D:\\BoJiJi\\KLTN\\My\\EmpyrealV2\\EmprealV2\\EmpyrealV2\\Empyreal.Entities\\obj\\",
+      "outputPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Entities\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -4437,11 +4437,11 @@
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "D:\\BoJiJi\\KLTN\\My\\EmpyrealV2\\EmprealV2\\EmpyrealV2\\Empyreal.Interfaces\\Empyreal.Interfaces.csproj": {
-              "projectPath": "D:\\BoJiJi\\KLTN\\My\\EmpyrealV2\\EmprealV2\\EmpyrealV2\\Empyreal.Interfaces\\Empyreal.Interfaces.csproj"
+            "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Interfaces\\Empyreal.Interfaces.csproj": {
+              "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Interfaces\\Empyreal.Interfaces.csproj"
             },
-            "D:\\BoJiJi\\KLTN\\My\\EmpyrealV2\\EmprealV2\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj": {
-              "projectPath": "D:\\BoJiJi\\KLTN\\My\\EmpyrealV2\\EmprealV2\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj"
+            "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj": {
+              "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj"
             }
           }
         }

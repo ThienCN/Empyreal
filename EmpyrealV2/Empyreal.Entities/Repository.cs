@@ -40,7 +40,7 @@ namespace Empyreal.Entities
         {
             return _dbset.FirstOrDefault(predicate);
         }
-
+        
         public IEnumerable<T> GetAll()
         {
             return _dbset.AsEnumerable();
@@ -50,10 +50,15 @@ namespace Empyreal.Entities
         {
             return _dbset.Where(expression);
         }
+
+        public IEnumerable<T> ExecWithStoreProcedure(string query, params object[] parameters)
+        {
+            return _dbset.FromSql(query, parameters);
+        }
+
         public int Save()
         {
             return _context.SaveChanges();
         }
-
     }
 }

@@ -7,13 +7,14 @@ using Empyreal.Models;
 using Empyreal.ServiceLocators;
 using Empyreal.ViewModels.Display;
 using Empyreal.ViewModels.Manager;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PagedList.Core;
 
 namespace Empyreal.Controllers.Manager
 {
+    [Authorize(Roles = "SuperAdmin, Admin")]
     public class UserController : Controller
     {
         private readonly IUserService userService;
@@ -52,9 +53,7 @@ namespace Empyreal.Controllers.Manager
                 };
                 listUser.Add(user);
             }
-            UserDisplayViewModel model = new UserDisplayViewModel();
-            model.PagedUserModel = new PagedList<UserBasicViewModel>(listUser.AsQueryable(), page, pageSize);
-            model.Keyword = keySearch;
+            UserManagerViewModel model = new UserManagerViewModel(listUser, page, pageSize, keySearch);
             return View(model);
         }
 
@@ -62,7 +61,7 @@ namespace Empyreal.Controllers.Manager
         {
             var roles = roleManager.Roles.ToList();
 
-            var model = new UserManagerViewModel();
+            var model = new UserUpdateViewModel();
             model.IsSuccess = isSuccess;
             model.Sex = "Nam";
             model.UserRoles = roles.Select(s => new SelectListItem
@@ -75,7 +74,7 @@ namespace Empyreal.Controllers.Manager
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddUser(UserManagerViewModel model)
+        public async Task<IActionResult> AddUser(UserUpdateViewModel model)
         {
             // Set roles of model to display in dropdownlist
             var roles = roleManager.Roles.ToList();
@@ -151,7 +150,7 @@ namespace Empyreal.Controllers.Manager
                 Text = s.Name
             });
 
-            var model = new UserManagerViewModel
+            var model = new UserUpdateViewModel
             {
                 HoTen = user.HoTen,
                 Email = user.Email,
@@ -180,7 +179,7 @@ namespace Empyreal.Controllers.Manager
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateUser(UserManagerViewModel model)
+        public async Task<IActionResult> UpdateUser(UserUpdateViewModel model)
         {
             var roles = roleManager.Roles.ToList();
             model.UserRoles = roles.Select(s => new SelectListItem

@@ -2,12 +2,14 @@
 using System.Threading.Tasks;
 using Empyreal.Models;
 using Empyreal.ViewModels;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Empyreal.Controllers
 {
+    [Authorize]
     public class LoginController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -25,8 +27,16 @@ namespace Empyreal.Controllers
             _signInManager = signInManager;
         }
 
-        public IActionResult SignIn()
+        [AllowAnonymous]
+        public async Task<IActionResult> SignIn(string returnUrl = null)
         {
+            //IList<AuthenticationScheme> externalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            //LoginViewModel model = new LoginViewModel(_signInManager, externalLogins);
+
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -95,7 +105,7 @@ namespace Empyreal.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PopupSignIn(LoginViewModel model, string returnUrl = null)
+        public async Task<JsonResult> PopupSignIn(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
@@ -107,8 +117,7 @@ namespace Empyreal.Controllers
                     var user = await _userManager.FindByEmailAsync(model.Email);
                     if (user == null)
                     {
-                        ModelState.AddModelError(String.Empty, "Email không khả dụng");
-                        return View(model);
+                        return Json(new { isSuccess = false, message = "Email không khả dụng" });
                     }
                     else
                     {
@@ -120,8 +129,7 @@ namespace Empyreal.Controllers
                     var user = await _userManager.FindByNameAsync(model.Email);
                     if (user == null)
                     {
-                        ModelState.AddModelError(String.Empty, "Số điện thoại không khả dụng");
-                        return View(model);
+                        return Json(new { isSuccess = false, message = "Số điện thoại không khả dụng" });
                     }
                     else
                     {
@@ -133,9 +141,12 @@ namespace Empyreal.Controllers
                 if (result.Succeeded)
                 {
                     //_logger.LogInformation("User logged in.");
-                    return Json(new { message = "success" });
+                    return Json(new { isSuccess = true });
                     //return RedirectToAction("Register", "User");
                 }
+
+                return Json(new { isSuccess = false, message = "Sai email hoặc password" });
+
                 //if (result.IsLockedOut)
                 //{
                 //    _logger.LogWarning("User account locked out.");
@@ -147,9 +158,22 @@ namespace Empyreal.Controllers
                 //    return View(model);
                 //}
             }
-
-            // If we got this far, something failed, redisplay form
-            return RedirectToLocal(returnUrl);
+            else
+            {
+                if (string.IsNullOrEmpty(model.Email) && string.IsNullOrEmpty(model.Password))
+                {
+                    return Json(new { isSuccess = false, message = "Email và password không được để trống" });
+                }
+                if (string.IsNullOrEmpty(model.Email))
+                {
+                    return Json(new { isSuccess = false, message = "Email không được để trống" });
+                }
+                if (string.IsNullOrEmpty(model.Password))
+                {
+                    return Json(new { isSuccess = false, message = "Password không được để trống" });
+                }
+            }
+            return Json(new { isSuccess = false, message = "both-null" });
         }
 
         [HttpGet]

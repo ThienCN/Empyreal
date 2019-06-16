@@ -75,11 +75,10 @@ namespace Empyreal
             //
             // ConnectionString
             services.AddDbContext<EmpyrealContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
             /* Denpendency Injection*/
 
-            services.AddMvc();
 
             services.AddSingleton<IUnitOfWork, UnitOfWork>();
 
@@ -91,6 +90,21 @@ namespace Empyreal
             services.AddSingleton<IImageService, ImageService>();
             services.AddSingleton<IProductTypeService, ProductTypeService>();
             services.AddSingleton<IProductPriceService, ProductPriceService>();
+            services.AddSingleton<ICartService, CartService>();
+            services.AddSingleton<ICartDetailService, CartDetailService>();
+            services.AddSingleton<IRateService, RateService>();
+            services.AddSingleton<ICommonService, CommonService>();
+            services.AddSingleton<IProvinceService, ProvinceService>();
+            services.AddSingleton<IDistrictService, DistrictService>();
+            services.AddSingleton<IWardService, WardService>();
+            services.AddSingleton<IOrderService, OrderService>();
+
+            //// Login with Google
+            //services.AddAuthentication().AddGoogle(googleOptions =>
+            //{
+            //    googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+            //    googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            //});
 
             //
             ServiceLocator.SetLocatorProvider(services.BuildServiceProvider());
@@ -122,7 +136,7 @@ namespace Empyreal
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Product}/{action=ProductManager}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Empyreal.Models;
+using Empyreal.Models.BaseModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,10 @@ namespace Empyreal.Interfaces.Entities
         IRepository<Image> ImageRepository { get; }
         IRepository<Comment> CommentRepository { get; }
         IRepository<Rate> RateRepository { get; }
+        IRepository<CommonModel> CommonRepository { get; }
+        IRepository<Province> ProvinceRepository { get; }
+        IRepository<District> DistrictRepository { get; }
+        IRepository<Ward> WardRepository { get; }
         //IRepository<CommentDetail> CommentSubRepository { get; }
         #endregion Repositories
     }

@@ -1,0 +1,130 @@
+﻿@model Empyreal.ViewModels.Display.ShippingViewModel
+@{
+    Layout = "_PaymentLayout";
+    ViewData["Title"] = "Thông tin giao hàng";
+    ViewBag.Step = 2;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/chosen.min.css" />
+}
+
+<div class="section section-gray">
+    <div class="container">
+        <h4>2. Địa chỉ giao hàng</h4>
+        @if (Model.Order != null)
+        {
+            <p class="font-weight-bold" id="old-order">Chọn địa chỉ giao hàng có sẵn bên dưới:</p>
+            <div class="row order-group">
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                    <div class="section-group" style="margin-bottom: 20px;">
+                        <div class="old-order">
+                            <div class="information">
+                                <h6>@Model.Order.Name</h6>
+                                <p class="old-address">@Model.Order.Address</p>
+                                <p class="old-country">Việt Nam</p>
+                                <p>Điện thoại: <span class="old-phonenumber">@Model.Order.PhoneNumber</span></p>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                <a class="primary-btn-circle" asp-controller="CheckOut" asp-action="Payment" asp-route-addressID="@Model.Order.Id">Giao đến địa chỉ này</a>
+                                <button class="btn btn-default">Sửa</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <p style="margin: 0 0 0 5px;">
+            Bạn muốn giao hàng đến địa chỉ khác?
+            <span id="add-new-address" class="link-blue">Thêm địa chỉ giao hàng mới</span>
+        </p>
+
+        <div class="account delivery-info" id="new-address">
+            <div class="content-right">
+                <div class="account-profile">
+                    <form class="profile-form" method="post" id="shipping-form" asp-controller="CheckOut" asp-action="Shipping">
+                        <div class="form-group">
+                            <label class="control-label" for="HoTen">Họ tên</label>
+                            <div class="input-wrap">
+                                <input class="form-control" placeholder="Nhập họ tên" type="text" asp-for="Name">
+                                <span class="text-danger" asp-validation-for="Name"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="PhoneNumber">Số điện thoại</label>
+                            <div class="input-wrap">
+                                <input class="form-control" placeholder="Nhập số điện thoại" type="text" asp-for="PhoneNumber">
+                                <span class="text-danger" asp-validation-for="PhoneNumber"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="Email">Tỉnh/Thành phố</label>
+                            <div class="input-wrap">
+                                <div class="user-role">
+                                    <select class="form-control province-select" asp-for="Province" asp-items="@(new SelectList(Model.Provinces, "Id", "Name", "79"))"></select>
+                                    <span asp-validation-for="Province" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Quận/Huyện</label>
+                            <div class="input-wrap">
+                                <div class="user-role">
+                                    <select class="form-control district-select" asp-for="District" asp-items="@(new SelectList(Model.Districts, "Id", "Name"))"></select>
+                                    <span asp-validation-for="District" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Phường/Xã</label>
+                            <div class="input-wrap">
+                                <div class="user-role">
+                                    <select class="form-control ward-select" asp-for="Ward" asp-items="@(new SelectList(Model.Wards, "Id", "Name"))"></select>
+                                    <span asp-validation-for="Ward" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Địa chỉ</label>
+                            <div class="input-wrap">
+                                <textarea class="form-control" rows="3" placeholder="Nhập địa chỉ" asp-for="Address"></textarea>
+                                <span class="text-danger" asp-validation-for="Address"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label"></label>
+                            <div class="input-wrap">
+                                <i style="font-size: 12px;">Để nhận hàng thuận tiện hơn, bạn vui lòng cho Empyreal biết loại địa chỉ</i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Loại địa chỉ</label>
+                            <div class="input-wrap">
+                                <div class="row">
+                                    <label class="col-xs-6 radio-wrap">
+                                        Nhà riêng / Chung cư
+                                        <input type="radio" asp-for="AddressType" value="Home" checked />
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label class="col-xs-6 radio-wrap">
+                                        Cơ quan / Công ty
+                                        <input type="radio" asp-for="AddressType" value="Company" />
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label"></label>
+                            <button class="primary-btn-circle" type="submit">Giao đến địa chỉ này</button>
+                        </div>
+                        <input name="__RequestVerificationToken" type="hidden" value="CfDJ8LCNW2sBYXhPuZ2q-I176J7mF5_v0A1XH_iOIYzyY9gCfluQTxlNvXY9RX4vVtlZpyTxYSmDdEM5WyBlQOy-GAfiu2UP7jbSFMex6tVY2KSsYcOK3UhLLYCyAjpIx8FRfPPoJToX438YcMKmOtqaUjBmLWOH6FaM5c3dxQQTwM2ftQWJYG23mUl79v8M-D4LGw">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="~/js/DisplayView/CheckOut.js"></script>
+<script type="text/javascript" src="~/js/chosen.jquery.min.js"></script>

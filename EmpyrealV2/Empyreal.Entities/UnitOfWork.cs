@@ -1,5 +1,6 @@
 ﻿using Empyreal.Interfaces.Entities;
 using Empyreal.Models;
+using Empyreal.Models.BaseModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -34,6 +35,10 @@ namespace Empyreal.Entities
         private IRepository<Image> _imageRepository;
         private IRepository<Comment> _commentRepository;
         private IRepository<Rate> _rateRepository;
+        private IRepository<CommonModel> _commonRepository;
+        private IRepository<Province> _provinceRepository;
+        private IRepository<District> _districtRepository;
+        private IRepository<Ward> _wardRepository;
 
         #endregion DbSet
 
@@ -139,6 +144,38 @@ namespace Empyreal.Entities
             get
             {
                 return _rateRepository = _rateRepository ?? new Repository<Rate>(_context);
+            }
+        }
+
+        public IRepository<CommonModel> CommonRepository
+        {
+            get
+            {
+                return _commonRepository = _commonRepository ?? new Repository<CommonModel>(_context);
+            }
+        }
+
+        public IRepository<Province> ProvinceRepository
+        {
+            get
+            {
+                return _provinceRepository = _provinceRepository ?? new Repository<Province>(_context);
+            }
+        }
+
+        public IRepository<District> DistrictRepository
+        {
+            get
+            {
+                return _districtRepository = _districtRepository ?? new Repository<District>(_context);
+            }
+        }
+
+        public IRepository<Ward> WardRepository
+        {
+            get
+            {
+                return _wardRepository = _wardRepository ?? new Repository<Ward>(_context);
             }
         }
 

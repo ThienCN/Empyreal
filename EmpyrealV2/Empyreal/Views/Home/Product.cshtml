@@ -1,0 +1,678 @@
+﻿@model Empyreal.ViewModels.Display.ProductBasicViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<!-- BREADCRUMB -->
+<div id="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+            <li class="active">@Model.Name</li>
+        </ul>
+    </div>
+</div>
+<!-- /BREADCRUMB -->
+<!-- section -->
+
+<div class="section">
+    <!-- container -->
+    <div class="container">
+
+        <!-- The Modal -->
+        <div class="modal fade loader" id="loader"></div>
+
+        <!-- row -->
+        <div class="row">
+            <!--  Product Details -->
+            <div class="product product-details clearfix">
+
+                <div class="modal fade" id="login-modal" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <div class="content-left">
+                                    <h4>Đăng nhập</h4>
+                                    <p>Đăng nhập để theo dõi đơn hàng, lưu <br>danh sách sản phẩm yêu thích, nhận<br> nhiều ưu đãi hấp dẫn.</p>
+                                    <img src="~/images/login.png">
+                                </div>
+
+                                <div class="content-right" style="float: left; height: 480px; padding: 10px 20px; width: calc(100% - 390px); background: #fff; overflow: hidden;">
+                                    <ul class="tab-nav">
+                                        <li class="active"><a data-toggle="tab" href="#login-form" aria-expanded="true">Đăng nhập</a></li>
+                                        <li class=""><a data-toggle="tab" href="#register-form" aria-expanded="false">Tạo tài khoản</a></li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div id="login-form" class="tab-pane fade active in">
+                                            <form class="content bv-form" method="post" asp-controller="Login" asp-action="PopupSignIn" asp-route-returnurl="@ViewData["ReturnUrl"]" id="login_popup_form">
+                                                <div class="error-summary text-danger" id="error-summary"></div>
+                                                <div class="form-group popup_email has-feedback">
+                                                    <label class="control-label login-label" for="Email">Email / SĐT *</label>
+                                                    <input id="popup-login-email" type="text" class="form-control login" name="Email" placeholder="Nhập Email hoặc Số điện thoại">
+                                                    <span data-valmsg-for="Email" class="text-danger"></span>
+                                                </div>
+
+                                                <div class="form-group popup_password has-feedback">
+                                                    <label class="control-label login-label" for="Password">Mật khẩu *</label>
+                                                    <input type="password" id="login_password" class="form-control login" name="Password" placeholder="Mật khẩu từ 6 đến 32 ký tự">
+                                                    <span data-valmsg-for="Password" class="text-danger"></span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p class="reset">Quên mật khẩu? Nhấn vào <a data-toggle="modal" data-target="#reset-password-form" href="#">đây</a></p>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <button type="button" id="login_popup_submit" class="btn btn-info btn-block btn-social">Đăng nhập</button>
+                                                </div>
+                                                <p class="btn-social">Hoặc đăng nhập bằng</p>
+                                                <div class="form-group">
+                                                    <a class="btn btn-block btn-social btn-facebook user-name-loginfb" title="Đăng nhập bằng Facebook" href="#" data-url="">
+                                                        <i class="fab fa-facebook-f"></i>
+                                                        <span>&nbsp; Đăng nhập bằng Facebook</span>
+                                                    </a>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <a class="btn btn-block btn-social btn-google user-name-login-google" title="Đăng nhập bằng Google" href="javascript: void(0)" data-url="https://tiki.vn/customer/account/login_google" style="margin-bottom: 50px;">
+                                                        <i class="fab fa-google-plus-g"></i>
+                                                        <span>&nbsp; Đăng nhập bằng Google</span>
+                                                    </a>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div id="register-form" class="tab-pane fade">
+                                            <p>tab 2</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div id="product-main-view">
+                        @foreach (var image in Model.Images)
+                        {
+                            <div class="product-view zoom">
+                                <img src="@image.Url" alt="">
+                            </div>
+                        }
+                    </div>
+                    <div id="product-view" data-count="@Model.Images.Count">
+                        @foreach (var image in Model.Images)
+                        {
+                            <div class="product-view">
+                                <img src="@image.Url" alt="">
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-6 products-right">
+                    <div class="products-zoom">
+
+                    </div>
+                    <div class="product-body">
+                        <div class="product-label">
+                            <span>New</span>
+                            <span class="sale">-20%</span>
+                        </div>
+                        <h4 class="product-name">@Model.Name</h4>
+                        <input type="hidden" id="product-id" value="@Model.Id" />
+                        <h3 class="product-price" id="product-price">@Model.PriceProductText</h3>
+                        <h3 class="product-price"><del class="product-old-price" id="product-old-price">@Model.OldPriceProductText</del></h3>
+                        <div class="pull-right" style="margin-right: 45px;">
+                            <button class="main-btn icon-btn" title="Thêm vào yêu thích"><i class="fas fa-heart"></i></button>
+                            <button class="main-btn icon-btn" title="Chia sẻ"><i class="fas fa-share-alt"></i></button>
+                        </div>
+                        <div class="product-rating">
+                            <p class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </p>
+                            <a href="#" class="review link-blue">36 đánh giá</a>
+                            <div class="pdp-link"></div>
+                            <a href="#" class="q&a link-blue">10 câu hỏi đã được trả lời</a>
+                            <p class="product-brands" style="display: block;">
+                                Thương hiệu:
+                                <a href="#" class="brands link-blue"> Adidas</a>
+                            </p>
+                        </div>
+                        <div class="product-description">
+                            <ul>
+                                <li>Chất liệu xốp cao cấp bền chắc</li>
+                                <li>Quai dép mềm mại tạo cảm giác thoải mái khi mang</li>
+                                <li>Độ đàn hồi tốt giúp bước đi êm ái và nhẹ nhàng</li>
+                                <li>Họa tiết trẻ trung, năng động</li>
+                            </ul>
+                        </div>
+                        <div class="product-options">
+                            <input type="hidden" id="12345" />
+                            @*<ul class="color-option">
+                                <li><span class="titled">Màu sắc</span></li>
+                                <li class="active"><a href="#" style="background-color:#475984;"></a></li>
+                                <li><a href="#" style="background-color:#8A2454;"></a></li>
+                                <li><a href="#" style="background-color:#BF6989;"></a></li>
+                                <li><a href="#" style="background-color:#9A54D8;"></a></li>
+                            </ul>*@
+
+                            <ul class="size-option" id="option-list">
+                                <li><span class="titled" style="line-height: 37px;">Kích thước</span></li>
+                                @foreach (var size in Model.GroupBySize)
+                                {
+                                    <li class="size-item"><a><span id="item-size" data-sizeid="@size[0].ID">@size[0].SizeText</span></a></li>
+                                }
+                            </ul>
+                            @foreach (var size in Model.GroupBySize)
+                            {
+                                <ul class="size-option color" data-color-sizeid="@size[0].ID" id="color-list">
+                                    <li><span class="titled" style="line-height: 37px;">Màu sắc</span></li>
+
+                                    @foreach (var item in size)
+                                    {
+                                        <li class="color-item" data-id="@item.ID"
+                                            data-price="@item.DisplayPrice"
+                                            data-old-price="@item.DisplayOldPrice"
+                                            data-quantity="@item.Quantity">
+                                            <a><span id="item-color">@item.ColorText</span></a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                        <div class="product-btns">
+                            <div class="qty-input">
+                                <span class="titled">Số lượng </span>
+                                <button class="minus-button" id="minus-button" disabled><i class="fas fa-minus"></i></button>
+                                <input type="text" name="quantity" id="product-input-quantity" min="1" max="5" value="1">
+                                <button class="plus-button" id="plus-button"><i class="fas fa-plus"></i></button>
+                                <span id="product-quantity" class="product-quantity" style="margin-left: 10px;" data-quantity="@Model.Details.First().Quantity">@Model.Details.First().Quantity sản phẩm có sẵn</span>
+                            </div>
+                        </div>
+                        <div class="buy-btns">
+                            <button class="primary-btn add-to-cart" id="add-to-cart"><i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
+                            <button class="primary-btn quick-buy btn-facebook" id="quick-buy"><i class="fas fa-dollar-sign"></i> Mua ngay</button>
+                        </div>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="addToCartModal" role="dialog">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Thêm thành công</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Thêm sản phẩm vào giỏ hàng thành công.</p>
+                                    <p>Đến giỏ hàng để kiểm tra.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a asp-controller="Home" asp-action="Cart" class="main-btn"><i class="fas fa-shopping-cart"></i> Đến giỏ hàng</a>
+                                    <button type="button" class="main-btn" data-dismiss="modal">Hủy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Review -->
+                <div class="col-md-12">
+                    <div class="product-tab">
+                        <ul class="tab-nav" role="tablist">
+                            <li class="active"><a data-toggle="tab" href="#product-description">Mô tả sản phẩm</a></li>
+                            <li><a data-toggle="tab" href="#product-reviews">Khách hàng nhận xét</a></li>
+                            <li><a data-toggle="tab" href="#product-qa">Hỏi, Đáp về sản phẩm</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <!-- Product Details -->
+                            <div id="product-description" class="tab-pane fade in active">
+                                <div class="content-hide" data-more="0">
+                                    <ul>
+                                        <li>Giày Sneaker Thể Thao Unisex Zapas GS064BA - Đen được thiết kế trẻ trung, năng động và sành điệu, khẳng định phong cách thời trang riêng của giới trẻ.</li>
+                                        <li>Tông màu nam tính, đẳng cấp cùng chất liệu vải sợi cao cấp, mềm mại, không mang đến cảm giác đau chân khi phải di chuyển nhiều, sản phẩm tạo nên sự tin tưởng tuyệt đối trong sự lựa chọn của giới trẻ thời nay.</li>
+                                        <li>Thân giày được may từ vải sợi cao cấp vừa bền chắc vừa dễ giặt sạch và khó phai màu.</li>
+                                        <li>Đế giày làm bằng chất liệu cao su tổng hợp có xẻ rãnh chống trơn trượt, tạo sự êm ái và nhẹ nhàng khi di chuyển.</li>
+                                        <li>Kiểu giày thể thao luôn được ưa chuộng vì dễ dàng kết hợp cùng nhiều phong cách thời trang khác nhau. Bạn có thể kết hợp giày cùng áo thun, áo sơ mi và quần jeans, đều phù hợp khi đi làm, đi chơi hoặc vận động thể thao...</li>
+                                    </ul>
+                                    <b>Hướng dẫn chọn size:</b>
+                                    <img src="~/images/giay-size.png" alt="Chọn size">
+                                </div>
+                                <div class="show-more">
+                                    <button class="btn primary-btn btn-radius" id="show-more-btn" style="display: none;">Xem thêm nội dung</button>
+                                </div>
+                            </div>
+                            <!-- /Product Details -->
+                            <!-- Product Reviews -->
+                            <div id="product-reviews" class="tab-pane fade in">
+                                <div class="customer-rating">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="customer-rating-1">
+                                                <h4>Đánh giá trung bình</h4>
+                                                <p class="total-review-point">@Model.AvgRate/5</p>
+                                                <div class="product-rating" style="margin-right: 0;">
+                                                    <p class="rating">
+                                                        @{
+                                                            int starLeft = Convert.ToInt32(Model.AvgRate);
+                                                            @for (int i = 1; i <= Model.AvgRate; i++)
+                                                            {
+                                                                <i class="fas fa-star"></i>
+                                                            }
+
+                                                            if (Model.AvgRate % 1 != 0)
+                                                            {
+                                                                <i class="fas fa-star-half-alt"></i>
+                                                            }
+
+                                                            for (int i = starLeft; starLeft < 5; starLeft++)
+                                                            {
+                                                                <i class="far fa-star"></i>
+                                                            }
+                                                        }
+                                                    </p>
+                                                    <p class="review" style="margin-left: 0;">(@Model.Rates.Count nhận xét)</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="customer-rating-2">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <div class="item-rating">
+                                                        <span class="rating-num">@i</span>
+                                                        <div class="progress">
+                                                            <div class="progress-bar" role="progressbar" style="width:@Model.RateList[i-1]">
+                                                                <span class="sr-only"></span>
+                                                            </div>
+                                                        </div>
+                                                        <span class="rating-num-total">@Model.RateList[i-1]</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="customer-rating-3">
+                                                <p>Chia sẻ nhận xét về sản phẩm</p>
+                                                <button class="primary-btn" id="write-review-btn">Viết nhận xét của bạn</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="your-review" data-more="0">
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            <div class="customer-rating-4">
+                                                <h4 class="text-uppercase" style="font-weight: 500;">Gửi nhận xét của bạn</h4>
+                                                <form class="review-form">
+                                                    <div class="form-group">
+                                                        <label class="control-label">1. Tiêu đề của nhận xét:</label>
+                                                        <input class="form-control" type="text" name="review-title" placeholder="Nhập tiêu đề nhận xét (không bắt buộc)" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label">2. Viết nhận xét của bạn:</label>
+                                                        <textarea class="form-control" placeholder="Nhận xét của bạn về sản phẩm này" name="review-detail" cols="30" rows="5" data-bv-field="detail"></textarea>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="input-rating">
+                                                            <label class="control-label">3. Đánh giá của bạn về sản phẩm này: </label>
+                                                            <div class="stars">
+                                                                <input type="radio" id="star5" name="rating" value="5" /><label for="star5"></label>
+                                                                <input type="radio" id="star4" name="rating" value="4" /><label for="star4"></label>
+                                                                <input type="radio" id="star3" name="rating" value="3" /><label for="star3"></label>
+                                                                <input type="radio" id="star2" name="rating" value="2" /><label for="star2"></label>
+                                                                <input type="radio" id="star1" name="rating" value="1" /><label for="star1"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button class="primary-btn">Gửi nhận xét</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="customer-rating-5">
+                                                <p>Quý khách có thắc mắc về sản phẩm hoặc dịch vụ của Empyreal? Quý khách đang muốn khiếu nại hay phản hồi về đơn hàng đã mua?</p>
+                                                <ul>
+                                                    <li>
+                                                        Tham khảo thông tin thêm tại
+                                                        <a href="#" class="link-blue" title="Thông tin hỗ trợ">Thông tin hỗ trợ</a>.
+                                                    </li>
+                                                    <li>
+                                                        Liên hệ hotline
+                                                        <a href="#" class="link-blue">1900-9999</a>, hoặc gửi thông tin về email <a href="#" class="link-blue">hotro@empyral.vn</a> để được hỗ trợ ngay.
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="review-filter">
+                                    <p>Nhận xét về sản phẩm</p>
+                                    <div class="item-filter item-first">
+                                        <span><i class="fas fa-sort icon-width"></i>Sắp xếp:</span>
+                                        <select class="item-filter-sort">
+                                            <option value="0">Mới nhất</option>
+                                            <option value="1">Đánh giá: Từ cao tới thấp</option>
+                                            <option value="2">Đánh giá: Từ thấp tới cao</option>
+                                        </select>
+                                    </div>
+                                    <div class="item-filter">
+                                        <span><i class="fas fa-filter"></i>Lọc:</span>
+                                        <select class="item-filter-filter">
+                                            <option value="0">Tất cả sao</option>
+                                            <option value="5">5 sao</option>
+                                            <option value="4">4 sao</option>
+                                            <option value="3">3 sao</option>
+                                            <option value="2">2 sao</option>
+                                            <option value="1">1 sao</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="customer-review">
+                                    @foreach (var item in Model.Rates)
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="customer-review-1">
+                                                    <div class="customer-review-img">
+                                                        <span class="avatar-letter">@item.Image</span>
+                                                    </div>
+                                                    <h4 class="name">@item.HoTen</h4>
+                                                    <p class="days">@item.RangeDate</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="customer-review-2">
+                                                    <div class="product-rating">
+                                                        <p class="rating">
+                                                            @{
+                                                                starLeft = item.Star.GetValueOrDefault();
+                                                                for (int i = 0; i < starLeft; i++)
+                                                                {
+                                                                    <i class="fas fa-star"></i>
+                                                                }
+                                                                for (int i = starLeft; starLeft < 5; starLeft++)
+                                                                {
+                                                                    <i class="far fa-star"></i>
+                                                                }
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <p class="review-title">@item.Tilte</p>
+                                                    <p class="buy-already">Đã mua sản phẩm này tại Empyreal</p>
+                                                    <p class="review-detail">
+                                                        <span>@item.Contents</span>
+                                                    </p>
+                                                    <p class="review-action">
+                                                        <a href="#" class="link-blue">Gửi trả lời</a>
+                                                        <span class="helpful">Nhận xét này hữu ích với bạn?</span>
+                                                        <button class="btn btn-xs btn-radius btn-thank-review"><i class="far fa-thumbs-up"></i> Cảm ơn</button>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="margin-row"></div>
+                                    }
+
+                                    
+                                    <div class="list-pager">
+                                        <ul>
+                                            <li>
+                                                <a class="next" href="#" data-page-number="2"><i class="fas fa-angle-left"></i></a>
+                                            </li>
+                                            <li><span class="current">1</span></li>
+                                            <li><a class="normal" href="#" data-page-number="2">2</a></li>
+                                            <li><a class="normal" href="#" data-page-number="3">3</a></li>
+                                            <li><a class="normal" href="#" data-page-number="4">4</a></li>
+                                            <li><a class="normal" href="#" data-page-number="5">5</a></li>
+                                            <li>
+                                                <a class="next" href="#" data-page-number="2"><i class="fas fa-angle-right"></i></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Product Reviews -->
+                            <!-- Product Q&A -->
+                            <div id="product-qa" class="tab-pane fade in">
+                                <h4>Câu hỏi về sản phẩm này <span class="qa-number">(10)</span></h4>
+                                <div class="group">
+                                    <p class="question">
+                                        <i class="far fa-comment"></i>
+                                        <span class="customer-question">có size 36 ko vậy ạ</span>
+                                    </p>
+                                    <p class="answer">
+                                        <i class="far fa-comments"></i>
+                                        <span class="seller-answer">dạ bên shop có nhé bạn</span>
+                                    </p>
+                                    <p class="answer-time">Empyreal đã trả lời vào 20/11/2018</p>
+                                </div>
+                                <div class="group">
+                                    <p class="question">
+                                        <i class="far fa-comment"></i>
+                                        <span class="customer-question">đúng màu xanh và đúng kiểu như hình chứ shop?</span>
+                                    </p>
+                                    <p class="answer">
+                                        <i class="far fa-comments"></i>
+                                        <span class="seller-answer">dạ vâng hàng chuẩn hình ạ</span>
+                                    </p>
+                                    <p class="answer-time">Empyreal đã trả lời vào 21/11/2018</p>
+                                </div>
+                                <div class="group">
+                                    <p class="question">
+                                        <i class="far fa-comment"></i>
+                                        <span class="customer-question">Cho mình xem màu trắng đi shop</span>
+                                    </p>
+                                    <p class="answer">
+                                        <i class="far fa-comments"></i>
+                                        <span class="seller-answer">dạ shop chỉ có mẫu như trong hình thôi ạ</span>
+                                    </p>
+                                    <p class="answer-time">Empyreal đã trả lời vào 25/11/2018</p>
+                                </div>
+                                <div class="group">
+                                    <p class="question">
+                                        <i class="far fa-comment"></i>
+                                        <span class="customer-question">có size 36 ko vậy ạ</span>
+                                    </p>
+                                    <p class="answer">
+                                        <i class="far fa-comments"></i>
+                                        <span class="seller-answer">dạ bên shop có nhé bạn</span>
+                                    </p>
+                                    <p class="answer-time">Empyreal đã trả lời vào 20/11/2018</p>
+                                </div>
+                                <div class="group">
+                                    <p class="question">
+                                        <i class="far fa-comment"></i>
+                                        <span class="customer-question">đúng màu xanh và đúng kiểu như hình chứ shop?</span>
+                                    </p>
+                                    <p class="answer">
+                                        <i class="far fa-comments"></i>
+                                        <span class="seller-answer">dạ vâng hàng chuẩn hình ạ</span>
+                                    </p>
+                                    <p class="answer-time">Empyreal đã trả lời vào 21/11/2018</p>
+                                </div>
+                                <div class="list-pager">
+                                    <ul>
+                                        <li>
+                                            <a class="next" href="#" data-page-number="2"><i class="fas fa-angle-left"></i></a>
+                                        </li>
+                                        <li><span class="current">1</span></li>
+                                        <li><a class="normal" href="#" data-page-number="2">2</a></li>
+                                        <li><a class="normal" href="#" data-page-number="3">3</a></li>
+                                        <li><a class="normal" href="#" data-page-number="4">4</a></li>
+                                        <li><a class="normal" href="#" data-page-number="5">5</a></li>
+                                        <li>
+                                            <a class="next" href="#" data-page-number="2"><i class="fas fa-angle-right"></i></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- /Product Q&A -->
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /Product Review -->
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /section -->
+    <!-- section -->
+    <div class="section">
+        <!-- container -->
+        <div class="container">
+            <!-- row -->
+            <div class="row">
+                <!-- section title -->
+                <div class="col-md-12">
+                    <div class="section-title">
+                        <h3 class="title">Sản phẩm thường được xem cùng</h3>
+                    </div>
+                </div>
+                <!-- section title -->
+                <!-- Product Single -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="product product-single" title="">
+                        <div class="product-thumb">
+                            <button class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</button>
+                            <img src="~/images/product01.jpg" alt="">
+                        </div>
+                        <div class="product-body">
+                            <h2 class="product-name"><a href="#">Ví nam thời trang</a></h2>
+                            <div class="product-rating">
+                                <p class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </p>
+                                <p class="review">(36 nhận xét)</p>
+                            </div>
+                            <h4 class="product-price">999.000 <u>đ</u></h4>
+                            <div class="product-btns">
+                                <button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
+                                @*<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>*@
+                                <button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Product Single -->
+                <!-- Product Single -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="product product-single" title="">
+                        <div class="product-thumb">
+                            <div class="product-label">
+                                <span>New</span>
+                                <span class="sale">-20%</span>
+                            </div>
+                            <button class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</button>
+                            <img src="~/images/product02.jpg" alt="">
+                        </div>
+                        <div class="product-body">
+                            <h2 class="product-name"><a href="#">Đồng hồ thời trang hàng nhập khẩu chất lượng cao</a></h2>
+                            <div class="product-rating">
+                                <p class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </p>
+                                <p class="review">(36 nhận xét)</p>
+                            </div>
+                            <h4 class="product-price">399.000 <u>đ</u><del class="product-old-price">499.000 <u>đ</u></del></h4>
+                            <div class="product-btns">
+                                <button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
+                                @*<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>*@
+                                <button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Product Single -->
+                <!-- Product Single -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="product product-single" title="">
+                        <div class="product-thumb">
+                            <div class="product-label">
+                                <span>New</span>
+                                <span class="sale">-20%</span>
+                            </div>
+                            <button class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</button>
+                            <img src="~/images/product03.jpg" alt="">
+                        </div>
+                        <div class="product-body">
+                            <h2 class="product-name"><a href="#">Cặp xách da nhập khẩu</a></h2>
+                            <div class="product-rating">
+                                <p class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </p>
+                                <p class="review">(36 nhận xét)</p>
+                            </div>
+                            <h4 class="product-price">399.000 <u>đ</u><del class="product-old-price">499.000 <u>đ</u></del></h4>
+                            <div class="product-btns">
+                                <button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
+                                @*<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>*@
+                                <button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Product Single -->
+                <!-- Product Single -->
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="product product-single" title="">
+                        <div class="product-thumb">
+                            <div class="product-label">
+                                <span>New</span>
+                            </div>
+                            <button class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</button>
+                            <img src="~/images/product04.jpg" alt="">
+                        </div>
+                        <div class="product-body">
+                            <h2 class="product-name"><a href="#">Cặp xách da nhập khẩu</a></h2>
+                            <div class="product-rating">
+                                <p class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </p>
+                                <p class="review">(36 nhận xét)</p>
+                            </div>
+                            <h4 class="product-price">399.000 <u>đ</u><del class="product-old-price">499.000 <u>đ</u></del></h4>
+                            <div class="product-btns">
+                                <button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
+                                @*<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>*@
+                                <button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Product Single -->
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+</div>
+<!-- /section -->
+<script type="text/javascript" src="~/js/DisplayView/productHome.js"></script>

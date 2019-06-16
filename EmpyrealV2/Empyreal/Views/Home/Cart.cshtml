@@ -1,0 +1,117 @@
+﻿@model Empyreal.ViewModels.Display.CartViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<div class="section-grey" style="min-height: 470px;">
+    <div class="container">
+        <div class="toast" id="snackbar"></div>
+
+        <!-- The Modal -->
+        <div class="modal fade loader" id="loader"></div>
+
+        <div class="cart-infor">
+            <div class="row">
+                <div class="col-lg-8 col-sm-8" id="cart-left" style="padding-right: 0;">
+                    @if (Model.Cart.Count <= 0)
+                    {
+                        <h4>Bạn chưa có sản phẩm nào</h4>
+                        <a class="primary-btn" asp-controller="Home" asp-action="Index">Tiếp tục mua sắm</a>
+                    }
+                    else
+                    {
+                        <div class="list-header">
+                            <div class="list-header-left">
+                                <label class="checkbox-wrap cart" id="is-select-all" style="float: left;">
+                                    <input type="checkbox" name="cart-select-all" id="cart-select-all" data-animation="0" />
+                                    <span class="checkmark" id="checkmark-select-all"></span>
+                                </label>
+                                <label class="checkbox-all">
+                                    Chọn tất cả <span>(<span id="item-sum" data-count="@Model.Cart.Count">@Model.Cart.Count</span> sản phẩm)</span>
+                                </label>
+                            </div>
+                            <div class="list-header-delete">
+                                <span><i class="far fa-trash-alt" style="font-size: 17px;"></i> Xóa</span>
+                            </div>
+                        </div>
+                        @foreach (var item in Model.Cart)
+                        {
+                            <div class="checkout-item">
+                                <div class="checkout-children">
+                                    <div class="cart-inner">
+                                        <div class="cart-inner-left">
+                                            <label class="checkbox-wrap cart" id="is-select-item">
+                                                <input type="checkbox" name="cart-select-item" id="cart-select-item" data-animation="0" />
+                                                <span class="checkmark" id="checkmark-select-item"></span>
+                                            </label>
+                                            <div class="img-wrap">
+                                                <a asp-controller="Home" asp-action="Product" asp-route-productID="@item.Product.Id">
+                                                    <img src="@item.ImageURL" title="@item.Product.Name" />
+                                                </a>
+                                            </div>
+                                            <div class="content">
+                                                <a asp-controller="Home" asp-action="Product" asp-route-productID="@item.Product.Id" class="title" title="@item.Product.Name">@item.Product.Name</a>
+                                                <div class="item-infor">
+                                                    <span>Cung cấp bởi</span><a href="#" class="link-blue"> Yame shop</a>,
+                                                    <span class="item-size"> Size: @item.ProductDetail.SizeText</span>,<span class="item-color"> Màu: @item.ProductDetail.ColorText</span>
+                                                </div>
+                                                <div class="operations">
+                                                    <span class="add-wishlist" title="Thêm vào danh sách yêu thích"><i class="far fa-heart fa-fw"></i></span>
+                                                    <span class="item-delete" id="btn-cart-delete" title="Xóa sản phẩm khỏi giỏ hàng"><i class="far fa-trash-alt fa-fw"></i></span>
+                                                    <input type="hidden" id="cart-id" value="@item.CartDetailId" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cart-inner-center product">
+                                            <h4 class="product-price" style="margin-top: 5px;">@item.ProductDetail.DisplayPrice<del class="product-old-price">@item.ProductDetail.DisplayOldPrice</del></h4>
+                                        </div>
+                                        <div class="cart-inner-right product product-details">
+                                            <div class="product-btns">
+                                                <div class="qty-input">
+                                                    <button class="minus-button" id="minus-button" data-id="1" disabled><i class="fas fa-minus"></i></button>
+                                                    <input type="text" name="quantity" value="1" data-id="1">
+                                                    <button class="plus-button" id="plus-button"><i class="fas fa-plus"></i></button>
+                                                    <span id="product-quantity" class="cart product-quantity" data-quantity="@item.ProductDetail.Quantity">@item.ProductDetail.Quantity sản phẩm có sẵn</span>
+                                                    <input type="hidden" name="item-price" id="item-price" value="@item.ProductDetail.PriceText" />
+                                                    <input type="hidden" name="item-ID" id="item-ID" value="@item.ProductDetail.ID" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                @if (Model.Cart.Count > 0)
+                {
+                    <div class="col-lg-4 col-sm-4">
+                        <div class="checkout-group">
+                            <h4>Thông tin thanh toán</h4>
+                            <div class="checkout-summary-row">
+                                <p class="checkout-summary-label">Tạm tính</p>
+                                <p class="checkout-summary-value" id="checkout-summary-temp-value">@String.Format(CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", 0)</p>
+                            </div>
+                            <div class="checkout-summary-row">
+                                <p class="checkout-summary-label">Phí giao hàng</p>
+                                <p class="checkout-summary-value">miễn phí</p>
+                            </div>
+                            <div class="checkout-summary-row">
+                                <p class="checkout-summary-label-black">Tổng cộng</p>
+                                <h4 class="checkout-summary-value">
+                                    <input type="hidden" id="summary-price" value="0" />
+                                    <span id="checkout-summary-value">@String.Format(CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", 0)</span>
+                                    <small>Đã bao gồm VAT (nếu có)</small>
+                                </h4>
+                            </div>
+                            <button class="primary-btn btn-block" id="cart-confirm">Xác nhận giỏ hàng</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="~/js/DisplayView/cartHome.js"></script>
+

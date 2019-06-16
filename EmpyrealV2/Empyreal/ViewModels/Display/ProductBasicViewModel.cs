@@ -22,6 +22,7 @@ namespace Empyreal.ViewModels.Display
         public DateTime? LastDate { get; set; }
         public string Description { get; set; }
         public double? PriceProduct { get; set; }
+        public double AvgRate { get; set; }
         public string PriceProductText
         {
             get
@@ -40,13 +41,16 @@ namespace Empyreal.ViewModels.Display
         {
             get
             {
-                return 0.8;
+                return 1.2;
             }
 
         }
         //public int? CartDetailID { get; set; }
         public List<ImageBasicViewModel> Images { get; set; }
         public List<ProductDetailBasicViewModel> Details { get; set; }
+        public List<RateViewModel> Rates { get; set; }
+        public List<List<ProductDetailBasicViewModel>> GroupBySize { get; set; }
+        public string[] RateList { get; set; }
 
         #endregion --- Variables ---
 
@@ -54,6 +58,21 @@ namespace Empyreal.ViewModels.Display
 
         public ProductBasicViewModel()
         {
+        }
+
+        public ProductBasicViewModel(Product product)
+        {
+            this.Id = product.Id;
+            this.Name = product.Name;
+            //this.CatalogName = product.Catalog.Name;
+            this.Description = product.Description;
+
+            // Models
+            this.Details = new List<ProductDetailBasicViewModel>();
+            this.Images = new List<ImageBasicViewModel>();
+            this.Rates = new List<RateViewModel>();
+            this.GroupBySize = new List<List<ProductDetailBasicViewModel>>();
+            this.RateList = new string[5];
         }
 
         #endregion --- Constructor ---

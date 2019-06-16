@@ -8,7 +8,7 @@ namespace Empyreal.Models
     {
         public Product()
         {
-            this.CreateDate = (DateTime)DateTime.Parse(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+            this.CreateDate = (DateTime)DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
             this.State = 1;
 
             Images = new HashSet<Image>();

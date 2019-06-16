@@ -29,5 +29,12 @@ namespace Empyreal.Services.Services
                 .OrderBy(order => order.Text)
                 .ToList();
         }
+
+        public List<ProductType> GetSizeColor(int sizeID, int colorID)
+        {
+            return _unitOfWork.ProductTypeRepository
+                .Where(t => t.Id == sizeID || t.Id == colorID)
+                .ToList();
+        }
     }
 }
