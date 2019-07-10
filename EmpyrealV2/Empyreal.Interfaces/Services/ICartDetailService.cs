@@ -10,5 +10,6 @@ namespace Empyreal.Interfaces.Services
 
         int Create(CartDetail cartDetail);
         int Update(CartDetail cartDetail);
+        int Updates(List<CartDetail> cartDetails);
     }
 }

@@ -10,6 +10,7 @@ namespace Empyreal.ViewModels.Display
     {
         CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
 
+        public int OrderId { get; set; }
         public string ShippingType { get; set; }
         public string PaymentType { get; set; }
         public string DateText { get; set; }
@@ -20,6 +21,7 @@ namespace Empyreal.ViewModels.Display
             MinLength(10, ErrorMessage = "Số điện thoại phải có 10 ký tự"),
             MaxLength(10, ErrorMessage = "Số điện thoại phải có 10 ký tự")]
         public string RelativePhoneNumber { get; set; }
+        public bool IsPaymentSuccess { get; set; }
         public double TempPrice { get; set; }
         public double ShippingFee { get; set; }
         public double FinalPrice
@@ -55,6 +57,6 @@ namespace Empyreal.ViewModels.Display
         }
 
         public ShippingViewModel Shipping { get; set; }
-        public List<CartDetailViewModel> Products { get; set; }
+        public CartViewModel Products { get; set; }
     }
 }

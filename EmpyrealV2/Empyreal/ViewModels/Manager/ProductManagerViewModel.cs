@@ -1,4 +1,5 @@
 ﻿using Empyreal.ViewModels.Display;
+using Empyreal.ViewModels.History;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PagedList.Core;
 using System;
@@ -16,6 +17,8 @@ namespace Empyreal.ViewModels.Manager
         #region --- Variables ---
 
         public PagedList<ProductBasicViewModel> PagedProductModel { get; set; }
+        public PagedHistoryViewModel HistoryPagedList { get; set; }
+
         public List<SelectListItem> CbbCatalog { get; set; }
         public int Catalog { get; set; }
         public string Keyword { get; set; }

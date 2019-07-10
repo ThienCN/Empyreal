@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Empyreal.Hubs;
 using Empyreal.Models;
 using Empyreal.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Empyreal.Controllers
 {
@@ -14,17 +16,19 @@ namespace Empyreal.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IHubContext<ChatHub> _hubContext;
 
         //// Login with Google account
         //private string ClientId = ConfigurationManager.AppSettings["Google.ClientID"];
         //private string SecretKey = ConfigurationManager.AppSettings["Google.SecretKey"];
         //private string RedirectUrl = ConfigurationManager.AppSettings["Google.RedirectUrl"];
 
-        public LoginController(UserManager<User> userManager,
-                    SignInManager<User> signInManager)
+        public LoginController(UserManager<User> userManager, SignInManager<User> signInManager,
+            IHubContext<ChatHub> hubContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _hubContext = hubContext;
         }
 
         [AllowAnonymous]
@@ -60,6 +64,7 @@ namespace Empyreal.Controllers
                     }
                     else
                     {
+                        await _userManager.UpdateSecurityStampAsync(user);
                         userName = user.UserName;
                     }
                 }
@@ -73,6 +78,7 @@ namespace Empyreal.Controllers
                     }
                     else
                     {
+                        await _userManager.UpdateSecurityStampAsync(user);
                         userName = user.UserName;
                     }
                 }
@@ -218,8 +224,10 @@ namespace Empyreal.Controllers
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     UserName = model.PhoneNumber,
-                    BirthDate = DateTime.Parse(model.DateOfBirth + "/" + model.MonthOfBirth + "/" + model.YearOfBirth),
-                    Sex = model.Sex
+                    BirthDate = DateTime.Parse(model.YearOfBirth + "-" + model.MonthOfBirth + "-" + model.DateOfBirth),
+                    Sex = model.Sex,
+                    State = 1,
+                    CreateDate = DateTime.Today
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -227,6 +235,9 @@ namespace Empyreal.Controllers
                 {
                     //_logger.LogInformation("User created a new account with password.");
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    // Call SignalR update statistical
+                    await _hubContext.Clients.All.SendAsync("ReloadStatistical");
 
                     return RedirectToLocal(returnUrl);
                     //return RedirectToAction("Profile", "User");

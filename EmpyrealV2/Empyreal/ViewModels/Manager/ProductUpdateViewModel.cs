@@ -17,6 +17,16 @@ namespace Empyreal.ViewModels.Manager
     public class ProductUpdateViewModel: ManagerBaseViewModel
     {
         #region --- Variables ---
+
+        /// <summary>
+        /// Mã người tạo
+        /// </summary>
+        public string UserID { get; set; }
+
+        /// <summary>
+        /// HoTen Người tạo
+        /// </summary>
+        public string UserName { get; set; }
         public int ProductId { get; set; }
 
         /// <summary>
@@ -38,6 +48,11 @@ namespace Empyreal.ViewModels.Manager
         /// Input: Mã chi tiết sản phẩm 
         /// </summary>
         public List<int> ProductDetailId { get; set; }
+        
+        /// <summary>
+        /// Input: Mã chi tiết sản phẩm đc XÓA
+        /// </summary>
+        public List<int> DeleteDetailID { get; set; }
 
         /// <summary>
         /// Input: Số lượng
@@ -93,6 +108,16 @@ namespace Empyreal.ViewModels.Manager
         /// ComboBox Danh mục
         /// </summary>
         public List<SelectListItem> Catalogs { get; set; }
+
+        /// <summary>
+        /// Json: Product Old use for check Save History
+        /// </summary>
+        public string ProductOld { get; set; } // JSON
+
+        /// <summary>
+        /// Lưu lại lịch sử chỉnh sửa sp
+        /// </summary>
+        public List<string> History { get; set; }
 
         #endregion --- Variables ---
 

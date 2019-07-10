@@ -1,5 +1,4 @@
-﻿using static Empyreal.Models.BaseModel.CommonModel;
-
+﻿
 namespace Empyreal.ViewModels.Display
 {
     public class RatePercentViewModel
@@ -7,10 +6,10 @@ namespace Empyreal.ViewModels.Display
         public int Star { get; set; }
         public double Percent { get; set; }
 
-        public RatePercentViewModel(RatePercent ratePercent)
-        {
-            this.Star = ratePercent.Star;
-            this.Percent = ratePercent.Percent;
-        }
+        //public RatePercentViewModel(RatePercent ratePercent)
+        //{
+        //    this.Star = ratePercent.Star;
+        //    this.Percent = ratePercent.Percent;
+        //}
     }
 }

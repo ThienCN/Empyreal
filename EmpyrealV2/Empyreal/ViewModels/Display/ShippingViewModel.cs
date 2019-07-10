@@ -12,15 +12,16 @@ namespace Empyreal.ViewModels.Display
             MinLength(10, ErrorMessage = "Số điện thoại phải có 10 ký tự"),
             MaxLength(10, ErrorMessage = "Số điện thoại phải có 10 ký tự")]
         public string PhoneNumber { get; set; }
-        [Required(ErrorMessage = "Vui lòng chọn tỉnh")]
+        // [Required(ErrorMessage = "Vui lòng chọn tỉnh")]
         public string Province { get; set; }
-        [Required(ErrorMessage = "Vui lòng chọn quận")]
+        // [Required(ErrorMessage = "Vui lòng chọn quận")]
         public string District { get; set; }
-        [Required(ErrorMessage = "Vui lòng chọn phường")]
+        // [Required(ErrorMessage = "Vui lòng chọn phường")]
         public string Ward { get; set; }
         [Required(ErrorMessage = "Vui lòng nhập địa chỉ")]
         public string Address { get; set; }
         public string AddressType { get; set; }
+        public CartViewModel CartViewModel { get; set; }
 
         public List<DistrictViewModel> Districts { get; set; }
         public List<ProvinceViewModel> Provinces { get; set; }

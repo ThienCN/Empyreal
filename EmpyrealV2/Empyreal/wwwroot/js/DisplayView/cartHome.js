@@ -3,21 +3,21 @@
 });
 
 var CartHome = new function () {
+    var k = $("#item-sum").attr("data-count"); // Get count product of cart
     this.Events = function () {
-        //if ($(".cart-infor").height() < 470) {
-        //    $("#footer").addClass("fixed");
-        //}
-        //else {
-        //    $("#footer").removeClass("fixed");
-        //}
+        // Set default value of input is 1
+        $("input[id='quantity']").val(1);
+
+        // Check if product is out of stock
+        CartHome.CheckQuantity();
 
         // Chon toan bo input
-        $("input[name='quantity']").click(function () {
+        $("input[id='quantity']").click(function () {
             $(this).select();
         });
 
         // Chi nhap so
-        $("input[name='quantity']").keydown(function (e) {
+        $("input[id='quantity']").keydown(function (e) {
             // Allow: backspace, delete, tab, escape, enter and .
             if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
                 // Allow: Ctrl/cmd+A
@@ -42,9 +42,9 @@ var CartHome = new function () {
             $("#loader").modal("show");
             var $quantity = parseInt($(this).parent().find($(".product-quantity")).attr("data-quantity"));
             //alert($quantity);
-            var $this = $(this).parent().find($("input[name='quantity']"));
+            var $this = $(this).parent().find($("input[id='quantity']"));
             var $checked = $(this).parents(':eq(4)').find($("input[name='cart-select-item']"));
-            var $price = $(this).parent().find($("input[name='item-price']")).val();
+            var $price = $(this).parent().find("#item-price").val();
 
             //alert($this.val());
             if ($this.val() < $quantity) {
@@ -66,9 +66,9 @@ var CartHome = new function () {
         // Click button - giam so luong xuong 1
         $('[id="minus-button"]').click(function () {
             $("#loader").modal("show");
-            var $this = $(this).parent().find($("input[name='quantity']"));
+            var $this = $(this).parent().find($("input[id='quantity']"));
             var $checked = $(this).parents(':eq(4)').find($("input[name='cart-select-item']"));
-            var $price = $(this).parent().find($("input[name='item-price']")).val();
+            var $price = $(this).parent().find("#item-price").val();
 
             if ($this.val() > 1) {
                 $this.val(parseInt($this.val()) - 1);
@@ -88,7 +88,7 @@ var CartHome = new function () {
 
         // Enable/Disable button + - 
         var t = false;
-        $("input[name='quantity']").focus(function () {
+        $("input[id='quantity']").focus(function () {
             var $this = $(this);
             var $quantity = parseInt($(this).parent().find($(".product-quantity")).attr("data-quantity"));
             t = setInterval(
@@ -105,6 +105,12 @@ var CartHome = new function () {
                             $this.parent().find($(".plus-button")).prop('disabled', true);
                             $this.parent().find($(".minus-button")).prop('disabled', false);
                         }
+
+                        if ($quantity == 1) {
+                            $this.val(1);
+                            $this.parent().find($(".plus-button")).prop('disabled', true);
+                            $this.parent().find($(".minus-button")).prop('disabled', true);
+                        }
                     }
                     if ($this.val() > 1 && $this.val() < $quantity) {
                         $this.parent().find($(".plus-button")).prop('disabled', false);
@@ -112,7 +118,7 @@ var CartHome = new function () {
                     }
                 });
         });
-        $("input[name='quantity']").blur(function () {
+        $("input[id='quantity']").blur(function () {
             if (t != false) {
                 window.clearInterval(t)
                 t = false;
@@ -125,14 +131,14 @@ var CartHome = new function () {
         });
 
         // Update summary price of Cart when change value of input
-        $("input[name='quantity']").keyup(CartHome.Delay(function () {
+        $("input[id='quantity']").keyup(CartHome.Delay(function () {
             $("#loader").modal("show");
             if ($(this).val().length > 0) {
                 var sumPrice = 0;
                 $(".checkout-item").each(function () {
                     var $this = $(this);
-                    if ($this.find($("input[name='cart-select-item']")).is(":checked") && $this.find($("input[name='quantity']")).val() != "") {
-                        sumPrice += parseFloat($this.find($("input[name='item-price']")).val()) * parseInt($this.find($("input[name='quantity']")).val());
+                    if ($this.find($("input[name='cart-select-item']")).is(":checked") && $this.find($("input[id='quantity']")).val() != "") {
+                        sumPrice += parseFloat($this.find("#item-price").val()) * parseInt($this.find($("input[id='quantity']")).val());
                     }
                 });
                 //alert(sumPrice);
@@ -144,7 +150,7 @@ var CartHome = new function () {
         }, 300));
 
         // Event focus out of input
-        $("input[name='quantity']").focusout(function () {
+        $("input[id='quantity']").focusout(function () {
             CartHome.InputFocusOut(this);
         });
 
@@ -163,13 +169,13 @@ var CartHome = new function () {
             if (!$this.prev().is(":checked")) {
                 $("input#cart-select-item").prop("checked", false);
                 $("#summary-price").val("0");
-                $("span#checkmark-select-item").each(function () {
+                $("span#checkmark-select-item").not(".disabled").each(function () {
                     CartHome.SumPrice(this, false);
                     $(this).prev().prop("checked", true);
                 });
             }
             else if ($this.prev().is(":checked")) {
-                $("span#checkmark-select-item").each(function () {
+                $("span#checkmark-select-item").not(".disabled").each(function () {
                     CartHome.SumPrice(this, false);
                     $(this).prev().prop("checked", false);
                 });
@@ -198,13 +204,17 @@ var CartHome = new function () {
                                 $("#cart-left").html(`<h4>Bạn chưa có sản phẩm nào</h4>
                                 <a class="primary-btn" href="/Home/Index"> Tiếp tục mua sắm</a>`);
                             }
+
+                            $("#outofstock-product li[li-cartdetail-id=" + $cartDetailId + "]").remove();
+                            if ($("#outofstock-product li").length == 0) {
+                                $(".alert-danger.cart").addClass("hidden");
+                            }
                             //setTimeout(function () {
                             //    $("#loader").modal("hide");
                             //}, 2000);
                             $("#loader").modal("hide");
                             CartHome.ShowToast(true, data.message);
 
-                            k--;
                             $("#item-sum").html(k); // Set count of product in cart
                             isAll = 0;
 
@@ -237,78 +247,177 @@ var CartHome = new function () {
         });
 
         $("#cart-confirm").click(function () {
-            var postData = new Array();
-            var $id = 0;
-            var $sl = 0;
             var k = 0;
 
             $("input[name='cart-select-item']").each(function () {
                 $this = $(this);
                 if ($this.is(':checked')) {
-                    $id = $this.parents(':eq(3)').find("#item-ID").val();
-                    $sl = $this.parents(':eq(3)').find("input[name='quantity']").val()
-                    postData.push($id);
-                    postData.push($sl);
                     k++;
+                    return false;
                 }
             });
 
             if (k > 0) {
-                $.ajax({
-                    url: "/CheckOut/BuyedProduct",
-                    type: "POST",
-                    data: { lst: postData },
-                    async: false,
-                    success: function (data) {
-                        if (data.isSuccess) {
-                            window.location = data.url;
-                        }
-                        else
-                            CartHome.ShowToast(false, data.message);
-
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        CartHome.ShowToast(false, "Some error remove");
+                $("input[name='cart-select-item']").each(function () {
+                    $this = $(this);
+                    if (!$this.is(':checked')) {
+                        $this.parents(":eq(2)").find("#quantity").val("0");
                     }
                 });
+                $("#buyed-product-form").submit();
             }
             else {
                 CartHome.ShowToast(false, "Vui lòng chọn món hàng để thanh toán");
             }
         });
+
+        // SignalR
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+        connection.on("ReloadQuantity", function (productdetails) {
+            $.each(productdetails, function (id, productdetail) {
+                // Update quantity of product
+                $("input[id='product-detail-id']").each(function () {
+                    $this = $(this);
+                    $productDetailId = $this.val();
+                    if ($productDetailId == productdetail.id) {
+                        $element = $this.prevAll().eq(1);
+                        $element.attr("data-quantity", productdetail.quantity);
+                        $inputQuantity = $element.prev().prev();
+
+                        // Check if product is out of stock
+                        if (productdetail.quantity <= 0) {
+                            if (!$element.parents(":eq(5)").hasClass("outofstock")) {
+                                $element.addClass("text-danger");
+                                $element.text("hết hàng");
+                                $element.parents(":eq(5)").addClass("outofstock").css("order", k);
+                                $element.parents(":eq(3)").find("#checkmark-select-item").addClass("disabled");
+                                $inputQuantity.val(0);
+                                k--;
+                                var li = document.createElement("li");  // Create with DOM
+                                li.innerHTML = $this.parents(":eq(3)").find(".title").text() + " đã hết hàng";
+                                li.setAttribute("li-cartdetail-id", $this.parents(":eq(3)").find("#cart-detail-id").val())
+                                $("#outofstock-product").append(li);
+                                $(".alert-danger.cart").addClass("visible");
+                            }                            
+                        }
+                        else {
+                            $element.text(productdetail.quantity + " sản phẩm có sẵn");
+                            if ($inputQuantity.val() > productdetail.quantity) {
+                                $inputQuantity.val(productdetail.quantity);
+                                $inputQuantity.prev().prop("disabled", false);
+                                $inputQuantity.next().prop("disabled", true);
+                            }
+                        }
+
+                        if (productdetail.quantity == 1) {
+                            $element.prev().prop('disabled', true);
+                        }
+
+                        return false;
+                    }
+                });
+            });
+
+            $("#item-sum").attr("data-count", k);
+            $("#item-sum").text(k);
+            if (k <= 0) {
+                $(".checkout-group").addClass("hidden");
+                $(".continue-shopping").removeClass("hidden");
+                $("#outofstock-product li:not(:first-child)").remove();
+                $("#outofstock-product li").first().text("Tất cả sản phẩm trong giỏ hàng của bạn đều đã hết hàng! Tiếp tục mua sắm nhé!");
+                $(".list-header").addClass("no-action");
+            }
+        });
+
+        // Reconnect loop
+        function start() {
+            connection.start().catch(function (err) {
+                setTimeout(function () {
+                    start();
+                }, 5000);
+            });
+        }
+
+        connection.onclose(function () {
+            start();
+        });
+
+        start();
+        // End SignalR
+    }
+
+    // Check if product is out of stock
+    this.CheckQuantity = function () {
+        console.log("fixed");
+        $(".product-quantity").each(function () {
+            $this = $(this);
+            if ($this.attr("data-quantity") <= 0) {
+                if (!$this.parents(":eq(5)").hasClass("outofstock")) {
+                    $this.addClass("text-danger");
+                    $this.text("hết hàng");
+                    $this.parents(":eq(5)").addClass("outofstock").css("order", k);
+                    $this.parents(":eq(3)").find("#checkmark-select-item").addClass("disabled");
+                    $this.prev().prev().val(0);
+                    k--;
+                    var li = document.createElement("li");  // Create with DOM
+                    li.innerHTML = $this.parents(":eq(3)").find(".title").text() + " đã hết hàng";
+                    li.setAttribute("li-cartdetail-id", $this.parents(":eq(3)").find("#cart-detail-id").val())
+                    $("#outofstock-product").append(li);
+                    $(".alert-danger.cart").addClass("visible");
+                }
+            }
+            else {
+                $this.text($this.attr("data-quantity") + " sản phẩm có sẵn");
+            }
+
+            if ($this.attr("data-quantity") == 1) {
+                $this.prev().prop('disabled', true);
+            }
+        });
+        $("#item-sum").attr("data-count", k);
+        $("#item-sum").text(k);
+        if (k <= 0) {
+            $(".checkout-group").addClass("hidden");
+            $(".continue-shopping").removeClass("hidden");
+            $("#outofstock-product li:not(:first-child)").remove();
+            $("#outofstock-product li").first().text("Tất cả sản phẩm trong giỏ hàng của bạn đều đã hết hàng! Tiếp tục mua sắm nhé!");
+            $(".list-header").addClass("no-action");
+        }
     }
 
     // Get sum price
-    var k = $("#item-sum").attr("data-count"); // Get count product of cart
     var isAll = 0; // Check selected all product
     this.SumPrice = function (input, bool) {
-        var $this = $(input).parents(':eq(3)');
+        var $this = $(input).parents(':eq(2)');
         var $price = $this.find("#item-price").val();
-        var $quantity = $this.find("input[name='quantity']").val();
-        if (!$(input).prev().is(":checked")) { // Chon them san pham cong them tien
-            //alert($price * $quantity);
-            $("#summary-price").val($price * $quantity + parseFloat($("#summary-price").val()));
-            var summaryPrice = parseFloat($("#summary-price").val());
-            $("#checkout-summary-temp-value").text(summaryPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }));
-            $("#checkout-summary-value").text(summaryPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }));
-            if (bool) isAll++;
-            else isAll = k;
-        }
-        else if ($(input).prev().is(":checked")) { // Bo chon san pham tru tien
-            if ($("input[name='cart-select-all']").is(":checked") && bool) {
-                $("input[name='cart-select-all']").prop("checked", false);
+        var $quantity = $this.find("input[id='quantity']").val();
+        if (!$this.hasClass("disabled")) {
+            if (!$(input).prev().is(":checked")) { // Chon them san pham cong them tien
+                //alert($price * $quantity);
+                $("#summary-price").val($price * $quantity + parseFloat($("#summary-price").val()));
+                var summaryPrice = parseFloat($("#summary-price").val());
+                $("#checkout-summary-temp-value").text(summaryPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }));
+                $("#checkout-summary-value").text(summaryPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }));
+                if (bool) isAll++;
+                else isAll = k;
+            }
+            else if ($(input).prev().is(":checked")) { // Bo chon san pham tru tien
+                if ($("input[name='cart-select-all']").is(":checked") && bool) {
+                    $("input[name='cart-select-all']").prop("checked", false);
+                }
+
+                $("#summary-price").val(parseFloat($("#summary-price").val()) - $price * $quantity);
+                var summaryPrice = parseFloat($("#summary-price").val());
+                $("#checkout-summary-temp-value").text(summaryPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }));
+                $("#checkout-summary-value").text(summaryPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }));
+                if (bool) isAll--;
+                else isAll = 0;
             }
 
-            $("#summary-price").val(parseFloat($("#summary-price").val()) - $price * $quantity);
-            var summaryPrice = parseFloat($("#summary-price").val());
-            $("#checkout-summary-temp-value").text(summaryPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }));
-            $("#checkout-summary-value").text(summaryPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }));
-            if (bool) isAll--;
-            else isAll = 0;
-        }
-
-        if (isAll == k && bool) { // If selected all product, prop input check all
-            $("input[name='cart-select-all']").prop("checked", true);
+            if (isAll == k && bool) { // If selected all product, prop input check all
+                $("input[name='cart-select-all']").prop("checked", true);
+            }
         }
     }
 
@@ -322,8 +431,8 @@ var CartHome = new function () {
             var sumPrice = 0;
             $(".checkout-item").each(function () {
                 var $this = $(this);
-                if ($this.find($("input[name='cart-select-item']")).is(":checked") && $this.find($("input[name='quantity']")).val() != "") {
-                    sumPrice += parseFloat($this.find($("input[name='item-price']")).val()) * parseInt($this.find($("input[name='quantity']")).val());
+                if ($this.find($("input[name='cart-select-item']")).is(":checked") && $this.find($("input[id='quantity']")).val() != "") {
+                    sumPrice += parseFloat($this.find("#item-price").val()) * parseInt($this.find($("input[id='quantity']")).val());
                 }
             });
             //alert(sumPrice);

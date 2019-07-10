@@ -9,6 +9,11 @@ namespace Empyreal.ViewModels.Display
     public class CartViewModel
     {
         public List<CartDetailViewModel> Cart { get; set; }
+
+        public CartViewModel()
+        {
+            Cart = new List<CartDetailViewModel>();
+        }
     }
 
     public class CartDetailViewModel
@@ -17,9 +22,10 @@ namespace Empyreal.ViewModels.Display
         public ProductDetailBasicViewModel ProductDetail { get; set; }
         public string ImageURL { get; set; }
         public int CartDetailId { get; set; }
+        public int? BuyedQuantity { get; set; }
 
         public CartDetailViewModel(Product product, ProductDetail productDetail,
-            string imageURL, int cartDetailId)
+            string imageURL, int cartDetailId, int buyedQuantity)
         {
             // Product
             Product = new ProductBasicViewModel(product);
@@ -31,6 +37,10 @@ namespace Empyreal.ViewModels.Display
             ImageURL = imageURL;
 
             CartDetailId = cartDetailId;
+
+            BuyedQuantity = buyedQuantity;
         }
+
+        public CartDetailViewModel() { }
     }
 }

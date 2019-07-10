@@ -16,40 +16,44 @@
             @await Html.PartialAsync("Manager\\_MenuLeftAdminPartial")
 
             <div class="col-lg-9 col-xs-12 content-right" id="content-right">
-                @if (!Model.IsHidden)
+                @if (!Model.IsError)
                 {
-                    @if (!Model.IsError)
-                    {
-                        <div>
-                            <div class="alert alert-success">@ViewData["Title"] thành công</div>
-                            @*<div style="text-align: center; width: 145px;">
-                                    <a class="main-btn" title="Quay lại" asp-controller="Product" asp-action="ProductManager"><i class="far fa-the-red-yeti"></i>Quay lại</a>
-                                </div>*@
 
+                    <div>
+                        <div class="alert alert-success">@ViewData["Title"] thành công</div>
+                        <div style="">
+                            <a class="main-btn" title="Quay lại" asp-controller="Product" asp-action="ProductManager"><i class="far fa-the-red-yeti"></i>Quay lại</a>
+                            <a class="main-btn" title="Thêm mới" asp-controller="Product" asp-action="ProductUpdate" asp-route-isUpdate="False"><i class="far fa-theater-masks"></i>Thêm sản phẩm</a>
                         </div>
-                    }
-                    else
-                    {
-                        <div>
-                            <div class="alert alert-danger">
-                                @ViewData["Title"] thất bại
-                                <div style="text-align: left; width: 145px;">
-                                    <a class="message" title="Error">@Model.Message</a>
-                                </div>
+                    </div>
+
+                }
+                else
+                {
+                    <h4 style="display: inline-block;">@ViewData["Title"]</h4>
+
+                    <button type="button" class="btn btn-info" id="historyPopup" style="float: right;"><i class="fas fa-search"></i> Lịch sử</button>
+
+                    <div>
+                        <div class="alert alert-danger message" hidden>
+                            @ViewData["Title"] thất bại
+                            <div style="text-align: left; width: auto;">
+                                <a id="message" title="Error">@Model.Message</a>
+                                <span asp-validation-for="IsError" class="text-danger"></span>
+
                             </div>
                         </div>
-                    }
-                }
-                @if (Model.IsError)
-                {
-
-                    <h4>@ViewData["Title"]</h4>
+                    </div>
                     <div class="account-profile">
                         <form class="product-form" method="post" asp-controller="Product" asp-action="UpdateProduct" id="ProductFormSubmit" enctype="multipart/form-data">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <input type="hidden" asp-for="ProductId" />
+                            <input type="hidden" asp-for="UserID" />
+                            <input type="hidden" asp-for="UserName" />
                             <input type="hidden" asp-for="IsUpdate" />
                             <input type="hidden" asp-for="IsError" />
+
+                            <input type="hidden" asp-for="ProductOld" />
 
                             <h4 class="title-shadow">Thông tin cơ bản</h4>
                             <div class="form-group" style="margin-top: 3px;">
@@ -107,7 +111,7 @@
                                                     <span asp-validation-for="@item.Quantity" class="text-danger"></span>
                                                 </div>
                                                 <label class="small-label">Đơn giá (đồng)</label>
-                                                <input type="hidden"  class="form-control" asp-for="@item.PriceID" id="PriceID" name="PriceID" onkeyup="splitInDots(this)" />
+                                                <input type="hidden" class="form-control" asp-for="@item.PriceID" id="PriceID" name="PriceID" onkeyup="splitInDots(this)" />
 
                                                 <div class="select-wrap">
                                                     <input type="text" class="form-control" asp-for="@item.PriceText" id="PriceText" name="PriceText" onkeyup="splitInDots(this)" />
@@ -159,15 +163,34 @@
 
                 }
             </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="historyModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Lịch sử</h4>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
         </div>
     </div>
 </div>
 
-
-<script src="~/js/Manager/ProductUpdate.js"></script>
-
-@section ckeditor {
-
+@section Scripts {
+    <script src="~/js/Manager/ProductUpdate.js"></script>
     <script src="~/lib/ckeditor/ckeditor.js"></script>
     <script src="~/lib/ckeditor/adapters/jquery.js"></script>
     <script>

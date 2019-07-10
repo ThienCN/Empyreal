@@ -15,7 +15,7 @@ var CheckOut = new function () {
         $(".ward-select").chosen();
 
         // Show add new address
-        $("#add-new-address").click(function () {
+        $("#add-new-address, #fix-address").click(function () {
             if ($("#new-address").hasClass("show")) {
                 $("#new-address").addClass("opacity");
                 setTimeout(function () {
@@ -25,15 +25,12 @@ var CheckOut = new function () {
             else {
                 $("#new-address").addClass("show");
             }
-            $("#footer").removeClass("fixed");
-            //$("input[type='text']").val("");
             $("textarea").val("");
         });
 
         // Hidden add new address form
         if ($("#old-order").length > 0) {
             $("#new-address").addClass("display-none");
-            $("#footer").addClass("fixed");
         }
 
         // Validate shipping form

@@ -1,7 +1,5 @@
 ﻿using Empyreal.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Empyreal.Interfaces.Services
 {
@@ -9,5 +7,6 @@ namespace Empyreal.Interfaces.Services
     {
         ProductDetail GetOne(int detailID);
         List<ProductDetail> GetList(int ProductID);
+        int Update(List<ProductDetail> productDetail);
     }
 }

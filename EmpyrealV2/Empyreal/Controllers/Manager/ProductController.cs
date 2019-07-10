@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 using Empyreal.Interfaces.Services;
 using Empyreal.Models;
 using Empyreal.ServiceLocators;
@@ -8,7 +10,9 @@ using Empyreal.ViewModels.Display;
 using Empyreal.ViewModels.Manager;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Empyreal.Controllers.Manager
 {
@@ -21,9 +25,12 @@ namespace Empyreal.Controllers.Manager
         private readonly IProductService productService;
         private readonly IProductDetailService detailService;
         private readonly IProductPriceService priceService;
+        private readonly IHistoryService historyService;
 
         private readonly IImageService imageService;
         private readonly IUserService userService;
+        private readonly UserManager<User> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
         // Environment
         private IHostingEnvironment _env;
@@ -31,13 +38,17 @@ namespace Empyreal.Controllers.Manager
         // Constant 
         private const int MODE_MANAGER = 0;
         private const int MODE_UPDATE = 1;
+        private const string TABLE_NAME = "Product";
         #endregion --- Variables ---
 
         #region --- Constructor ---
 
-        public ProductController(IHostingEnvironment env)
+        public ProductController(IHostingEnvironment env, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _env = env;
+
+            this.userManager = userManager;
+            this.roleManager = roleManager;
 
             catalogService = ServiceLocator.Current.GetInstance<ICatalogService>();
             productService = ServiceLocator.Current.GetInstance<IProductService>();
@@ -45,6 +56,7 @@ namespace Empyreal.Controllers.Manager
             priceService = ServiceLocator.Current.GetInstance<IProductPriceService>();
             imageService = ServiceLocator.Current.GetInstance<IImageService>();
             userService = ServiceLocator.Current.GetInstance<IUserService>();
+            historyService = ServiceLocator.Current.GetInstance<IHistoryService>();
         }
 
         #endregion --- Constructor ---
@@ -64,21 +76,20 @@ namespace Empyreal.Controllers.Manager
             var Catalogs = new ComboBoxController().GetCatalogs(MODE_MANAGER);
             //
             if (string.IsNullOrWhiteSpace(keySearch))
-                keySearch = string.Empty;
-            //var user = await userManager.GetUserAsync(User);
+                keySearch = " ";
+
             List<Product> products = new List<Product>();
-            if (catalogSelect == 0)
-                products = productService.ByName(keySearch, 1);
-            else
-                products = productService.ByNameAndCatalog(keySearch, catalogSelect, 1);
+
+            products = productService.SearchFullText(keySearch, catalogSelect, 1);
+
             //
             List<ProductBasicViewModel> listProduct = new List<ProductBasicViewModel>();
             foreach (var p in products)
             {
                 string userName = string.Empty;
-                //User user = userService.ByID(p.UserId);
-                //if (user != null)
-                //    userName = user.HoTen;
+                User user = userService.Get(p.CreateByUser);
+                if (user != null)
+                    userName = user.HoTen;
 
                 ProductBasicViewModel product = new ProductBasicViewModel()
                 {
@@ -105,11 +116,12 @@ namespace Empyreal.Controllers.Manager
         /// [Lương Mỹ] Create [20/04/2019]
         /// </history>
         [HttpGet]
-        public IActionResult ProductUpdate(int productID, bool isUpdate)
+        public async Task<IActionResult> ProductUpdate(int productID, bool isUpdate)
         {
 
             ProductUpdateViewModel viewModel = new ProductUpdateViewModel(new Product());
             viewModel.IsUpdate = isUpdate;
+
 
             #region --- Default --- 
 
@@ -121,18 +133,42 @@ namespace Empyreal.Controllers.Manager
 
             #endregion --- Default --- 
 
-            string message;
-            bool isError;
-            Product product;
-            List<ProductDetail> productDetails;
-            List<Image> images;
+            string message = string.Empty;
+            bool isError = false;
+            Product product = new Product();
+            List<ProductDetail> productDetails = new List<ProductDetail>();
+            List<Image> images = new List<Image>();
             //
-            GetDataFromSever(productID, out product, out productDetails, out images, out isError, out message);
+            bool result = GetDataFromSever(productID, out product, out productDetails, out images, out isError, out message);
+
+            if (result)
+            {
+                viewModel.IsError = isError;
+                viewModel.Message = message;
+
+                //ModelState.AddModelError("IsError", message);
+                goto Finish;
+            }
             //
             Mapping(product, productDetails, images, ref viewModel);
-
+            //
             InitComboBox(ref viewModel);
+            // Use for History
+            if (isUpdate)
+            {
+                string JSON_ProductOld = ParseJson_ProductOld(product);
+                viewModel.ProductOld = JSON_ProductOld;
+            }
 
+            var ENVIRONMENT_USER_ID = await userManager.GetUserAsync(User);
+            if(ENVIRONMENT_USER_ID == null)
+            {
+                return RedirectToAction("SignIn", "Login");
+            }
+            viewModel.UserID = ENVIRONMENT_USER_ID.Id;
+            viewModel.UserName = ENVIRONMENT_USER_ID.UserName;
+        //
+        Finish:
             return View(viewModel);
         }
 
@@ -155,10 +191,11 @@ namespace Empyreal.Controllers.Manager
 
             // Product Entity
             Product product = null;
+            History history = null;
             //Excute
             try
             {
-                DataTranfer(out product, viewModel);
+                DataTranfer(out product, out history, viewModel);
             }
             catch (Exception e)
             {
@@ -173,13 +210,17 @@ namespace Empyreal.Controllers.Manager
             // Execute Insert
             try
             {
-                if (!viewModel.IsUpdate) { // Create
-                    isReturn = productService.Create(product);
-                }
-                else // Update
+                if (!viewModel.IsUpdate)
                 {
-                    isReturn = productService.Update(product);
+                    history.Summary = "Thêm mới";
+                    history.Content = "Thêm mới sản phẩm";
                 }
+                else
+                {
+                    history.Summary = "Chỉnh sửa";
+                }
+
+                isReturn = productService.Update(product, history);
             }
             catch (Exception e)
             {
@@ -194,36 +235,68 @@ namespace Empyreal.Controllers.Manager
             viewModel.IsError = (isReturn == 0);
             viewModel.Message = message;
 
-
-
+           
             #endregion --- Main Execute ---
 
             return View(viewModel);
         }
 
-        #endregion --- Request --- 
-
-        #region --- Method ---
-
 
         /// <summary>
-        /// Khởi tạo ComboBox cho Create / Update
+        /// 
         /// </summary>
-        /// <returns>
-        /// out viewModel
-        /// </returns>
-        public void InitComboBox(ref ProductUpdateViewModel viewModel)
+        /// <param name="productID"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ProductDelete(int productID, string keySearch, int selectCatalog)
         {
-            //Get Data ComboBox
-            var comboBox = new ComboBoxController();
-            viewModel.Catalogs = comboBox.GetCatalogs(MODE_UPDATE);
+            int isReturn = 0;
+            string message = String.Empty;
+            // Call Service => Execute
+            #region --- Main Execute ---
 
-            viewModel.Sizes = comboBox.GetProductType("Size");
-            viewModel.Colors = comboBox.GetProductType("Color");
+            
+            // Execute Insert
+            try
+            {
+                Product productDel = productService.Get(productID);
+                if (productDel == null)
+                {
+                    message = "Sản phẩm đã được xóa trước đó!";
+                    goto Finish;
+                }
+                var ENVIRONMENT_USER_ID = await userManager.GetUserAsync(User);
+                string UserID = ENVIRONMENT_USER_ID.Id;
 
-            return;
+                History history = new History();
+                history.Table = TABLE_NAME;
+                history.Detail = productDel.Id;
+                history.CreateByUser = UserID;
+                history.Summary = "Xóa";
+                history.Content = String.Format("<p> Sản phẩm {0} đã bị xóa. </p>", productDel.Id);
+
+                productDel.State = 0; // Delete
+                isReturn = productService.Update(productDel, history);
+
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+                goto Finish;
+            }
+
+
+        Finish:
+
+            #endregion --- Main Execute ---
+            return RedirectToAction("ProductManager", "Product", new { keySearch = keySearch, catalogSelect = selectCatalog } );
         }
-        //end InitViewModel
+
+
+
+        #endregion --- Request --- 
+
+        #region --- Private Method ---
 
         /// <summary>
         /// Xử lý Input thành ViewModel hoàn chỉnh
@@ -232,10 +305,11 @@ namespace Empyreal.Controllers.Manager
         /// <history>
         /// [Lương Mỹ] Create [29/04/2019]
         /// </history>
-        public void ConfigViewModel (ref ProductUpdateViewModel viewModel)
+        private void ConfigViewModel(ref ProductUpdateViewModel viewModel)
         {
             // Input => ViewModel
             #region --- Set Value ---
+
             InitComboBox(ref viewModel);
 
             if (viewModel.IsUpdate)
@@ -253,10 +327,12 @@ namespace Empyreal.Controllers.Manager
             var Quantity = viewModel.Quantity;
 
             #endregion --- Set Value ---
+
             #region --- Execute ---
 
             // Add Partial View => View Model
             viewModel.ProductDetails = new List<ProductDetailBasicViewModel>();
+
             if (DetailID != null & DetailID.Count > 0)
             {
                 for (int i = 0; i < DetailID.Count; i++)
@@ -310,7 +386,7 @@ namespace Empyreal.Controllers.Manager
                     {
                         viewModel.IsError = true;
                         viewModel.Message = e.Message;
-                        return ;
+                        return;
                     }
 
                 }
@@ -322,7 +398,7 @@ namespace Empyreal.Controllers.Manager
 
             return;
         }
-        //end ConfigViewModel
+        //end ConfigViewModel        
 
         /// <summary>
         /// Chuyển đổi từ ViewModel => Entity
@@ -334,22 +410,41 @@ namespace Empyreal.Controllers.Manager
         /// <history>
         /// [Lương Mỹ] Create [29/04/2019]
         /// </history>
-        public void DataTranfer(out Product product, ProductUpdateViewModel viewModel)
+        private void DataTranfer(out Product product, out History history, ProductUpdateViewModel viewModel)
         {
+            string userID = viewModel.UserID;
+            string userName = viewModel.UserName;
+            history = new History();
+
             // ViewModel => Entity
             #region --- Tranfer ---
 
+            #region --- Product ---
             // Product Entity => Product
             int productID = viewModel.ProductId;
-            product = (productID == 0) ? new Product() : productService.Get(productID);
-
-            product.Id = viewModel.ProductId;
+            if (productID == 0)
+            {
+                product = new Product();
+                product.CreateByUser = userID;
+                product.CreateDate = DateTime.Now;
+            }
+            else
+            {
+                product = productService.Get(productID);
+                if (product == null) return; // lỗi
+            }
             product.Name = viewModel.ProductName;
             //UserID
             product.CatalogId = viewModel.Catalog;
             product.Description = viewModel.Description;
-            product.CreateDate = DateTime.Now;
+            //History
+            product.LastModifyByUser = userID;
+            product.LastModifyDate = DateTime.Now;
+            //
             product.State = 1;
+            #endregion --- Product ---
+
+            #region --- Details + Price ---
 
             // ProductDetail Entity => ProductDetails
             var productDetails = new List<ProductDetail>();
@@ -357,43 +452,87 @@ namespace Empyreal.Controllers.Manager
             {
                 var proDetailModel = viewModel.ProductDetails[i];
 
-                // ProductDetail
                 int detailID = proDetailModel.ID;
-                ProductDetail detail = (detailID == 0) ? new ProductDetail() : detailService.GetOne(detailID);
+                ProductDetail detail = null;
+                if (detailID == 0)
+                {   // Thêm mới
+                    detail = new ProductDetail();
+                    detail.CreateByUser = userID;
+                    detail.CreateDate = DateTime.Now;
+                }
+                else { // Chỉnh sửa
+                    detail = detailService.GetOne(detailID);
+                    if (detail == null) continue;
+                }
+                // Info
                 detail.Id = proDetailModel.ID;
                 detail.Size = proDetailModel.Size;
                 detail.Color = proDetailModel.Color;
                 detail.Quantity = proDetailModel.Quantity;
                 detail.Price = proDetailModel.PriceID;
-                detail.CreateDate = DateTime.Now;
+                // History
+                detail.LastModifyByUser = userID;
+                detail.LastModifyDate = DateTime.Now;
+                // State
                 detail.State = 1;
-
-
 
                 // ProductPrice
                 int priceID = proDetailModel.PriceID.GetValueOrDefault();
 
                 ProductPrice productPrice = null;
-                if (priceID != 0 )
+                if (priceID != 0)
                 {
                     productPrice = priceService.GetOne(priceID);
                     // Tạo mới Price nếu Thay đổi giá tiền
                     if (productPrice.Price != viewModel.PriceText[i])
                     {
                         productPrice = new ProductPrice();
+                        productPrice.CreateDate = DateTime.Now;
+                        productPrice.CreateByUser = userID;
                     }
                 }
                 else
                 {
                     productPrice = new ProductPrice();
+                    productPrice.CreateDate = DateTime.Now;
+                    productPrice.CreateByUser = userID;
                 }
                 productPrice.Price = viewModel.PriceText[i];
+                // History
+                productPrice.LastModifyByUser = userID;
+                productPrice.LastModifyDate = DateTime.Now;
+                //
                 productPrice.State = 1;
 
                 detail.PriceNavigation = productPrice;
                 productDetails.Add(detail);
 
             }//end Entity ProductDetail
+
+            // Delete ProductDetail
+            if (viewModel.DeleteDetailID != null)
+            {
+                for (int i = 0; i < viewModel.DeleteDetailID.Count; i++)
+                {
+                    var proDetailID = viewModel.DeleteDetailID[i];
+
+                    // ProductDetail
+                    ProductDetail detail = detailService.GetOne(proDetailID);
+                    if (detail == null) continue;
+
+                    detail.State = 0; // Xoa
+                                      // Update history
+                    detail.LastModifyByUser = userID;
+                    detail.LastModifyDate = DateTime.Now;
+
+                    productDetails.Add(detail);
+
+                }
+            }
+
+            #endregion --- Details + Price ---
+
+            #region --- Image ---
 
             // Image Entity => List<Image>
             var images = new List<Image>();
@@ -403,11 +542,40 @@ namespace Empyreal.Controllers.Manager
 
                 Image img = new Image()
                 {
-                    Url = imgModel.Url
+                    Url = imgModel.Url,
+                    CreateByUser = userID
+                    
                 };
                 images.Add(img);
             }
-            //
+
+            #endregion --- Image ---
+
+            #region --- History ---
+
+            history.CreateDate = DateTime.Now;
+            history.CreateByUser = userID;
+            String changes = String.Empty;
+            if (viewModel.History != null)
+            {   // Chỉnh sửa
+                for (int i = 0; i < viewModel.History.Count; i++)
+                {
+                    var item = viewModel.History[i];
+                    item = String.Format("<p> {0} </p>", item.ToString());
+                    viewModel.History[i] = item;
+                }
+                changes = String.Join(" ", viewModel.History);
+            }
+            else // Thêm mới
+            {
+                changes = String.Format("</p> Tạo mới sản phảm </p>");
+            }
+
+            history.Content = changes;
+            history.Table = "Product";
+
+            #endregion --- History ---
+
 
             product.Images = images;
             product.ProductDetails = productDetails;
@@ -426,7 +594,7 @@ namespace Empyreal.Controllers.Manager
         /// <history>
         /// [Lương Mỹ] Create [29/04/2019]
         /// </history>
-        public void Mapping( Product product, List<ProductDetail> productDetails, List<Image> images,
+        private void Mapping(Product product, List<ProductDetail> productDetails, List<Image> images,
             ref ProductUpdateViewModel viewModel)
         {
             // Entity => ViewModel
@@ -456,16 +624,20 @@ namespace Empyreal.Controllers.Manager
         //end Mapping
 
         /// <summary>
-        /// Void Function: Gọi Service để lấy dữ liệu từ sever => Entity
+        /// Gọi Service để lấy dữ liệu từ sever => Entity :
+        /// True = Error || False = Success
         /// </summary>
         /// <param name="product"></param>
         /// <param name="productDetails"></param>
         /// <param name="images"></param>
         /// <param name="viewModel"> ViewModel chứa Input</param>
+        /// <returns>
+        /// True = Error || False = Success
+        /// </returns>
         /// <history>
         /// [Lương Mỹ] Create [29/04/2019]
         /// </history>
-        public void GetDataFromSever(int productID, out Product product, out List<ProductDetail> productDetails,
+        private bool GetDataFromSever(int productID, out Product product, out List<ProductDetail> productDetails,
             out List<Image> images, out bool isError, out string message)
         {
             // Call Services
@@ -473,13 +645,14 @@ namespace Empyreal.Controllers.Manager
             //Init
             message = string.Empty;
             isError = false;
+            //
             product = new Product();
             productDetails = new List<ProductDetail>();
             images = new List<Image>();
-            //
 
             // Check Data in here
             int ProductID = productID;
+
             // end Check Data
 
             product = (productID == 0) ? new Product() : productService.Get(ProductID);
@@ -488,10 +661,10 @@ namespace Empyreal.Controllers.Manager
                 message = "Không tìm thấy sản phẩm!";
                 // Lỗi
                 isError = true;
-                return;
+                return true;
             }
             productDetails = detailService.GetList(ProductID);
-            foreach(var detail in productDetails)
+            foreach (var detail in productDetails)
             {
                 int id = detail.Price.GetValueOrDefault();
                 var price = priceService.GetOne(id);
@@ -499,17 +672,54 @@ namespace Empyreal.Controllers.Manager
             images = imageService.GetList(ProductID);
 
             #endregion --- Get Data ---
-
+            // Success
+            return false;
         }
         //end GetDataFromSevice
 
-        [HttpPost]
-        public IActionResult EditHistoryPartial()
-        {
-            return PartialView("_EditHistoryPartial");
-        }
 
-        #endregion --- Method ---
+        /// <summary>
+        /// Khởi tạo ComboBox cho Create / Update
+        /// </summary>
+        /// <returns>
+        /// out viewModel
+        /// </returns>
+        private void InitComboBox(ref ProductUpdateViewModel viewModel)
+        {
+            //Get Data ComboBox
+            var comboBox = new ComboBoxController();
+            viewModel.Catalogs = comboBox.GetCatalogs(MODE_UPDATE);
+
+            viewModel.Sizes = comboBox.GetProductType("Size");
+            viewModel.Colors = comboBox.GetProductType("Color");
+
+            return;
+        }
+        //end InitViewModel
+
+        /// <summary>
+        /// Get Product Old in Sever & Parse to JSon
+        /// </summary>
+        /// <param name="productID"></param>
+        /// <returns></returns>
+        private string ParseJson_ProductOld(Product product)
+        {
+            string json = String.Empty;
+
+            if (product == null)
+                return String.Empty;
+            ProductUpdateViewModel model = new ProductUpdateViewModel(product);
+            model.Description = WebUtility.HtmlDecode(model.Description);
+            foreach (var detail in product.ProductDetails)
+            {
+                ProductDetailBasicViewModel detailModel = new ProductDetailBasicViewModel(detail);
+                model.ProductDetails.Add(detailModel);
+            }
+            json = JsonConvert.SerializeObject(model);
+            return json;
+        }
+        
+        #endregion --- Private Method ---
 
     }
 

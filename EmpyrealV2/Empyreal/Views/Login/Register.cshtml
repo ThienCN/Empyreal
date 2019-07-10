@@ -62,23 +62,23 @@
                                     <div class="input-wrap">
                                         <div class="row">
                                             @*<label class="col-xs-3 radio-wrap">
-                                                    Nam
-                                                    <input type="radio" asp-for="Sex" value="Nam" checked />
-                                                    <span class="checkmark"></span>
-                                                </label>
-                                                <label class="col-xs-3 radio-wrap">
-                                                    Nữ
-                                                    <input type="radio" asp-for="Sex" value="Nữ" />
-                                                    <span class="checkmark" style="left: -2px;"></span>
-                                                </label>*@
-                                            @*@foreach (var item in Model.SexList)
+                                                Nam
+                                                <input type="radio" asp-for="Sex" value="Nam" checked />
+                                                <span class="checkmark"></span>
+                                            </label>
+                                            <label class="col-xs-3 radio-wrap">
+                                                Nữ
+                                                <input type="radio" asp-for="Sex" value="Nữ" />
+                                                <span class="checkmark" style="left: -2px;"></span>
+                                            </label>*@
+                                            @foreach (var item in Model.SexList)
                                             {
                                                 <label class="col-xs-3 radio-wrap">
                                                     @item.Text
                                                     <input type="radio" asp-for="Sex" value="@item.Value" />
                                                     <span class="checkmark"></span>
                                                 </label>
-                                            }*@
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -86,16 +86,17 @@
                                     <label class="control-label">Ngày sinh</label>
                                     <div class="input-wrap">
                                         <div class="birthday-picker">
-                                            @*<select class="form-control" asp-for="DateOfBirth" asp-items="Model.Dates"></select>
+                                            <select class="form-control" asp-for="DateOfBirth" asp-items="Model.Dates"></select>
                                             <span asp-validation-for="DateOfBirth" class="text-danger"></span>
                                             <select class="form-control" asp-for="MonthOfBirth" asp-items="Model.Months"></select>
                                             <span asp-validation-for="MonthOfBirth" class="text-danger"></span>
                                             <select class="form-control" asp-for="YearOfBirth" asp-items="Model.Years"></select>
-                                            <span asp-validation-for="YearOfBirth" class="text-danger"></span>*@
+                                            <span asp-validation-for="YearOfBirth" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label class="control-label"></label>
                                     <button class="primary-btn" type="submit">Đăng ký</button>
                                 </div>
                             </form>

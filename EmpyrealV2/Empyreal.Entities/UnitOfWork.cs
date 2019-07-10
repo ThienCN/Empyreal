@@ -1,13 +1,8 @@
 ﻿using Empyreal.Interfaces.Entities;
 using Empyreal.Models;
-using Empyreal.Models.BaseModel;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Empyreal.Entities
 {
@@ -18,6 +13,8 @@ namespace Empyreal.Entities
         private readonly EmpyrealContext _context;
         private IDbContextTransaction _transaction;
         private bool _disposed;
+
+        #endregion Variables
 
         #region DbSet
 
@@ -31,18 +28,16 @@ namespace Empyreal.Entities
         private IRepository<ProductDetail> _productDetailRepository;
         private IRepository<ProductType> _productTypeRepository;
         private IRepository<ProductPrice> _productPriceRepository;
-
+        private IRepository<History> _historyRepository;
         private IRepository<Image> _imageRepository;
         private IRepository<Comment> _commentRepository;
         private IRepository<Rate> _rateRepository;
-        private IRepository<CommonModel> _commonRepository;
         private IRepository<Province> _provinceRepository;
         private IRepository<District> _districtRepository;
         private IRepository<Ward> _wardRepository;
+        private IRepository<Statistical> _statisticalRepository;
 
         #endregion DbSet
-
-        #endregion Variables
 
         #region Constructor
 
@@ -125,6 +120,13 @@ namespace Empyreal.Entities
                 return _productPriceRepository = _productPriceRepository ?? new Repository<ProductPrice>(_context);
             }
         }
+        public IRepository<History> HistoryRepository
+        {
+            get
+            {
+                return _historyRepository = _historyRepository ?? new Repository<History>(_context);
+            }
+        }
         public IRepository<Image> ImageRepository
         {
             get
@@ -146,15 +148,6 @@ namespace Empyreal.Entities
                 return _rateRepository = _rateRepository ?? new Repository<Rate>(_context);
             }
         }
-
-        public IRepository<CommonModel> CommonRepository
-        {
-            get
-            {
-                return _commonRepository = _commonRepository ?? new Repository<CommonModel>(_context);
-            }
-        }
-
         public IRepository<Province> ProvinceRepository
         {
             get
@@ -162,7 +155,6 @@ namespace Empyreal.Entities
                 return _provinceRepository = _provinceRepository ?? new Repository<Province>(_context);
             }
         }
-
         public IRepository<District> DistrictRepository
         {
             get
@@ -170,12 +162,19 @@ namespace Empyreal.Entities
                 return _districtRepository = _districtRepository ?? new Repository<District>(_context);
             }
         }
-
         public IRepository<Ward> WardRepository
         {
             get
             {
                 return _wardRepository = _wardRepository ?? new Repository<Ward>(_context);
+            }
+        }
+
+        public IRepository<Statistical> StatisticalRepository
+        {
+            get
+            {
+                return _statisticalRepository = _statisticalRepository ?? new Repository<Statistical>(_context);
             }
         }
 
@@ -188,7 +187,7 @@ namespace Empyreal.Entities
 
         /// <summary>
         /// Return the Number of Rows Affected
-        /// </summary>
+        /// </summary>       
         public int Commit()
         {
             var transaction = _transaction != null ? _transaction : _context.Database.BeginTransaction();
@@ -225,7 +224,7 @@ namespace Empyreal.Entities
                         Console.WriteLine("Rollback Exception Type: {0}", ex2.GetType());
                         Console.WriteLine("  Message: {0}", ex2.Message);
                     }
-                    throw new Exception("Error on save changes ", ex);
+                    throw new Exception("Error on save changes " + ex.Message);
                 }
             }
         }
@@ -257,7 +256,7 @@ namespace Empyreal.Entities
                 _transaction = _context.Database.BeginTransaction();
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -275,7 +274,7 @@ namespace Empyreal.Entities
                 _transaction = null;
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

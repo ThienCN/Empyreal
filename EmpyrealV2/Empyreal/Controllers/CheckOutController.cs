@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Empyreal.Hubs;
 using Empyreal.Interfaces.Services;
 using Empyreal.Models;
 using Empyreal.ServiceLocators;
 using Empyreal.ViewModels.Display;
+using Microsoft.AspNet.SignalR.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Empyreal.Controllers
 {
@@ -21,28 +26,32 @@ namespace Empyreal.Controllers
         private readonly IDistrictService districtService;
         private readonly IWardService wardService;
         private readonly IOrderService orderService;
+        private readonly IOrderDetailService orderDetailService;
         private readonly IProductService productService;
         private readonly IProductDetailService productDetailService;
         private readonly IProductPriceService priceService;
         private readonly IProductTypeService productTypeService;
+        private readonly ICartDetailService cartDetailService;        
         private readonly UserManager<User> userManager;
-        private static List<CartDetailViewModel> cartDetailViewModels = new List<CartDetailViewModel>(); // List cart detail view model
-        private static PaymentViewModel paymentViewModel;
+        private readonly IHubContext<ChatHub> _hubContext;
 
-        public CheckOutController(UserManager<User> userManager)
+        public CheckOutController(UserManager<User> userManager, IHubContext<ChatHub> hubContext)
         {
             provinceService = ServiceLocator.Current.GetInstance<IProvinceService>();
             districtService = ServiceLocator.Current.GetInstance<IDistrictService>();
             wardService = ServiceLocator.Current.GetInstance<IWardService>();
             orderService = ServiceLocator.Current.GetInstance<IOrderService>();
+            orderDetailService = ServiceLocator.Current.GetInstance<IOrderDetailService>();
             productService = ServiceLocator.Current.GetInstance<IProductService>();
             productDetailService = ServiceLocator.Current.GetInstance<IProductDetailService>();
             priceService = ServiceLocator.Current.GetInstance<IProductPriceService>();
             productTypeService = ServiceLocator.Current.GetInstance<IProductTypeService>();
+            cartDetailService = ServiceLocator.Current.GetInstance<ICartDetailService>();
             this.userManager = userManager;
+            _hubContext = hubContext;
         }
 
-        public async Task<IActionResult> Shipping()
+        public async Task<IActionResult> Shipping(CartViewModel cartViewModel)
         {
             List<Province> provinces; // List of Province
             List<District> districts; // List of District
@@ -88,6 +97,9 @@ namespace Empyreal.Controllers
                 wardViewModels.Add(wardViewModel);
             }
 
+            // Remove products which out of stock
+            cartViewModel.Cart = cartViewModel.Cart.Where(cd => cd.BuyedQuantity != 0).ToList();
+
             // Mapping to view model
             ShippingViewModel model = new ShippingViewModel()
             {
@@ -96,7 +108,8 @@ namespace Empyreal.Controllers
                 PhoneNumber = user.PhoneNumber,
                 Provinces = provinceViewModels,
                 Districts = districtViewModels,
-                Wards = wardViewModels
+                Wards = wardViewModels,
+                CartViewModel = cartViewModel
             };
 
             // Get old order's info of current user
@@ -107,11 +120,11 @@ namespace Empyreal.Controllers
                 model.Order = orderViewModel;
             }
 
-            return View(model);
+            return View("Shipping", model);
         }
 
         [HttpPost]
-        public IActionResult Shipping(ShippingViewModel shippingModel)
+        public IActionResult Pay(ShippingViewModel shippingModel)
         {
             if (ModelState.IsValid)
             {
@@ -126,9 +139,299 @@ namespace Empyreal.Controllers
 
                 shippingModel.Address = string.Format("{0}, {1}, {2}, {3}",
                     shippingModel.Address, ward, district, province);
-                return RedirectToAction("Payment", "CheckOut", new RouteValueDictionary(shippingModel));
+                return Payment(shippingModel);
             }
             return View(shippingModel);
+        }
+
+        public IActionResult Payment(ShippingViewModel shippingModel)
+        {
+            if (shippingModel.Order != null && shippingModel.Order.Id > 0)
+            {
+                shippingModel.Id = shippingModel.Order.UserId;
+                shippingModel.Address = shippingModel.Order.Address;
+                shippingModel.AddressType = shippingModel.Order.AddressType;
+                shippingModel.Name = shippingModel.Order.Name;
+                shippingModel.PhoneNumber = shippingModel.Order.PhoneNumber;
+            }
+
+            //ShippingViewModel shippingModel = (ShippingViewModel)TempData["ShippingViewModel"];
+            double sumPrice = 0;
+            double shippingFee = 0;
+            DateTime date = DateTime.Now.AddDays(3);
+            string dayOfWeek = date.DayOfWeek.ToString();
+            string dateShipping = date.ToString("dd/MM/yyyy");
+            ChangeDay(ref dayOfWeek);
+
+            string dateText = string.Format("{0}, {1}", dayOfWeek, dateShipping);
+
+            foreach (var item in shippingModel.CartViewModel.Cart)
+            {
+                sumPrice += item.BuyedQuantity.GetValueOrDefault()
+                    * item.ProductDetail.PriceText.GetValueOrDefault();
+            }
+
+            if (sumPrice < 500000)
+            {
+                shippingFee = sumPrice * 0.05;
+            }
+
+            PaymentViewModel paymentViewModel = new PaymentViewModel()
+            {
+                Shipping = shippingModel,
+                DateText = dateText,
+                Products = shippingModel.CartViewModel,
+                TempPrice = sumPrice,
+                ShippingFee = shippingFee,
+                IsError = false,
+                Message = string.Empty
+            };
+
+            return View("Payment", paymentViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Payment(PaymentViewModel paymentViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                Dictionary<int, string> result = new Dictionary<int, string>();
+                int isReturn = 0; // Success or fail
+                string message = string.Empty; // Message
+                ProductDetail productDetailUpdate; // Update product detail
+                List<ProductDetail> lstProductDetailUpdate = new List<ProductDetail>(); // Update product detail list
+                CartDetail cartDetailUpdate; // Update cart detail
+                List<CartDetail> lstCartDetailUpdate = new List<CartDetail>(); // Update cart detail list
+
+                foreach (var item in paymentViewModel.Products.Cart)
+                {
+                    productDetailUpdate = productDetailService.GetOne(item.ProductDetail.ID);
+                    if (productDetailUpdate != null)
+                    {
+                        if (productDetailUpdate.Quantity <= 0)
+                        {
+                            isReturn = 0;
+                            message = "outofstock";
+                            goto Finish;
+                        }
+                        lstProductDetailUpdate.Add(productDetailUpdate);
+                    }
+                }
+
+                Order order = null; // Order Entity
+                try
+                {
+                    DataTranfer(out order, paymentViewModel);
+                }
+                catch (Exception e)
+                {
+                    message = e.Message;
+                    goto Finish;
+                }
+
+                // Call Service => Execute
+                #region --- Main Execute ---
+
+                // Create new order
+                result = orderService.Create(order);
+
+                // Check create new order success or fail
+                paymentViewModel.OrderId = result.Keys.FirstOrDefault();
+                if (paymentViewModel.OrderId <= 0) // Create fail
+                {
+                    result.TryGetValue(isReturn, out message); // Get error message
+                    goto Finish;
+                }
+                else // Add new order successful
+                {
+                    try
+                    {
+                        DataTranferOrderDetail(ref order, paymentViewModel);
+                    }
+                    catch (Exception e)
+                    {
+                        message = e.Message;
+                        goto Finish;
+                    }
+                }
+
+                result.Clear();
+                // Create new order detail
+                result = orderDetailService.AddOrderDetail(order);
+
+                // Check create new order detail success or fail
+                isReturn = result.Keys.FirstOrDefault();
+                if (isReturn <= 0) // Create fail
+                {
+                    result.TryGetValue(isReturn, out message); // Get error message
+                    goto Finish;
+                }
+                else // Create order detail successful, then update quantity of product
+                {
+                    // Update quantity of product
+                    for (int i = 0; i < lstProductDetailUpdate.Count; i++)
+                    {
+                        lstProductDetailUpdate[i].Quantity -= paymentViewModel.Products.Cart[i].BuyedQuantity;
+                    }
+                    isReturn = productDetailService.Update(lstProductDetailUpdate); // Update
+
+                    if (isReturn <= 0)
+                    {
+                        message = "Cập nhật số lượng sản phẩm không thành công";
+                        goto Finish;
+                    }
+
+                    // Update cart detail
+                    foreach (var item in paymentViewModel.Products.Cart)
+                    {
+                        cartDetailUpdate = cartDetailService.Get(item.CartDetailId);
+                        if (cartDetailUpdate != null)
+                        {
+                            cartDetailUpdate.State = 2;
+                            lstCartDetailUpdate.Add(cartDetailUpdate);
+                        }
+                    }
+                    isReturn = cartDetailService.Updates(lstCartDetailUpdate); // Update
+
+                    if (isReturn <= 0)
+                    {
+                        message = "Cập nhật trạng thái của sản phẩm trong giỏ hàng không thành công";
+                        goto Finish;
+                    }
+                }
+
+                Finish:
+                // isReturn = 0: Error || 1: Success
+                // Giải thích: isReturn = dbContext.Commit = số dòng được thay đổi trong sql
+                paymentViewModel.IsError = (isReturn == 0);
+                paymentViewModel.Message = message;
+
+                #endregion --- Main Execute ---
+
+                if (paymentViewModel.IsError) // Error
+                    return View(paymentViewModel);
+
+                List<ProductDetail> temp = new List<ProductDetail>();
+                foreach (var item in lstProductDetailUpdate)
+                {
+                    productDetailUpdate = new ProductDetail()
+                    {
+                        Id = item.Id,
+                        Quantity = item.Quantity
+                    };
+                    temp.Add(productDetailUpdate);
+                }
+
+                // Call SignalR update quantity
+                await _hubContext.Clients.All.SendAsync("ReloadQuantity", temp);
+
+                // Call SignalR update statistical
+                await _hubContext.Clients.All.SendAsync("ReloadStatistical");                
+
+                paymentViewModel.IsPaymentSuccess = true;
+                return View(paymentViewModel);
+            }
+
+            //    //string userIDProc = order.UserId;
+            //    //DataTable dataTable = new DataTable();
+            //    //dataTable.Columns.Add(new DataColumn("ID", typeof(int)));
+            //    //dataTable.Columns.Add(new DataColumn("Quantity", typeof(int)));
+            //    //dataTable.Columns.Add(new DataColumn("Processed", typeof(int)));
+            //    //dataTable.Columns.Add(new DataColumn("UserIDProc", typeof(string)));
+            //    //foreach(var item in order.OrderDetail)
+            //    //{
+            //    //    dataTable.Rows.Add(item.ProductDetailId, item.Quantity, 0, userIDProc);
+            //    //}
+            //    //string query = "UpdateProductDetail @ListID";
+            //    //orderDetailService.ExecStoreUpdate(query, new SqlParameter("@ListID", dataTable));
+
+            return View(paymentViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeliveryAddress(CartViewModel cartViewModel)
+        {
+            return await Shipping(cartViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeDeliveryAddress(PaymentViewModel paymentViewModel)
+        {
+            return await Shipping(paymentViewModel.Products);
+        }
+
+        [HttpPost]
+        public IActionResult Order(ShippingViewModel shippingViewModel)
+        {
+            return Payment(shippingViewModel);
+        }
+
+        public void DataTranfer(out Order order, PaymentViewModel paymentViewModel)
+        {
+            // ViewModel => Entity
+            #region --- Tranfer ---
+
+            if (!paymentViewModel.IsRelative) 
+            {
+                // Order Entity => Order
+                order = new Order()
+                {
+                    UserId = paymentViewModel.Shipping.Id,
+                    PriceSum = paymentViewModel.TempPrice,
+                    CreateDate = DateTime.Now,
+                    State = 1,
+                    Address = paymentViewModel.Shipping.Address,
+                    AddressType = paymentViewModel.Shipping.AddressType,
+                    Name = paymentViewModel.Shipping.Name,
+                    PhoneNumber = paymentViewModel.Shipping.PhoneNumber,
+                    ShippingDate = DateTime.Now.AddDays(3),
+                    ShippingFee = paymentViewModel.ShippingFee,
+                    PaymentType = paymentViewModel.PaymentType,
+                    ShippingType = paymentViewModel.ShippingType
+                };
+            }
+            else // Delivery to another
+            {
+                // Order Entity => Order
+                order = new Order()
+                {
+                    UserId = paymentViewModel.Shipping.Id,
+                    PriceSum = paymentViewModel.TempPrice,
+                    CreateDate = DateTime.Now,
+                    State = 1,
+                    Address = paymentViewModel.Shipping.Address,
+                    AddressType = paymentViewModel.Shipping.AddressType,
+                    Name = paymentViewModel.RelativeName,
+                    PhoneNumber = paymentViewModel.RelativePhoneNumber,
+                    ShippingDate = DateTime.Now.AddDays(3),
+                    ShippingFee = paymentViewModel.ShippingFee,
+                    PaymentType = paymentViewModel.PaymentType,
+                    ShippingType = paymentViewModel.ShippingType
+                };
+            }
+
+            #endregion --- Tranfer ---
+
+        }
+
+        public void DataTranferOrderDetail(ref Order order, PaymentViewModel paymentViewModel)
+        {
+            // ViewModel => Entity
+            var orderDetails = new List<OrderDetail>();
+            OrderDetail orderDetail;
+            foreach (var item in paymentViewModel.Products.Cart)
+            {
+                orderDetail = new OrderDetail()
+                {
+                    OrderId = order.Id,
+                    ProductDetailId = item.ProductDetail.ID,
+                    Price = item.ProductDetail.PriceText,
+                    Quantity = item.BuyedQuantity.GetValueOrDefault(),
+                    State = 1
+                };
+                orderDetails.Add(orderDetail);
+            }
+            order.OrderDetail = orderDetails;
         }
 
         [HttpPost]
@@ -159,218 +462,6 @@ namespace Empyreal.Controllers
             }
             return Json(new { isSuccess = true, wards = wards });
         }
-
-        public IActionResult Payment(ShippingViewModel shippingModel, int addressID)
-        {
-            if (addressID > 0)
-            {
-                var oldOrder = orderService.Get(addressID);
-                shippingModel.Id = oldOrder.UserId;
-                shippingModel.Address = oldOrder.Address;
-                shippingModel.AddressType = oldOrder.AddressType;
-                shippingModel.Name = oldOrder.Name;
-                shippingModel.PhoneNumber = oldOrder.PhoneNumber;                
-            }
-
-            //ShippingViewModel shippingModel = (ShippingViewModel)TempData["ShippingViewModel"];
-            double sumPrice = 0;
-            double shippingFee = 0;
-            DateTime date = DateTime.Now.AddDays(3);
-            string dayOfWeek = date.DayOfWeek.ToString();
-            string dateShipping = date.ToString("dd/MM/yyyy");
-            ChangeDay(ref dayOfWeek);
-
-            string dateText = string.Format("{0}, {1}", dayOfWeek, dateShipping);
-
-            for (int i = 0; i < cartDetailViewModels.Count; i++)
-            {
-                sumPrice += cartDetailViewModels[i].ProductDetail.Quantity.GetValueOrDefault()
-                    * cartDetailViewModels[i].ProductDetail.PriceText.GetValueOrDefault();
-            }
-
-            if (sumPrice < 500000)
-            {
-                shippingFee = sumPrice * 0.05;
-            }
-
-            paymentViewModel = new PaymentViewModel()
-            {
-                Shipping = shippingModel,
-                DateText = dateText,
-                Products = cartDetailViewModels,
-                TempPrice = sumPrice,
-                ShippingFee = shippingFee
-            };
-
-            return View(paymentViewModel);
-        }
-
-        [HttpPost]
-        public IActionResult Payment(PaymentViewModel viewModel)
-        {
-            if (ModelState.IsValid)
-            {
-                int isReturn = 0;
-                string message = string.Empty;
-
-                // Oder Entity
-                Order order = null;
-                //Excute
-                try
-                {
-                    DataTranfer(out order, viewModel);
-                }
-                catch (Exception e)
-                {
-                    message = e.Message;
-                    goto Finish;
-                }
-
-                // Call Service => Execute
-                #region --- Main Execute ---
-
-                // Execute Insert
-                try
-                {
-                    // Create
-                    isReturn = orderService.Create(order);
-                }
-                catch (Exception e)
-                {
-                    message = e.Message;
-                    goto Finish;
-                }
-
-                if (isReturn > 0)
-                {
-
-                }
-
-                Finish:
-                    // isReturn = 0: Error || 1: Success
-                    // Giải thích: isReturn = dbContext.Commit = số dòng được thay đổi trong sql
-                    viewModel.IsError = (isReturn == 0);
-                    viewModel.Message = message;
-
-                #endregion --- Main Execute ---
-
-                return View(paymentViewModel);
-            }
-
-            return View(paymentViewModel);
-        }
-
-        [HttpPost]
-        public IActionResult BuyedProduct(List<int> lst)
-        {
-            ProductDetail productDetail;
-            CartDetailViewModel cartDetailViewModel; // Cart detail view model
-            Product product; // Get product in cart
-            int productDetailID; // ID of product detail
-            int priceID; // Get price ID of product detail
-            int sizeID; // Get size ID of product detail
-            int colorID; // Get color ID of product detail
-            int productID; // ID of product
-            List<ProductType> productTypes; // Get size and color of product detail
-
-            cartDetailViewModels = new List<CartDetailViewModel>();
-
-            for (int i = 0; i < lst.Count; i = i + 2)
-            {
-                // Get detail of product
-                productDetailID = lst[i];
-                productDetail = productDetailService.GetOne(productDetailID);
-
-                // Get price of product detail
-                priceID = productDetail.Price.GetValueOrDefault();
-                productDetail.PriceNavigation = priceService.GetOne(priceID);
-
-                // Get size and color of product detai
-                sizeID = productDetail.Size.GetValueOrDefault();
-                colorID = productDetail.Color.GetValueOrDefault();
-                productTypes = productTypeService.GetSizeColor(sizeID, colorID);
-                productDetail.SizeNavigation = productTypes[0];
-                productDetail.ColorNavigation = productTypes[1];
-                productDetail.Quantity = lst[i + 1];
-
-                productID = productDetail.ProductId.GetValueOrDefault();
-                product = productService.Get(productID);
-
-                cartDetailViewModel = new CartDetailViewModel(product, productDetail, string.Empty, 0);
-                cartDetailViewModels.Add(cartDetailViewModel);
-            }
-
-            if (cartDetailViewModels.Count > 0)
-                return Json(new
-                {
-                    isSuccess = true,
-                    url = "/CheckOut/Shipping"
-                });
-
-            return Json(new
-            {
-                isSuccess = false,
-                message = "No item chosen"
-            });
-        }
-
-        public void DataTranfer(out Order order, PaymentViewModel viewModel)
-        {
-            // ViewModel => Entity
-            #region --- Tranfer ---
-
-            if (!viewModel.IsRelative) // 
-            {
-                // Order Entity => Order
-                order = new Order()
-                {
-                    UserId = paymentViewModel.Shipping.Id,
-                    PriceSum = paymentViewModel.TempPrice,
-                    CreateDate = DateTime.Now,
-                    State = 1,
-                    Address = paymentViewModel.Shipping.Address,
-                    AddressType = paymentViewModel.Shipping.AddressType,
-                    Name = paymentViewModel.Shipping.Name,
-                    PhoneNumber = paymentViewModel.Shipping.PhoneNumber,
-                    ShippingDate = DateTime.Now.AddDays(3),
-                    ShippingFee = paymentViewModel.ShippingFee,
-                    PaymentType = viewModel.PaymentType,
-                    ShippingType = viewModel.ShippingType
-                };
-            }
-            else // Delivery to another
-            {
-                // Order Entity => Order
-                order = new Order()
-                {
-                    UserId = paymentViewModel.Shipping.Id,
-                    PriceSum = paymentViewModel.TempPrice,
-                    CreateDate = DateTime.Now,
-                    State = 1,
-                    Address = paymentViewModel.Shipping.Address,
-                    AddressType = paymentViewModel.Shipping.AddressType,
-                    Name = viewModel.RelativeName,
-                    PhoneNumber = viewModel.RelativePhoneNumber,
-                    ShippingDate = DateTime.Now.AddDays(3),
-                    ShippingFee = paymentViewModel.ShippingFee,
-                    PaymentType = viewModel.PaymentType,
-                    ShippingType = viewModel.ShippingType
-                };
-            }           
-            
-            #endregion --- Tranfer ---
-
-        }
-
-        //public void DataTranfer(out Order order)
-        //{
-        //    var orderDetails = new List<OrderDetail>();
-        //    foreach(var item in paymentViewModel.Products)
-        //    {
-
-        //    }
-        //    order.OrderDetail = orderDetails;
-        //}
 
         public void ChangeDay(ref string dayOfWeek)
         {

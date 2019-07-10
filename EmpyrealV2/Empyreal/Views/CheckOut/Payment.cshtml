@@ -6,158 +6,235 @@
     ViewBag.Step = 3;
 }
 
-<div class="section">
+<div class="section" style="min-height: 445px;">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-md-8 col-sm-8">
-                <h4>1. Chọn hình thức giao hàng</h4>
-                <form method="post" asp-controller="CheckOut" asp-action="Payment" id="receiver-form">
-                    <div class="section-group">
-                        <div class="input-wrap">
-                            <label class="radio-wrap" style="position: relative;">
-                                Giao hàng tiêu chuẩn (Dự kiến giao hàng vào @Model.DateText):
-                                @{
-                                    if (Model.ShippingFee > 0)
-                                    {
-                                        <a class="link-blue">chỉ @Model.DisplayShippingFee</a>
-                                    }
-                                    else
-                                    {
-                                        <a class="link-blue">miễn phí giao hàng</a>
-                                    }
-                                }
-                                <input type="radio" asp-for="ShippingType" value="Normal" checked />
-                                <span class="checkmark"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <h4>2. Chọn hình thức thanh toán</h4>
-                    <div class="section-group">
-                        <div class="input-wrap">
-                            <label class="radio-wrap" style="position: relative;">
-                                Thanh toán tiền mặt khi nhận hàng
-                                <input type="radio" asp-for="PaymentType" value="Cash" checked />
-                                <span class="checkmark"></span>
-                            </label>
-                        </div>
-                        <div class="input-wrap">
-                            <label class="radio-wrap" style="position: relative;">
-                                Thanh toán bằng thẻ quốc tế Visa, Master
-                                <input type="radio" asp-for="PaymentType" value="Visa" />
-                                <span class="checkmark"></span>
-                            </label>
-                        </div>
-                        <div class="input-wrap">
-                            <label class="radio-wrap" style="position: relative;">
-                                Thẻ ATM nội địa/Internet Banking (Miễn phí thanh toán)
-                                <input type="radio" asp-for="PaymentType" value="ATM" />
-                                <span class="checkmark"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <h4 class="h4-title">Thông tin người mua:</h4>
-                    <div class="checkbox-pay">
-                        <label class="checkbox-wrap cart" id="is-change-receiver">
-                            Sử dụng Họ tên & Số điện thoại của địa chỉ giao hàng
-                            <input type="checkbox" name="is-change-receiver" data-animation="0" checked="checked" />
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
-                    <div class="col-sm-11 offset-sm-1" style="margin-bottom: 45px;">
-                        <div class="payment-sub display-none">
-                            <div class="panel-body">
-                                <h5 style="font-size: 13px;">Nếu bạn gửi hàng cho người khác, vui lòng nhập thông tin của họ để Empyreal tiện liên lạc.</h5>
-                                <input type="hidden" asp-for="IsRelative" />
-                                <div class="form-group">
-                                    <label>Họ và tên</label>
-                                    <input class="form-control" type="text" asp-for="RelativeName" placeholder="Nhập họ tên" />
-                                    <span class="text-danger" asp-validation-for="RelativeName"></span>
-                                </div>
-                                <div class="form-group">
-                                    <label>Số điện thoại</label>
-                                    <input class="form-control" type="text" asp-for="RelativePhoneNumber" placeholder="Nhập số điện thoại" />
-                                    <span class="text-danger" asp-validation-for="RelativePhoneNumber"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group end">
-                        <button class="primary-btn" type="submit">Đặt mua</button>
-                        <p class="note">(Xin vui lòng kiểm tra lại đơn hàng trước khi Đặt mua)</p>
-                    </div>
-                </form>
-            </div>
-
-            <div class="col-lg-4 col-md-4 col-sm-4">
-                <div class="section-group" style="margin-top: 29px;">
-                    <div class="old-order payment-header-right">
-                        <div class="order">
-                            <p>Địa chỉ giao hàng</p>
-                            <a class="btn btn-default" asp-controller="CheckOut" asp-action="Shipping">Sửa</a>
-                        </div>
-                        <div class="information">
-                            <h6>@Model.Shipping.Name</h6>
-                            <p>
-                                @Model.Shipping.Address
-                                <br />
-                                Việt Nam
-                                <br />
-                                Điện thoại: @Model.Shipping.PhoneNumber
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="section-group" style="margin-top: 25px;">
-                    <div class="payment-header-right">
-                        <div class="order">
-                            <p>Đơn hàng (<span id="product-quantity">@Model.Products.Count</span> sản phẩm)</p>
-                            <a class="btn btn-default" asp-controller="Home" asp-action="Cart">Sửa</a>
-                        </div>
-                        <div class="product">
-                            <div class="item">
-                                @foreach (var item in Model.Products)
-                                {
-                                    <p class="title">
-                                        <strong class="quantity">@item.ProductDetail.Quantity x</strong>
-                                        <a href="#" class="link-blue">@item.Product.Name, Màu: @item.ProductDetail.ColorText, Size: @item.ProductDetail.SizeText</a>
-                                    </p>
-                                    <p class="price text-right">
-                                        <span>@item.ProductDetail.DisplayPrice</span>
-                                    </p>
-                                }
-                            </div>
-                        </div>
-                        <p class="list-info-price">
-                            <b>Tạm tính</b>
-                            <span class="price-total-temp">@Model.DisplayTempPrice</span>
-                        </p>
-                        <p class="list-info-price">
-                            <b>Phí vận chuyển</b>
-                            <span class="price-total-temp">@Model.DisplayShippingFee</span>
-                        </p>
-                        <p class="total">
-                            <b>Thành tiền:</b>
-                            <span class="price-total">@Model.DisplayFinalPrice</span>
-                        </p>
-                        <p class="text-right" style="font-size: 13px;">
-                            <i>(Đã bao gồm VAT)</i>
-                        </p>
-                    </div>
-                </div>
-                @if (Model.ShippingFee <= 0)
+        @{
+            if (!Model.IsPaymentSuccess)
+            {
+                if (string.Equals(Model.Message, "outofstock"))
                 {
-                    <div class="free-ship">
-                        <div class="arrow"></div>
-                        <div class="free-ship-content">
-                            <p class="ship">Đơn hàng của bạn sẽ được miễn phí vận chuyển.</p>
+                    <div class="alert alert-danger">
+                        <strong>Thất bại!</strong> Sản phẩm bạn mua đã hết hàng. Vui lòng chọn lại sản phẩm trong giỏ hàng.
+                    </div>
+                    <a class="primary-btn-circle" asp-controller="Home" asp-action="Cart">Giỏ hàng của bạn</a>
+                    <a class="btn btn-default" asp-controller="Home" asp-action="Index">Trở về trang chủ</a>
+                }
+                else
+                {
+                    if (Model.IsError)
+                    {
+                        <div class="alert alert-danger">
+                            <strong>Thất bại!</strong> @Model.Message
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="col-lg-8 col-md-8 col-sm-8">
+                            <h4>1. Chọn hình thức giao hàng</h4>
+                            <form method="post" asp-controller="CheckOut" asp-action="Payment" id="receiver-form">
+                                <div class="section-group">
+                                    <div class="input-wrap">
+                                        <label class="radio-wrap" style="position: relative;">
+                                            Giao hàng tiêu chuẩn (Dự kiến giao hàng vào @Model.DateText):
+                                            @{
+                                                if (Model.ShippingFee > 0)
+                                                {
+                                                    <a class="link-blue">chỉ @Model.DisplayShippingFee</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="link-blue">miễn phí giao hàng</a>
+                                                }
+                                            }
+                                            <input type="radio" asp-for="ShippingType" value="Normal" checked />
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <h4>2. Chọn hình thức thanh toán</h4>
+                                <div class="section-group">
+                                    <div class="input-wrap">
+                                        <label class="radio-wrap" style="position: relative;">
+                                            Thanh toán tiền mặt khi nhận hàng
+                                            <input type="radio" asp-for="PaymentType" value="Cash" checked />
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="input-wrap">
+                                        <label class="radio-wrap" style="position: relative;">
+                                            Thanh toán bằng thẻ quốc tế Visa, Master
+                                            <input type="radio" asp-for="PaymentType" value="Visa" />
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="input-wrap">
+                                        <label class="radio-wrap" style="position: relative;">
+                                            Thẻ ATM nội địa/Internet Banking (Miễn phí thanh toán)
+                                            <input type="radio" asp-for="PaymentType" value="ATM" />
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <h4 class="h4-title">Thông tin người mua:</h4>
+                                <div class="checkbox-pay">
+                                    <label class="checkbox-wrap cart" id="is-change-receiver">
+                                        Sử dụng Họ tên & Số điện thoại của địa chỉ giao hàng
+                                        <input type="checkbox" name="is-change-receiver" data-animation="0" checked="checked" />
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                                <div class="col-sm-11 offset-sm-1" style="margin-bottom: 45px;">
+                                    <div class="payment-sub display-none">
+                                        <div class="panel-body">
+                                            <h5 style="font-size: 13px;">Nếu bạn gửi hàng cho người khác, vui lòng nhập thông tin của họ để Empyreal tiện liên lạc.</h5>
+                                            <input type="hidden" asp-for="IsRelative" />
+                                            <div class="form-group">
+                                                <label>Họ và tên</label>
+                                                <input class="form-control" type="text" asp-for="RelativeName" placeholder="Nhập họ tên" />
+                                                <span class="text-danger" asp-validation-for="RelativeName"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Số điện thoại</label>
+                                                <input class="form-control" type="text" asp-for="RelativePhoneNumber" placeholder="Nhập số điện thoại" />
+                                                <span class="text-danger" asp-validation-for="RelativePhoneNumber"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @for (var i = 0; i < Model.Products.Cart.Count; i++)
+                                {
+                                    @Html.HiddenFor(m => m.Products.Cart[i].ProductDetail.SizeText)
+                                    @Html.HiddenFor(m => m.Products.Cart[i].ProductDetail.ColorText)
+                                    @Html.HiddenFor(m => m.Products.Cart[i].Product.Name)
+                                    @Html.HiddenFor(m => m.Products.Cart[i].CartDetailId)
+                                    @Html.HiddenFor(m => m.Products.Cart[i].BuyedQuantity)
+                                    @Html.HiddenFor(m => m.Products.Cart[i].ProductDetail.PriceText)
+                                    @Html.HiddenFor(m => m.Products.Cart[i].ProductDetail.ID)
+                                }
+                                @Html.HiddenFor(m => m.Shipping.Id)
+                                @Html.HiddenFor(m => m.Shipping.Address)
+                                @Html.HiddenFor(m => m.Shipping.AddressType)
+                                @Html.HiddenFor(m => m.Shipping.PhoneNumber)
+                                @Html.HiddenFor(m => m.Shipping.Name)
+                                @Html.HiddenFor(m => m.TempPrice)
+                                @Html.HiddenFor(m => m.ShippingFee)
+                                @Html.HiddenFor(m => m.ShippingType)
+                                @Html.HiddenFor(m => m.PaymentType)
+                                @Html.HiddenFor(m => m.DateText)
+
+                                <div class="form-group end">
+                                    <button class="primary-btn" type="submit">Đặt mua</button>
+                                    <p class="note">(Xin vui lòng kiểm tra lại đơn hàng trước khi Đặt mua)</p>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="section-group" style="margin-top: 29px;">
+                                <div class="old-order payment-header-right">
+                                    <div class="order">
+                                        <p>Địa chỉ giao hàng</p>
+                                        <form asp-controller="CheckOut" asp-action="ChangeDeliveryAddress" method="post" style="display: inline;">
+                                            @for (var i = 0; i < Model.Products.Cart.Count; i++)
+                                            {
+                                                @Html.HiddenFor(m => m.Products.Cart[i].ProductDetail.SizeText)
+                                                @Html.HiddenFor(m => m.Products.Cart[i].ProductDetail.ColorText)
+                                                @Html.HiddenFor(m => m.Products.Cart[i].Product.Name)
+                                                @Html.HiddenFor(m => m.Products.Cart[i].CartDetailId)
+                                                @Html.HiddenFor(m => m.Products.Cart[i].BuyedQuantity)
+                                                @Html.HiddenFor(m => m.Products.Cart[i].ProductDetail.PriceText)
+                                                @Html.HiddenFor(m => m.Products.Cart[i].ProductDetail.ID)
+                                            }
+                                            <input class="btn btn-default" type="submit" value="Sửa" />
+                                        </form>
+                                    </div>
+                                    <div class="information">
+                                        <h6>@Model.Shipping.Name</h6>
+                                        <p>
+                                            @Model.Shipping.Address
+                                            <br />
+                                            Việt Nam
+                                            <br />
+                                            Điện thoại: @Model.Shipping.PhoneNumber
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="section-group" style="margin-top: 25px;">
+                                <div class="payment-header-right">
+                                    <div class="order">
+                                        <p>Đơn hàng (<span id="product-quantity">@Model.Products.Cart.Count</span> sản phẩm)</p>
+                                        <a class="btn btn-default" asp-controller="Home" asp-action="Cart">Sửa</a>
+                                    </div>
+                                    <div class="product">
+                                        <div class="item">
+                                            @foreach (var item in Model.Products.Cart)
+                                            {
+                                                <p class="title">
+                                                    <strong class="quantity">@item.BuyedQuantity x</strong>
+                                                    <a href="#" class="link-blue">@item.Product.Name, Màu: @item.ProductDetail.ColorText, Size: @item.ProductDetail.SizeText</a>
+                                                </p>
+                                                <p class="price text-right">
+                                                    <span>@item.ProductDetail.DisplayPrice</span>
+                                                </p>
+                                            }
+                                        </div>
+                                    </div>
+                                    <p class="list-info-price">
+                                        <b>Tạm tính</b>
+                                        <span class="price-total-temp">@Model.DisplayTempPrice</span>
+                                    </p>
+                                    <p class="list-info-price">
+                                        <b>Phí vận chuyển</b>
+                                        <span class="price-total-temp">@Model.DisplayShippingFee</span>
+                                    </p>
+                                    <p class="total">
+                                        <b>Thành tiền:</b>
+                                        <span class="price-total">@Model.DisplayFinalPrice</span>
+                                    </p>
+                                    <p class="text-right" style="font-size: 13px;">
+                                        <i>(Đã bao gồm VAT)</i>
+                                    </p>
+                                </div>
+                            </div>
+                            @if (Model.ShippingFee <= 0)
+                            {
+                                <div class="free-ship">
+                                    <div class="arrow"></div>
+                                    <div class="free-ship-content">
+                                        <p class="ship">Đơn hàng của bạn sẽ được miễn phí vận chuyển.</p>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 }
-            </div>
-        </div>
+            }
+            else
+            {
+                <div class="payment-success">
+                    <div class="row">
+                        <div class="col-sm-3 image-shipping">
+                            <img src="~/images/shipping.png" />
+                        </div>
+                        <div class="col-sm-6 info">
+                            <h4>Cảm ơn bạn đã mua hàng tại Empyreal!</h4>
+                            <p>Mã số đơn hàng của bạn:</p>
+                            <button class="primary-btn">@Model.OrderId</button>
+                            <p>Giao hàng tiêu chuẩn, thời gian giao hàng dự kiến @Model.DateText</p>
+                        </div>
+                        <div class="col-sm-3 set-height">
+                            <a class="btn btn-default" asp-controller="Home" asp-action="Index">Tiếp tục mua sắm</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
     </div>
 </div>
-<script type="text/javascript" src="~/js/DisplayView/Payment.js"></script>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/DisplayView/Payment.js"></script>
+}

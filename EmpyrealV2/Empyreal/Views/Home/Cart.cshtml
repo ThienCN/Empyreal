@@ -4,7 +4,7 @@
     ViewData["Title"] = "Giỏ hàng";
 }
 
-<div class="section-grey" style="min-height: 470px;">
+<div class="section-grey" style="min-height: 282px;">
     <div class="container">
         <div class="toast" id="snackbar"></div>
 
@@ -21,6 +21,9 @@
                     }
                     else
                     {
+                        <div class="alert alert-danger cart">
+                            <ul class="outofstock-product" id="outofstock-product"></ul>
+                        </div>
                         <div class="list-header">
                             <div class="list-header-left">
                                 <label class="checkbox-wrap cart" id="is-select-all" style="float: left;">
@@ -35,53 +38,62 @@
                                 <span><i class="far fa-trash-alt" style="font-size: 17px;"></i> Xóa</span>
                             </div>
                         </div>
-                        @foreach (var item in Model.Cart)
-                        {
-                            <div class="checkout-item">
-                                <div class="checkout-children">
-                                    <div class="cart-inner">
-                                        <div class="cart-inner-left">
-                                            <label class="checkbox-wrap cart" id="is-select-item">
-                                                <input type="checkbox" name="cart-select-item" id="cart-select-item" data-animation="0" />
-                                                <span class="checkmark" id="checkmark-select-item"></span>
-                                            </label>
-                                            <div class="img-wrap">
-                                                <a asp-controller="Home" asp-action="Product" asp-route-productID="@item.Product.Id">
-                                                    <img src="@item.ImageURL" title="@item.Product.Name" />
-                                                </a>
-                                            </div>
-                                            <div class="content">
-                                                <a asp-controller="Home" asp-action="Product" asp-route-productID="@item.Product.Id" class="title" title="@item.Product.Name">@item.Product.Name</a>
-                                                <div class="item-infor">
-                                                    <span>Cung cấp bởi</span><a href="#" class="link-blue"> Yame shop</a>,
-                                                    <span class="item-size"> Size: @item.ProductDetail.SizeText</span>,<span class="item-color"> Màu: @item.ProductDetail.ColorText</span>
+                        <form asp-controller="CheckOut" asp-action="DeliveryAddress" method="post" id="buyed-product-form">
+                            <div class="checkout-products">
+                                @for (var i = 0; i < Model.Cart.Count; i++)
+                                {
+                                    <div class="checkout-item">
+                                        <p class="sold-out">Hết hàng</p>
+                                        <div class="checkout-children">
+                                            <div class="cart-inner">
+                                                <div class="cart-inner-left">
+                                                    <label class="checkbox-wrap cart" id="is-select-item">
+                                                        <input type="checkbox" name="cart-select-item" id="cart-select-item" data-animation="0" />
+                                                        <span class="checkmark" id="checkmark-select-item"></span>
+                                                    </label>
+                                                    <div class="img-wrap">
+                                                        <a asp-controller="Home" asp-action="Product" asp-route-productID="@Model.Cart[i].Product.Id">
+                                                            <img src="@Model.Cart[i].ImageURL" title="@Model.Cart[i].Product.Name" />
+                                                        </a>
+                                                    </div>
+                                                    <div class="content">
+                                                        <a asp-controller="Home" asp-action="Product" asp-route-productID="@Model.Cart[i].Product.Id" class="title" title="@Model.Cart[i].Product.Name">@Model.Cart[i].Product.Name</a>
+                                                        <div class="item-infor">
+                                                            <span>Cung cấp bởi</span><a href="#" class="link-blue"> Yame shop</a>,
+                                                            <span class="item-size"> Size: @Model.Cart[i].ProductDetail.SizeText</span>,<span class="item-color"> Màu: @Model.Cart[i].ProductDetail.ColorText</span>
+                                                            @Html.HiddenFor(m => m.Cart[i].ProductDetail.SizeText)
+                                                            @Html.HiddenFor(m => m.Cart[i].ProductDetail.ColorText)
+                                                            @Html.HiddenFor(m => m.Cart[i].Product.Name)
+                                                        </div>
+                                                        <div class="operations">
+                                                            <span class="add-wishlist" title="Thêm vào danh sách yêu thích"><i class="far fa-heart fa-fw"></i></span>
+                                                            <span class="item-delete" id="btn-cart-delete" title="Xóa sản phẩm khỏi giỏ hàng"><i class="far fa-trash-alt fa-fw"></i></span>
+                                                            @Html.HiddenFor(m => m.Cart[i].CartDetailId, new { id = "cart-detail-id" })
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="operations">
-                                                    <span class="add-wishlist" title="Thêm vào danh sách yêu thích"><i class="far fa-heart fa-fw"></i></span>
-                                                    <span class="item-delete" id="btn-cart-delete" title="Xóa sản phẩm khỏi giỏ hàng"><i class="far fa-trash-alt fa-fw"></i></span>
-                                                    <input type="hidden" id="cart-id" value="@item.CartDetailId" />
+                                                <div class="cart-inner-center product">
+                                                    <h4 class="product-price" style="margin-top: 5px;">@Model.Cart[i].ProductDetail.DisplayPrice<del class="product-old-price">@Model.Cart[i].ProductDetail.DisplayOldPrice</del></h4>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="cart-inner-center product">
-                                            <h4 class="product-price" style="margin-top: 5px;">@item.ProductDetail.DisplayPrice<del class="product-old-price">@item.ProductDetail.DisplayOldPrice</del></h4>
-                                        </div>
-                                        <div class="cart-inner-right product product-details">
-                                            <div class="product-btns">
-                                                <div class="qty-input">
-                                                    <button class="minus-button" id="minus-button" data-id="1" disabled><i class="fas fa-minus"></i></button>
-                                                    <input type="text" name="quantity" value="1" data-id="1">
-                                                    <button class="plus-button" id="plus-button"><i class="fas fa-plus"></i></button>
-                                                    <span id="product-quantity" class="cart product-quantity" data-quantity="@item.ProductDetail.Quantity">@item.ProductDetail.Quantity sản phẩm có sẵn</span>
-                                                    <input type="hidden" name="item-price" id="item-price" value="@item.ProductDetail.PriceText" />
-                                                    <input type="hidden" name="item-ID" id="item-ID" value="@item.ProductDetail.ID" />
+                                                <div class="cart-inner-right product product-details">
+                                                    <div class="product-btns">
+                                                        <div class="qty-input">
+                                                            <button class="minus-button" type="button" id="minus-button" disabled><i class="fas fa-minus"></i></button>
+                                                            @Html.TextBoxFor(m => m.Cart[i].BuyedQuantity, new { id = "quantity" })
+                                                            <button class="plus-button" type="button" id="plus-button"><i class="fas fa-plus"></i></button>
+                                                            <span id="product-quantity" class="cart product-quantity" data-quantity="@Model.Cart[i].ProductDetail.Quantity">@Model.Cart[i].ProductDetail.Quantity sản phẩm có sẵn</span>
+                                                            @Html.HiddenFor(m => m.Cart[i].ProductDetail.PriceText, new { id = "item-price" })
+                                                            @Html.HiddenFor(m => m.Cart[i].ProductDetail.ID, new { id = "product-detail-id" })
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                }
                             </div>
-                        }
+                        </form>
+
                     }
                 </div>
                 @if (Model.Cart.Count > 0)
@@ -95,7 +107,7 @@
                             </div>
                             <div class="checkout-summary-row">
                                 <p class="checkout-summary-label">Phí giao hàng</p>
-                                <p class="checkout-summary-value">miễn phí</p>
+                                <p class="checkout-summary-value" style="font-size: 13px;">Hóa đơn trên @String.Format(CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", 500000) sẽ được miễn phí giao hàng</p>
                             </div>
                             <div class="checkout-summary-row">
                                 <p class="checkout-summary-label-black">Tổng cộng</p>
@@ -107,11 +119,17 @@
                             </div>
                             <button class="primary-btn btn-block" id="cart-confirm">Xác nhận giỏ hàng</button>
                         </div>
+                        <div class="continue-shopping hidden">
+                            <a class="primary-btn" asp-controller="Home" asp-action="Index">Tiếp tục mua sắm</a>
+                        </div>
                     </div>
                 }
             </div>
         </div>
     </div>
 </div>
-<script type="text/javascript" src="~/js/DisplayView/cartHome.js"></script>
 
+@section Scripts {
+    <script type="text/javascript" src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script type="text/javascript" src="~/js/DisplayView/cartHome.js"></script>
+}

@@ -14,7 +14,7 @@
 
     <!-- jQuery Plugins -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
 
     <!-- Google font -->
     <link href="https://fonts.googleapis.com/css?family=Hind:400,700" rel="stylesheet">
@@ -139,7 +139,7 @@
                                         <li><a asp-controller="User" asp-action="Notification"><i class="far fa-bell fa-fw"></i> Thông báo của tôi</a></li>
                                         <li><a asp-controller="User" asp-action="Wishlist"><i class="far fa-heart fa-fw"></i> Danh sách yêu thích</a></li>
                                         <li>
-                                            <form asp-controller="User" asp-action="Logout" method="post">
+                                            <form asp-controller="Login" asp-action="SignOut" method="post">
                                                 <button class="btn btn-link"><i class="fas fa-sign-out-alt fa-fw"></i> Đăng xuất</button>
                                             </form>
                                         </li>

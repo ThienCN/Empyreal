@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/css/chosen.min.css" />
 }
 
-<div class="section section-gray">
+<div class="section section-gray" style="min-height: 355px;">
     <div class="container">
         <h4>2. Địa chỉ giao hàng</h4>
         @if (Model.Order != null)
@@ -26,8 +26,28 @@
                                 <p>Điện thoại: <span class="old-phonenumber">@Model.Order.PhoneNumber</span></p>
                             </div>
                             <div style="margin-top: 5px;">
-                                <a class="primary-btn-circle" asp-controller="CheckOut" asp-action="Payment" asp-route-addressID="@Model.Order.Id">Giao đến địa chỉ này</a>
-                                <button class="btn btn-default">Sửa</button>
+                                <form asp-controller="CheckOut" asp-action="Order" method="post">
+                                    @Html.HiddenFor(m => m.Order.Name)
+                                    @Html.HiddenFor(m => m.Order.Address)
+                                    @Html.HiddenFor(m => m.Order.UserId)
+                                    @Html.HiddenFor(m => m.Order.AddressType)
+                                    @Html.HiddenFor(m => m.Order.PhoneNumber)
+                                    @Html.HiddenFor(m => m.Order.Id)
+
+                                    @for (var i = 0; i < Model.CartViewModel.Cart.Count; i++)
+                                    {
+                                        @Html.HiddenFor(m => m.CartViewModel.Cart[i].ProductDetail.SizeText)
+                                        @Html.HiddenFor(m => m.CartViewModel.Cart[i].ProductDetail.ColorText)
+                                        @Html.HiddenFor(m => m.CartViewModel.Cart[i].Product.Name)
+                                        @Html.HiddenFor(m => m.CartViewModel.Cart[i].CartDetailId)
+                                        @Html.HiddenFor(m => m.CartViewModel.Cart[i].BuyedQuantity)
+                                        @Html.HiddenFor(m => m.CartViewModel.Cart[i].ProductDetail.PriceText)
+                                        @Html.HiddenFor(m => m.CartViewModel.Cart[i].ProductDetail.ID)
+                                    }
+
+                                    <input type="submit" class="primary-btn-circle" value="Giao đến địa chỉ này" />
+                                    <button class="btn btn-default" type="button" id="fix-address">Sửa</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -43,7 +63,7 @@
         <div class="account delivery-info" id="new-address">
             <div class="content-right">
                 <div class="account-profile">
-                    <form class="profile-form" method="post" id="shipping-form" asp-controller="CheckOut" asp-action="Shipping">
+                    <form class="profile-form" method="post" id="shipping-form" asp-controller="CheckOut" asp-action="Pay">
                         <div class="form-group">
                             <label class="control-label" for="HoTen">Họ tên</label>
                             <div class="input-wrap">
@@ -115,6 +135,19 @@
                                 </div>
                             </div>
                         </div>
+
+                        @for (var i = 0; i < Model.CartViewModel.Cart.Count; i++)
+                        {
+                            @Html.HiddenFor(m => m.CartViewModel.Cart[i].ProductDetail.SizeText)
+                            @Html.HiddenFor(m => m.CartViewModel.Cart[i].ProductDetail.ColorText)
+                            @Html.HiddenFor(m => m.CartViewModel.Cart[i].Product.Name)
+                            @Html.HiddenFor(m => m.CartViewModel.Cart[i].CartDetailId)
+                            @Html.HiddenFor(m => m.CartViewModel.Cart[i].BuyedQuantity)
+                            @Html.HiddenFor(m => m.CartViewModel.Cart[i].ProductDetail.PriceText)
+                            @Html.HiddenFor(m => m.CartViewModel.Cart[i].ProductDetail.ID)
+                        }
+                        @Html.HiddenFor(m => m.Order.UserId)
+
                         <div class="form-group">
                             <label class="control-label"></label>
                             <button class="primary-btn-circle" type="submit">Giao đến địa chỉ này</button>
@@ -126,5 +159,8 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="~/js/DisplayView/CheckOut.js"></script>
-<script type="text/javascript" src="~/js/chosen.jquery.min.js"></script>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/DisplayView/CheckOut.js"></script>
+    <script type="text/javascript" src="~/js/chosen.jquery.min.js"></script>
+}

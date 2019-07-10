@@ -8,6 +8,6 @@ namespace Empyreal.Interfaces.Services
     public interface IProductTypeService
     {
         List<ProductType> GetProductType(string Type, int State);
-        List<ProductType> GetSizeColor(int sizeID, int colorID);        
+        List<ProductType> GetSizeColor(int sizeID, int colorID);
     }
 }

@@ -22,36 +22,28 @@ namespace Empyreal.Services.Services
             _unitOfWork.Rollback();
         }
 
-        /// <summary>
-        /// Lấy sản phẩm theo Danh mục
-        /// </summary>
-        /// <param name="catalogID">Mã danh mục</param>
-        /// <param name="state">Trạng thái: 0 = Đã bị xóa </param>
-        /// <returns>List</returns>
-        public List<Product> ByName(string name, int state)
+        public List<Product> SearchFullText(string text, int catalogID, int state)
         {
-            string nameLower = name.ToLower();
+            if (String.IsNullOrEmpty(text))
+            {
+                text = " "; // replace = space để tránh lỗi. Empty là lỗi
+            }
+            if (catalogID == 0)
+            { // chỉ tìm theo text & state
+                return _unitOfWork.ProductRepository
+                    .Search(text.ToLower())
+                    .Where(p => p.State == state)
+                    .ToList();
+            }
+            // tìm theo text & catalog & state
             return _unitOfWork.ProductRepository
-                .Where(p => p.Name.ToLower().Contains(nameLower) && p.State == state)
-                .ToList();
-        }
-        /// <summary>
-        /// Lấy sản phẩm theo Danh mục và Tên sản phảm ( Tìm theo tên sp gần đúng )
-        /// </summary>
-        /// <param name="name">Tên sản phẩm</param>
-        /// <param name="catalogID">Mã danh mục</param>
-        /// <param name="state">Trạng thái: 0 = Đã bị xóa </param>
-        /// <returns>List</returns>
-        public List<Product> ByNameAndCatalog(string name, int catalogID, int state)
-        {
-            string nameLower = name.ToLower();
-            return _unitOfWork.ProductRepository
-                .Where(p => p.CatalogId == catalogID  && p.State == state && p.Name.ToLower().Contains(nameLower))
+                .Search(text.ToLower())
+                .Where(p => p.CatalogId == catalogID && p.State == state)
                 .ToList();
         }
 
         /// <summary>
-        /// Lấy 1 sản phảm
+        /// Lấy 1 sản phẩm
         /// </summary>
         /// <param name="ProductID">Mã sản phẩm</param>
         /// <returns>Product</returns>
@@ -75,45 +67,15 @@ namespace Empyreal.Services.Services
         }
 
         /// <summary>
-        /// Thêm mới sản phẩm
+        /// Lấy nhiều sản phẩm
         /// </summary>
-        /// <param name="product">Product Entity</param>
-        /// <param name="productDetails">List ProductDetail Entity</param>
-        /// <param name="images">List Image Entity</param>
-        /// <returns>
-        /// return the number of rows affected
-        /// 0 = Error
-        /// </returns>
-        public int Create(Product product)
+        /// <param name="ProductID">Mã sản phẩm</param>
+        /// <returns></returns>
+        public IEnumerable<Product> GetAvailable()
         {
-            
-            try
-            {
-                int Result = 0;
-
-                _unitOfWork.ProductRepository.Add(product);
-                _unitOfWork.ProductRepository.Save();
-
-                foreach (var item in product.ProductDetails)
-                {
-                    int productID = item.Id;
-                    ProductPrice priceNav = item.PriceNavigation;
-                    priceNav.ProductDetailId = productID;
-                    _unitOfWork.ProductPriceRepository.Update(priceNav);
-
-                    // Commit transaction
-                }
-
-                Result = _unitOfWork.Commit();
-                // Commit transaction
-                return Result;
-            }
-            catch (Exception e)
-            {
-                _unitOfWork.Rollback();
-                return 0; // => Lỗi
-            }
+            return _unitOfWork.ProductRepository.Where(p => p.State == 1);
         }
+
 
         /// <summary>
         /// Chỉnh sửa sản phẩm
@@ -126,27 +88,36 @@ namespace Empyreal.Services.Services
         /// return the number of rows affected
         /// 0 = Error
         /// </returns>
-        public int Update(Product product)
+        public int Update(Product product, History history)
         {
             try
             {
                 int isReturn = 0;
                 _unitOfWork.ProductRepository.Update(product);
+                _unitOfWork.ProductRepository.Save(); // Save entity to GetID
+
                 foreach (var item in product.ProductDetails)
                 {
-                    int productID = item.Id;
+                    int detailID = item.Id;
                     ProductPrice priceNav = item.PriceNavigation;
-                    priceNav.ProductDetailId = productID;
+                    priceNav.ProductDetailId = detailID;
                     _unitOfWork.ProductPriceRepository.Update(priceNav);
 
                     // Commit transaction
                 }
-
+                
                 isReturn = _unitOfWork.Commit();
+
+                if (isReturn != 0)
+                {
+                    history.Detail = product.Id;
+                    _unitOfWork.HistoryRepository.Update(history);
+                    isReturn = _unitOfWork.Commit();
+                }
 
                 return isReturn;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 _unitOfWork.Rollback();
                 return 0; // => Lỗi

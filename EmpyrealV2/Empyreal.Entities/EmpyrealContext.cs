@@ -1,11 +1,9 @@
 ﻿using Empyreal.Models;
-using Empyreal.Models.BaseModel;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 
@@ -42,11 +40,10 @@ namespace Empyreal.Entities
         #endregion --- Init ---
 
         #region --- DbSet ---
-        public DbSet<Answer> Answer { get; set; }
         public DbSet<Cart> Cart { get; set; }
         public DbSet<CartDetail> CartDetail { get; set; }
         public DbSet<Catalog> Catalog { get; set; }
-        public DbSet<Comment> Comment { get; set; }
+        public DbSet<History> History { get; set; }
         public DbSet<Image> Image { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderDetail> OrderDetail { get; set; }
@@ -58,6 +55,7 @@ namespace Empyreal.Entities
         public DbSet<Province> Province { get; set; }
         public DbSet<Ward> Ward { get; set; }
         public DbSet<District> District { get; set; }
+        public DbSet<Statistical> Statistical { get; set; }
 
         #endregion --- DbSet ---
 
@@ -259,6 +257,28 @@ namespace Empyreal.Entities
                     .HasForeignKey(d => d.ProvinceId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_District_Province");
+            });
+
+            modelBuilder.Entity<History>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Content).HasMaxLength(2000);
+
+                entity.Property(e => e.CreateByUser).HasMaxLength(450);
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Summary).HasMaxLength(100);
+
+                entity.Property(e => e.Table).HasMaxLength(50);
+
+                entity.Property(e => e.Detail).HasMaxLength(50);
+
+                entity.HasOne(d => d.CreateByUserNavigation)
+                    .WithMany(p => p.History)
+                    .HasForeignKey(d => d.CreateByUser)
+                    .HasConstraintName("FK_History_AspNetUsers");
             });
 
             modelBuilder.Entity<Image>(entity =>

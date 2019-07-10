@@ -67,6 +67,14 @@ var ProductHome = new function () {
             asNavFor: '#product-main-view'
         });
 
+        if ($("#product-quantity").attr("data-quantity") == 0) {
+            $(".product-quantity").addClass("outofstock");
+            $(".product-quantity").text("hết hàng");
+            // Enable button
+            $("input[name='quantity']").val("0");
+            $(".qty-input").addClass("readonly");
+        }
+
         // Update price, quantity of product when change type of product
         $('#option-list li').click(function () {
             $("#loader").modal("show");
@@ -83,15 +91,27 @@ var ProductHome = new function () {
             // Hien thi gia cua san pham
             $("#product-price").text($element.find("li:nth-child(2)").attr("data-price"));
             $("#product-old-price").text($element.find("li:nth-child(2)").attr("data-old-price"));               
-
-            // Hien thi so luong cua san pham
+            
             $(".product-quantity").attr("data-quantity", $element.find("li:nth-child(2)").attr("data-quantity"));
-            $(".product-quantity").text($element.find("li:nth-child(2)").attr("data-quantity") + " sản phẩm có sẵn");
-
-            // Enable button
-            $("input[name='quantity']").val("1");
-            $(".plus-button").prop('disabled', false);
-            $(".minus-button").prop('disabled', true);
+            // Hien thi so luong cua san pham
+            if ($element.find("li:nth-child(2)").attr("data-quantity") > 0) {
+                $(".product-quantity").removeClass("outofstock");
+                $(".product-quantity").text($element.find("li:nth-child(2)").attr("data-quantity") + " sản phẩm có sẵn");
+                // Enable button
+                $("input[name='quantity']").val("1");
+                $(".plus-button").prop('disabled', false);
+                $(".minus-button").prop('disabled', true);
+                $(".qty-input").removeClass("readonly");
+            }
+            else {
+                $(".product-quantity").addClass("outofstock");
+                $(".product-quantity").text("hết hàng");
+                // Enable button
+                $("input[name='quantity']").val("0");
+                $(".plus-button").prop('disabled', false);
+                $(".minus-button").prop('disabled', false);
+                $(".qty-input").addClass("readonly");
+            }
 
             // Hien thi mau sac tuong ung voi size
             $parents.find(".color.active").removeClass("active");
@@ -116,14 +136,26 @@ var ProductHome = new function () {
             $("#product-price").text($this.attr("data-price"));
             $("#product-old-price").text($this.attr("data-old-price"));
 
-            // Hien thi so luong cua san pham
             $(".product-quantity").attr("data-quantity", $this.attr("data-quantity"));
-            $(".product-quantity").text($this.attr("data-quantity") + " sản phẩm có sẵn");
-
-            // Enable button
-            $("input[name='quantity']").val("1");
-            $(".plus-button").prop('disabled', false);
-            $(".minus-button").prop('disabled', true);
+            // Hien thi so luong cua san pham
+            if ($this.attr("data-quantity") > 0) {
+                $(".product-quantity").removeClass("outofstock");
+                $(".product-quantity").text($this.attr("data-quantity") + " sản phẩm có sẵn");
+                // Enable button
+                $("input[name='quantity']").val("1");
+                $(".plus-button").prop('disabled', false);
+                $(".minus-button").prop('disabled', true);
+                $(".qty-input").removeClass("readonly");
+            }
+            else {
+                $(".product-quantity").addClass("outofstock");
+                $(".product-quantity").text("hết hàng");
+                // Enable button
+                $("input[name='quantity']").val("0");
+                $(".plus-button").prop('disabled', false);
+                $(".minus-button").prop('disabled', false);
+                $(".qty-input").addClass("readonly");
+            }
 
             $("#loader").modal("hide");
         });
@@ -262,36 +294,84 @@ var ProductHome = new function () {
         $("#quick-buy").click(function () {
             $("#addToCartModal").modal("show");
         });
+
+        // SignalR
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        
+        connection.on("ReloadQuantity", function (productdetails) {
+            $.each(productdetails, function (id, productdetail) {
+                // Update quantity of product
+                $("ul.size-option.color").each(function () {
+                    $this = $(this).find("li.color-item");
+                    $id = $this.data("id");
+                    if ($id == productdetail.id) {
+                        $this.attr("data-quantity", productdetail.quantity);
+                        return false;
+                    }
+                });
+            });
+
+            // Update quantity of product display
+            $(".product-quantity").attr("data-quantity", $(".size-option.active").find("li.color-item.active").data("quantity"));
+            $("#product-quantity").text($(".size-option.active").find("li.color-item.active").data("quantity") + " sản phẩm có sẵn");
+            if ($("#product-quantity").attr("data-quantity") == 0) {
+                $(".product-quantity").addClass("outofstock");
+                $(".product-quantity").text("hết hàng");
+                // Enable button
+                $("input[name='quantity']").val("0");
+                $(".qty-input").addClass("readonly");
+            }
+        });
+
+        // Reconnect loop
+        function start() {
+            connection.start().catch(function (err) {
+                setTimeout(function () {
+                    start();
+                }, 5000);
+            });
+        }
+
+        connection.onclose(function () {
+            start();
+        });
+
+        start();
+        // End SignalR
     }
 
     this.AddToCart = function () {
         var $liactive = $(".size-option.color.active").find('li.active');
-        //alert($($liactive.find("#item-color")).text());
-        var postData = {
-            productDetailId: $liactive.attr("data-id"),
-            quantity: $('input[name="quantity"]').val()
-        };
-        $.ajax({
-            url: "/Home/AddToCart",
-            type: "POST",
-            datatype: "json",
-            data: postData,
-            success: function (data) {
-                if (data.isSuccess) {
-                    $("#addToCartModal").modal("show");
+        if ($liactive.attr("data-quantity") == 0) {
+            alert("Màu sắc bạn chọn đã hết hàng vui lòng chọn màu khác");
+        }
+        else {
+            var postData = {
+                productDetailId: $liactive.attr("data-id"),
+                quantity: $('input[name="quantity"]').val()
+            };
+            $.ajax({
+                url: "/Home/AddToCart",
+                type: "POST",
+                datatype: "json",
+                data: postData,
+                success: function (data) {
+                    if (data.isSuccess) {
+                        $("#addToCartModal").modal("show");
+                    }
+                    else {
+                        if (data.message == "null")
+                            $("#login-modal").modal("show");
+                        else if (data.message == "cart-error")
+                            alert("Thêm mới giỏ hàng không thành công");
+                        else alert("Thêm sản phẩm vào giỏ hàng không thành công");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Some error add to cart");
                 }
-                else {
-                    if (data.message == "null")
-                        $("#login-modal").modal("show");
-                    else if (data.message == "cart-error")
-                        alert("Thêm mới giỏ hàng không thành công");
-                    else alert("Thêm sản phẩm vào giỏ hàng không thành công");
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert("Some error add to cart");
-            }
-        });
+            });
+        }
     }
     
 }

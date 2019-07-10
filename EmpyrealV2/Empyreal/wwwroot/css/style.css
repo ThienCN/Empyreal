@@ -2920,8 +2920,10 @@ box-shadow: 0px 0px 0px 2px #0000FF inset;*/
     padding: 12px;
     overflow: hidden;
     background: #fff;
-    height: 120px;
+    /*height: 120px;*/
     margin-bottom: 12px;
+    position: relative;
+    width: 100%;
 }
 
 .checkbox-all {
@@ -2945,7 +2947,7 @@ box-shadow: 0px 0px 0px 2px #0000FF inset;*/
 .cart-inner-left {
     float: left;
     display: table;
-    width: 500px;
+    width: 480px;
 }
 
 .cart-inner-center {
@@ -3020,6 +3022,34 @@ box-shadow: 0px 0px 0px 2px #0000FF inset;*/
     display: block;
     font-size: 13px;
     margin-top: 5px;
+    text-align: center;
+}
+
+.product-quantity.outofstock {
+    color: #a94442;
+}
+
+.qty-input.readonly {
+    pointer-events: none;
+}
+
+.checkout-products {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    /* optional */
+    -webkit-box-align: start;
+    -moz-box-align: start;
+    -ms-flex-align: start;
+    -webkit-align-items: flex-start;
+    align-items: flex-start;
 }
 
 .checkout-group {
@@ -3072,6 +3102,70 @@ box-shadow: 0px 0px 0px 2px #0000FF inset;*/
         display: block;
         margin-top: 7px;
     }
+
+.sold-out {
+    top: 2em;
+    left: -4em;
+    color: #fff;
+    display: none;
+    position: absolute;
+    text-align: center;
+    text-decoration: none;
+    letter-spacing: .06em;
+    background-color: #A00;
+    padding: 0.5em 5em 0.4em 5em;
+    text-shadow: 0 0 0.75em #444;
+    box-shadow: 0 0 0.5em rgba(0,0,0,0.5);
+    font: bold 16px/1.2em Arial, Sans-Serif;
+    -webkit-text-shadow: 0 0 0.75em #444;
+    -webkit-box-shadow: 0 0 0.5em rgba(0,0,0,0.5);
+    -webkit-transform: rotate(-45deg) scale(0.75,1);
+    z-index: 10;
+}
+
+    .sold-out:before {
+        content: '';
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        position: absolute;
+        margin: -0.3em -5em;
+        transform: scale(0.7);
+        -webkit-transform: scale(0.7);
+        border: 2px rgba(255,255,255,0.7) dashed;
+    }
+
+.checkout-item.outofstock .checkbox-wrap, .checkout-item.outofstock .img-wrap, .checkout-item.outofstock .title, .checkout-item.outofstock .item-infor, .checkout-item.outofstock .cart-inner-center, .checkout-item.outofstock .cart-inner-right, .checkout-item.outofstock .add-wishlist {
+    opacity: .5;
+    pointer-events: none;
+}
+
+.checkout-item.outofstock .sold-out {
+    display: block;
+    opacity: 1;
+}
+
+.alert-danger.cart {
+    display: none;
+}
+
+.alert-danger.cart.visible {
+    display: block;
+}
+
+.outofstock-product {
+    list-style-type: disc;
+    padding-left: 25px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.no-action {
+    pointer-events: none;
+}
 
 #cke_Description {
     display: inline-block !important;
@@ -3305,6 +3399,7 @@ box-shadow: 0px 0px 0px 2px #0000FF inset;*/
     }
 
     100% {
+        opacity: 1;
     }
 }
 
@@ -3476,7 +3571,7 @@ label.error {
         line-height: 32px;
     }
 
-    .payment-header-right .order a {
+    .payment-header-right .order a, .payment-header-right .order input {
         float: right;
     }
 
@@ -3624,11 +3719,128 @@ label.error {
     margin-top: 5px;
 }
 
+.payment-success {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+    .payment-success .image-shipping {
+        text-align: center;        
+    }
+
+        .payment-success .image-shipping img {
+            width: 100%;
+            padding-left: 10px;
+        }
+
+        .payment-success .info {
+            margin-top: 15px;
+        }
+
+    .payment-success .primary-btn {
+        font-weight: 500;
+        margin-bottom: 20px;
+        pointer-events: none;
+    }
+
+    .payment-success .set-height {
+        height: 225px;
+    }
+
+    .payment-success .set-height .btn {
+        position: absolute;
+        top: 45%;
+    }
+
+/*=========================================================
+	STATISTICAL
+===========================================================*/
+.stats-small {
+    background: #f5f6f8;
+    border: none;
+    border-radius: .625rem;
+    min-height: 100px;
+    padding: 14px 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16), 0 1px 10px 0 rgba(0,0,0,0.12);
+}
+
+.stats-small-icon {
+    float: left;
+    height: 70px;
+    width: 70px;
+    text-align: center;
+    font-size: 30px;
+    border-radius: 100%;
+    line-height: 69px;
+}
+
+.stats-small-content {
+    margin-left: 90px;
+    padding: 9px 0 10px 0;
+}
+
+.stats-small-number {
+    display: block;
+    font-size: 21px;
+}
+
+.stats-small-text {
+    display: block;
+    font-size: 16px;
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+.bg-pink {
+    background-color: rgba(255, 99, 132, 0.6);
+    color: #fff;
+}
+
+.bg-blue {
+    background-color: rgba(54, 162, 235, 0.6);
+    color: #fff;
+}
+
+.bg-yellow {
+    background-color: rgba(255, 159, 64, 0.6);
+    color: #fff;
+}
+
+#OptionsOfSearch ul {
+    -webkit-box-shadow: 0px 0px 0px 1px #DADADA inset, 0px 0px 0px 5px transparent;
+    box-shadow: 0px 0px 0px 1px #DADADA inset, 0px 0px 0px 5px transparent;
+    background: #fff;
+}
+
+    #OptionsOfSearch ul li {
+        padding: 10px;
+        border-bottom: 1px solid #DADADA;
+        cursor: pointer;
+    }
+
+    #OptionsOfSearch ul li div {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+.ui-menu-item.active {
+    background-color: #e9e9e9;
+}
+
+.img-search {
+    z-index: 101;
+    background: #fff;
+    -webkit-box-shadow: 0px 0px 0px 1px #DADADA inset, 0px 0px 0px 5px transparent;
+    box-shadow: 0px 0px 0px 1px #DADADA inset, 0px 0px 0px 5px transparent;
+}
+
 /*=========================================================
 	12 -> RESPONSIVE
 ===========================================================*/
-@media only screen and (max-width: 991px) {
-    #home .home-wrap {
+    @media only screen and (max-width: 991px) {
+        #home .home-wrap {
         margin-left: 0px;
     }
 

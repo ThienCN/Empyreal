@@ -14,6 +14,9 @@ using Empyreal.Services.Services;
 using Empyreal.ServiceLocators;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
+using Empyreal.Hubs;
 
 namespace Empyreal
 {
@@ -30,8 +33,6 @@ namespace Empyreal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-
             //services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<EmpyrealContext>();
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<EmpyrealContext>()
@@ -57,11 +58,14 @@ namespace Empyreal
                 options.User.RequireUniqueEmail = true;
             });
 
+            services.Configure<SecurityStampValidatorOptions>(options =>
+                options.ValidationInterval = TimeSpan.FromSeconds(0));
+
             services.ConfigureApplicationCookie(options =>
             {
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
 
                 options.LoginPath = "/Login/SignIn";
                 options.AccessDeniedPath = "/Login/AccessDenied";
@@ -74,11 +78,17 @@ namespace Empyreal
 
             //
             // ConnectionString
+            //services.AddDbContext<EmpyrealContext>(ServiceLifetime.Transient);
             services.AddDbContext<EmpyrealContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
+
 
             /* Denpendency Injection*/
 
+            services.AddMvc().AddJsonOptions(options => {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
 
             services.AddSingleton<IUnitOfWork, UnitOfWork>();
 
@@ -90,6 +100,7 @@ namespace Empyreal
             services.AddSingleton<IImageService, ImageService>();
             services.AddSingleton<IProductTypeService, ProductTypeService>();
             services.AddSingleton<IProductPriceService, ProductPriceService>();
+            services.AddSingleton<IHistoryService, HistoryService>();
             services.AddSingleton<ICartService, CartService>();
             services.AddSingleton<ICartDetailService, CartDetailService>();
             services.AddSingleton<IRateService, RateService>();
@@ -98,6 +109,10 @@ namespace Empyreal
             services.AddSingleton<IDistrictService, DistrictService>();
             services.AddSingleton<IWardService, WardService>();
             services.AddSingleton<IOrderService, OrderService>();
+            services.AddSingleton<IOrderDetailService, OrderDetailService>();
+            services.AddSingleton<IStatisticalService, StatisticalService>();
+
+            services.AddSignalR();
 
             //// Login with Google
             //services.AddAuthentication().AddGoogle(googleOptions =>
@@ -108,8 +123,6 @@ namespace Empyreal
 
             //
             ServiceLocator.SetLocatorProvider(services.BuildServiceProvider());
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -131,6 +144,10 @@ namespace Empyreal
             app.UseCookiePolicy();
 
             app.UseAuthentication();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/chatHub");
+            });
 
             app.UseMvc(routes =>
             {

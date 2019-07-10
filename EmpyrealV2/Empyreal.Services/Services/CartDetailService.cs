@@ -63,5 +63,26 @@ namespace Empyreal.Services.Services
                 return 0; // Error
             }
         }
+
+        public int Updates(List<CartDetail> cartDetails)
+        {
+            int result = 0;
+            try
+            {
+                foreach (var item in cartDetails)
+                {
+                    _unitOfWork.CartDetailRepository.Update(item);
+                }
+                
+                result = _unitOfWork.Commit();
+
+                return result;
+            }
+            catch (Exception)
+            {
+                _unitOfWork.Rollback();
+                return 0; // Error
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace Empyreal.ViewModels.Display
     {
 
         #region --- Variables ---
-        
+
         CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
 
         public int ID { get; set; }

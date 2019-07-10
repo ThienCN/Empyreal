@@ -13,10 +13,13 @@ namespace Empyreal.Interfaces.Entities
         IEnumerable<T> GetAll();
         IEnumerable<T> Where(Expression<Func<T, bool>> expression);
         IEnumerable<T> ExecWithStoreProcedure(string query, params object[] parameters);
+        void ExecWithStoreProcedureUpdate(string query, params object[] parameters);
         T Get(Expression<Func<T, bool>> predicate);
         void Add(T entity);
         void Update(T entity);
         void Delete(T entity);
         int Save();
+        IEnumerable<T> Search(string text);
+
     }
 }

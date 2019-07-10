@@ -1,10 +1,10 @@
 ﻿using Empyreal.Interfaces.Entities;
+using Korzh.EasyQuery.Linq;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace Empyreal.Entities
 {
@@ -40,7 +40,7 @@ namespace Empyreal.Entities
         {
             return _dbset.FirstOrDefault(predicate);
         }
-        
+
         public IEnumerable<T> GetAll()
         {
             return _dbset.AsEnumerable();
@@ -53,12 +53,22 @@ namespace Empyreal.Entities
 
         public IEnumerable<T> ExecWithStoreProcedure(string query, params object[] parameters)
         {
-            return _dbset.FromSql(query, parameters);
+            return _dbset.AsNoTracking().FromSql(query, parameters);
         }
 
         public int Save()
         {
             return _context.SaveChanges();
+        }
+
+        public IEnumerable<T> Search(string text)
+        {
+            return _dbset.FullTextSearchQuery(text);
+        }
+
+        public void ExecWithStoreProcedureUpdate(string query, params object[] parameters)
+        {
+            _dbset.FromSql(query, parameters);
         }
     }
 }

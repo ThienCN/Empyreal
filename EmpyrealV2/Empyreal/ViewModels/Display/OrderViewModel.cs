@@ -27,5 +27,7 @@ namespace Empyreal.ViewModels.Display
             this.Name = order.Name;
             this.PhoneNumber = order.PhoneNumber;
         }
+
+        public OrderViewModel() { }
     }
 }

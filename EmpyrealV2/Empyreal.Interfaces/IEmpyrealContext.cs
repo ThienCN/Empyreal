@@ -15,6 +15,5 @@ namespace Empyreal.Entities
         DbSet<ProductDetail> ProductDetail { get; set; }
         DbSet<ProductPrice> ProductPrice { get; set; }
         DbSet<ProductType> ProductType { get; set; }
-        DbSet<Rate> Rate { get; set; }
     }
 }

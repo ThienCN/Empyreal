@@ -1,14 +1,13 @@
-﻿using Empyreal.Models.BaseModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Empyreal.Models
 {
-    public partial class Product: History
+    public partial class Product
     {
         public Product()
         {
-            this.CreateDate = (DateTime)DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
+            this.CreateDate = DateTime.Now;
             this.State = 1;
 
             Images = new HashSet<Image>();
@@ -21,7 +20,10 @@ namespace Empyreal.Models
         public string UserId { get; set; }
         public int CatalogId { get; set; }
         public string Description { get; set; }
-
+        public DateTime? CreateDate { get; set; }
+        public string CreateByUser { get; set; }
+        public DateTime? LastModifyDate { get; set; }
+        public string LastModifyByUser { get; set; }
         public virtual Catalog Catalog { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<Image> Images { get; set; }

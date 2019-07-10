@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
-@model Empyreal.ViewModels.HomeViewModel
+@*@model Empyreal.ViewModels.HomeViewModel*@
 @{
     ViewData["Title"] = "Trang chủ";
     Layout = null;
@@ -20,6 +20,7 @@
 
     <!-- Bootstrap -->
     <link type="text/css" rel="stylesheet" href="~/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="~/css/manage/jquery/jquery-ui.min.css" />
 
     <!-- Slick -->
     <link type="text/css" rel="stylesheet" href="~/css/slick.css" />
@@ -52,6 +53,7 @@
 <body>
     <!-- HEADER -->
     <header>
+
         <!-- top Header -->
         <div id="top-header">
             <div class="container">
@@ -86,18 +88,20 @@
                     <!-- Logo -->
                     <div class="header-logo">
                         @*<a class="logo" href="#">
-                                <img src="~/images/logo.png" alt="">
-                            </a>*@
+                <img src="~/images/logo.png" alt="">
+            </a>*@
                         <a asp-controller="Home" asp-action="Index"><h2>Empyreal!</h2></a>
                     </div>
                     <!-- /Logo -->
                     <!-- Search -->
                     <div class="header-search">
                         <form method="get" asp-controller="Search" asp-action="Index">
-                            <input class="input search-input" type="text" asp-for="KeySearch" asp-route-keySearch="@Model.KeySearch" value="@Model.KeySearch" name="keySearch" placeholder="Tìm sản phẩm">
+                            <input class="input search-input form-control" type="text" id="KeySearch" name="KeySearch" placeholder="Tìm sản phẩm">
                             <button type="submit" title="Tìm kiếm" class="search-btn"><i class="fa fa-search"></i></button>
                         </form>
                     </div>
+                    <img style="width:50px; height:50px;" id="SearchPreview" />
+
                     <!-- /Search -->
                 </div>
                 <div class="pull-right">
@@ -105,8 +109,8 @@
                         <li class="header-account dropdown default-dropdown" style="width: 210px;">
                             <div class="login-signin">
                                 @*<div class="header-btns-icon">
-                <img id="avatar_user" style="width:40px;border-radius:50%;" alt="avatar" src="~/images/bo.jpg" />
-            </div>*@
+                                        <img id="avatar_user" style="width:40px;border-radius:50%;" alt="avatar" src="~/images/bo.jpg" />
+                                    </div>*@
                                 <strong class="text-uppercase" id="taikh">Tài khoản</strong>
                             </div>
                             @if (SignInManager.IsSignedIn(User))
@@ -145,86 +149,11 @@
                                 <a asp-controller="Login" asp-action="SignIn" class="text-uppercase">Đăng nhập</a><span> / </span>
                                 <a asp-controller="Login" asp-action="Register" class="text-uppercase">Đăng ký</a>
                                 @*<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>*@
+                                    <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>*@
                             }
 
-
-
-<li> 
-                            @*<!-- Modal -->
-                                <div class="modal fade" id="login-modal" role="dialog">
-                                    <div class="modal-dialog">
-
-                                        <!-- Modal content-->
-                                        <div class="modal-content">
-                                            <div class="modal-body">
-                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                <div class="content-left">
-                                                    <h4>Đăng nhập</h4>
-                                                    <p>Đăng nhập để theo dõi đơn hàng, lưu <br>danh sách sản phẩm yêu thích, nhận<br> nhiều ưu đãi hấp dẫn.</p>
-                                                    <img src="https://pipe.tikicdn.com/media/upload/2018/10/12/2a3acb91a35d45e1b4b7c96912a0c84a.png">
-                                                </div>
-
-                                                <div class="content-right">
-                                                    <ul class="tab-nav">
-                                                        <li class="active"><a data-toggle="tab" href="#login-form" aria-expanded="true">Đăng nhập</a></li>
-                                                        <li class=""><a data-toggle="tab" href="#register-form" aria-expanded="false">Tạo tài khoản</a></li>
-                                                    </ul>
-                                                    <div class="tab-content">
-                                                        <div id="login-form" class="tab-pane fade active in">
-                                                            <form class="content bv-form" method="POST" action="#" id="login_popup_form" novalidate="novalidate">
-                                                                <div class="form-group popup_email has-feedback" id="popup_login">
-                                                                    <label class="control-label login-label">Email / SĐT *</label>
-                                                                    <input id="popup-login-email" type="text" class="form-control login" name="email" placeholder="Nhập Email hoặc Số điện thoại" data-bv-field="email"><i class="form-control-feedback" data-bv-icon-for="email" style="display: none;"></i>
-                                                                    <span class="help-block ajax-message"></span>
-                                                                    <small class="help-block" data-bv-validator="notEmpty" data-bv-for="email" data-bv-result="NOT_VALIDATED" style="display: none;">Vui lòng nhập Email hoặc Số điện thoại</small><small class="help-block" data-bv-validator="regexp" data-bv-for="email" data-bv-result="NOT_VALIDATED" style="display: none;">Email hoặc Số điện thoại không hợp lệ</small>
-                                                                </div>
-
-                                                                <div class="form-group popup_password has-feedback" id="popup_password">
-                                                                    <label class="control-label login-label">Mật khẩu *</label>
-                                                                    <input type="password" id="login_password" class="form-control login" name="password" placeholder="Mật khẩu từ 6 đến 32 ký tự" autocomplete="off" data-bv-field="password"><i class="form-control-feedback" data-bv-icon-for="password" style="display: none;"></i>
-                                                                    <span class="help-block ajax-message"></span>
-                                                                    <small class="help-block" data-bv-validator="stringLength" data-bv-for="password" data-bv-result="NOT_VALIDATED" style="display: none;">Mật khẩu phải dài từ 6 đến 32 ký tự</small>
-                                                                </div>
-
-                                                                <div class="form-group">
-                                                                    <p class="reset">Quên mật khẩu? Nhấn vào <a data-toggle="modal" data-target="#reset-password-form" href="#">đây</a></p>
-                                                                </div>
-
-                                                                <div class="form-group">
-                                                                    <button type="submit" id="login_popup_submit" class="btn btn-info btn-block btn-social" admicro-data-event="ClickDangNhap" admicro-data-auto="1" admicro-data-order="false">Đăng nhập</button>
-                                                                </div>
-                                                                <p class="btn-social">Hoặc đăng nhập bằng</p>
-                                                                <div class="form-group">
-                                                                    <a class="btn btn-block btn-social btn-facebook user-name-loginfb" title="Đăng nhập bằng Facebook" href="#" data-url="">
-                                                                        <i class="fab fa-facebook-f"></i>
-                                                                        <span>&nbsp; Đăng nhập bằng Facebook</span>
-                                                                    </a>
-
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <a class="btn btn-block btn-social btn-google user-name-login-google" title="Đăng nhập bằng Google" href="javascript: void(0)" data-url="https://tiki.vn/customer/account/login_google" style="margin-bottom: 50px;">
-                                                                        <i class="fab fa-google-plus-g"></i>
-                                                                        <span>&nbsp; Đăng nhập bằng Google</span>
-                                                                    </a>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                        <div id="register-form" class="tab-pane fade">
-                                                            <p>tab 2</p>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>*@
-
-                        </li>
-                        <!-- /Account -->
-                        <!-- Cart -->
+                            <!-- /Account -->
+                            <!-- Cart -->
                         <li class="header-cart" style="width:145px;">
                             <a asp-controller="Home" asp-action="Cart">
                                 <div class="header-btns-icon">
@@ -236,35 +165,35 @@
                                     <span>7.900.000 <u>đ</u></span>*@
                             </a>
                             <div class="custom-menu">
-                                    <div id="shopping-cart">
-                                        <div class="shopping-cart-list">
-                                            <div class="product product-widget">
-                                                <div class="product-thumb">
-                                                    <img src="~/images/product01.jpg" alt="">
-                                                </div>
-                                                <div class="product-body">
-                                                    <h3 class="product-price">$32.50 <span class="qty">x3</span></h3>
-                                                    <h2 class="product-name"><a href="#">Product Name Goes Here</a></h2>
-                                                </div>
-                                                <button class="cancel-btn"><i class="fa fa-trash"></i></button>
+                                <div id="shopping-cart">
+                                    <div class="shopping-cart-list">
+                                        <div class="product product-widget">
+                                            <div class="product-thumb">
+                                                <img src="~/images/product01.jpg" alt="">
                                             </div>
-                                            <div class="product product-widget">
-                                                <div class="product-thumb">
-                                                    <img src="./img/thumb-product01.jpg" alt="">
-                                                </div>
-                                                <div class="product-body">
-                                                    <h3 class="product-price">$32.50 <span class="qty">x3</span></h3>
-                                                    <h2 class="product-name"><a href="#">Product Name Goes Here</a></h2>
-                                                </div>
-                                                <button class="cancel-btn"><i class="fa fa-trash"></i></button>
+                                            <div class="product-body">
+                                                <h3 class="product-price">$32.50 <span class="qty">x3</span></h3>
+                                                <h2 class="product-name"><a href="#">Product Name Goes Here</a></h2>
                                             </div>
+                                            <button class="cancel-btn"><i class="fa fa-trash"></i></button>
                                         </div>
-                                        <div class="shopping-cart-btns">
-                                            <button class="main-btn">View Cart</button>
-                                            <button class="primary-btn">Checkout <i class="fa fa-arrow-circle-right"></i></button>
+                                        <div class="product product-widget">
+                                            <div class="product-thumb">
+                                                @*<img src="./img/thumb-product01.jpg" alt="">*@
+                                            </div>
+                                            <div class="product-body">
+                                                <h3 class="product-price">$32.50 <span class="qty">x3</span></h3>
+                                                <h2 class="product-name"><a href="#">Product Name Goes Here</a></h2>
+                                            </div>
+                                            <button class="cancel-btn"><i class="fa fa-trash"></i></button>
                                         </div>
                                     </div>
+                                    <div class="shopping-cart-btns">
+                                        <button class="main-btn">View Cart</button>
+                                        <button class="primary-btn">Checkout <i class="fa fa-arrow-circle-right"></i></button>
+                                    </div>
                                 </div>
+                            </div>
                         </li>
                         <!-- /Cart -->
                         <!-- Mobile nav toggle-->
@@ -1012,24 +941,7 @@
                 <div class="col-md-12">
                     <div class="row">
                         <div id="product-slick-1" class="product-slick">
-                            <!-- Product Multiple -->
-                            <!-- banner -->
-                            @foreach (var product in Model.TopProducts)
-                            {
-                                <div class="col-md-2 col-sm-6">
-                                    <a class="banner banner-1" asp-controller="Home" asp-action="Products" asp-route-id="@product.Id" title="">
-                                        <img src="@product.Images[0].Url" alt="">
-                                        <div class="banner-popular">
-                                            <h5 class="white-color">@product.Name</h5>
-                                            <p class="white-color">@product.PriceProductText </p>
 
-                                        </div>
-                                    </a>
-                                </div>
-                            }
-                            <!-- /banner -->
-                            <!-- banner -->
-                            <!-- /banner -->
                         </div>
                     </div>
                 </div>
@@ -1044,114 +956,8 @@
         <!-- container -->
         <div class="container">
             <!-- row -->
-            <div class="row">
-                <!-- section-title -->
-                <div class="col-md-12">
-                    <div class="section-title">
-                        <h3 class="title">SẢN PHẨM MỚI  </h3>
-                        <div class="pull-right">
-                            <div class="product-slick-dots-2 custom-dots"></div>
-                        </div>
-                    </div>
-                </div>
-                <!-- /section-title -->
-                <!-- banner -->
+            <div class="row" id="product-new">
 
-                <div class="col-md-3 col-sm-6 col-xs-6">
-                    @*<div class="banner banner-2">
-                            <img src="~/images/banner14.jpg" alt="">
-                            <div class="banner-caption">
-                                <h2 class="white-color">NEW<br>COLLECTION</h2>
-                                <button class="primary-btn">Shop Now</button>
-                            </div>
-                        </div>*@
-
-                    @{
-                        var productHOT = Model.NewProdcuts.Last();
-                    }
-
-                    <div class="product product-single product-hot" title="@productHOT.Name">
-                        <div class="product-thumb">
-                            <div class="product-label">
-                                    <span class="sale">HOT</span>
-                                </div>
-                            @*<ul class="product-countdown">
-                                    <li><span>00 H</span></li>
-                                    <li><span>00 M</span></li>
-                                    <li><span>00 S</span></li>
-                            </ul>*@
-                            <a asp-controller="Home" asp-action="Product" asp-route-productID="@productHOT.Id" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</a>
-                            <img src="@productHOT.Images[0].Url" alt="">
-                        </div>
-                        <div class="product-body">
-                            <h2 class="product-name"><a asp-controller="Home" asp-action="Product" asp-route-productID="@productHOT.Id">@productHOT.Name</a></h2>
-                            <div class="product-rating">
-                                <p class="rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="far fa-star"></i>
-                                </p>
-                                <p class="review">(36 nhận xét)</p>
-                            </div>
-                            <h4 class="product-price">@productHOT.PriceProductText<del class="product-old-price">@productHOT.OldPriceProductText</del></h4>
-                            @*<div class="product-btns">
-                                    <button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
-                                    <button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
-                                    <button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
-                                </div>*@
-                        </div>
-                    </div>
-                </div>
-                <!-- /banner -->
-                <!-- Product Slick -->
-                <div class="col-md-9 col-sm-6 col-xs-6">
-                    <div class="row">
-                        <div id="product-slick-2" class="product-slick">
-                            @foreach (var product in Model.NewProdcuts)
-                            {
-                                <!-- Product Single -->
-                                <div class="product product-single" title="@product.Name">
-                                    <div class="product-thumb">
-                                        <div class="product-label">
-                                            <span>New</span>
-                                            @*<span class="sale">-20%</span>*@
-                                        </div>
-                                        @*<ul class="product-countdown">
-                                                <li><span>00 H</span></li>
-                                                <li><span>00 M</span></li>
-                                                <li><span>00 S</span></li>
-                                            </ul>*@
-                                        <a asp-controller="Home" asp-action="Product" asp-route-productID="@product.Id" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</a>
-                                        <img src="@product.Images[0].Url" alt="">
-                                    </div>
-                                    <div class="product-body">
-                                        <h2 class="product-name"><a asp-controller="Home" asp-action="Product" asp-route-productID="@product.Id">@product.Name</a></h2>
-                                        <div class="product-rating">
-                                            <p class="rating">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="far fa-star"></i>
-                                            </p>
-                                            <p class="review">(36 nhận xét)</p>
-                                        </div>
-                                        <h4 class="product-price">@product.PriceProductText</h4>
-                                        @*<div class="product-btns">
-                                                <button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
-                                                <button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
-                                                <button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
-                                            </div>*@
-                                    </div>
-                                </div>
-                                <!-- /Product Single -->
-                            }
-                        </div>
-                        <!-- /Product Single -->
-                    </div>
-                </div>
             </div>
             <!-- /Product Slick -->
         </div>
@@ -1159,7 +965,7 @@
     </div>
     <!-- /section -->
     <!-- section -->
-    <div class="section section-grey">
+    <div class="section section-grey" id="catalog-section">
         <!-- container -->
         <div class="container">
             <!-- row -->
@@ -1280,46 +1086,8 @@
         <!-- container -->
         <div class="container">
             <!-- row -->
-            <div class="row">
-                <!-- section title -->
-                <div class="col-md-12">
-                    <div class="section-title">
-                        <h3 class="title">Dành riêng cho bạn</h3>
-                    </div>
-                </div>
-                <!-- section title -->
-                @foreach (var product in Model.YourProducts)
-                {
-                    <!-- Product Single -->
-                    <div class="col-md-3 col-sm-6 col-xs-6">
-                        <div class="product product-single" title="@product.Name">
-                            <div class="product-thumb">
-                                <a asp-controller="Home" asp-action="Product" asp-route-productID="@product.Id" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Xem chi tiết</a>
-                                <img src="@product.Images[0].Url" alt="">
-                            </div>
-                            <div class="product-body">
-                                <h2 class="product-name"><a asp-controller="Home" asp-action="Products" asp-route-productID="@product.Id">@product.Name</a></h2>
-                                <div class="product-rating">
-                                    <p class="rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                    </p>
-                                    <p class="review">(36 nhận xét)</p>
-                                </div>
-                                <h4 class="product-price">@product.PriceProductText<del class="product-old-price"> @product.OldPriceProductText</del></h4>
-                                @*<div class="product-btns">
-                                        <button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
-                                        <button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
-                                        <button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
-                                    </div>*@
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /Product Single -->
-                }
+            <div class="row" id="product-random">
+
             </div>
             <!-- /row -->
         </div>
@@ -1338,8 +1106,8 @@
                         <!-- footer logo -->
                         <div class="footer-logo">
                             @*<a class="logo" href="#">
-                                    <img src="~/images/logo.png" alt="">
-                                </a>*@
+                                <img src="~/images/logo.png" alt="">
+                            </a>*@
                             <h2>Empyreal!</h2>
                         </div>
                         <!-- /footer logo -->
@@ -1388,8 +1156,12 @@
             </div>
             <!-- /row -->
         </div>
+
+        <table id="OptionsOfSearch">
+        </table>
         <!-- /container -->
     </footer>
+
     <!-- /FOOTER -->
     <!-- jQuery Plugins -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -1399,7 +1171,7 @@
     <script src="~/js/nouislider.min.js"></script>
     <script src="~/js/jquery.zoom.min.js"></script>
     <script src="~/js/jquery-ui.min.js"></script>
+    <script src="~/js/HomeIndex.js"></script>
     <script src="~/js/main.js"></script>
-
 </body>
 

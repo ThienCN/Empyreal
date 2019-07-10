@@ -4374,11 +4374,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj",
+      "projectUniqueName": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj",
       "projectName": "Empyreal.Models",
-      "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj",
+      "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj",
       "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-      "outputPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Models\\obj\\",
+      "outputPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Models\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

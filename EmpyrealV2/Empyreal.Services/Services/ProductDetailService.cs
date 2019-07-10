@@ -40,5 +40,31 @@ namespace Empyreal.Services.Services
                 .ToList();
         }
 
+        /// <summary>
+        /// Cập nhật nhiều chi tiết sản phẩm
+        /// </summary>
+        /// <param name="productDetails">Danh sách các chi tiết sản phẩm</param>
+        /// <returns></returns>
+        public int Update(List<ProductDetail> productDetails)
+        {
+            try
+            {
+                int result = 0;
+
+                foreach (var item in productDetails)
+                {
+                    _unitOfWork.ProductDetailRepository.Update(item);
+                }                
+
+                result = _unitOfWork.Commit();
+                // Commit transaction
+                return result;
+            }
+            catch (Exception)
+            {
+                _unitOfWork.Rollback();
+                return 0; // => Lỗi
+            }
+        }
     }
 }

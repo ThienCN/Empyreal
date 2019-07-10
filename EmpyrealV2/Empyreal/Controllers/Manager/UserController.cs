@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Empyreal.Hubs;
 using Empyreal.Interfaces.Services;
 using Empyreal.Models;
 using Empyreal.ServiceLocators;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Empyreal.Controllers.Manager
 {
@@ -20,12 +22,15 @@ namespace Empyreal.Controllers.Manager
         private readonly IUserService userService;
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IHubContext<ChatHub> _hubContext;
 
-        public UserController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public UserController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
+            IHubContext<ChatHub> hubContext)
         {
             userService = ServiceLocator.Current.GetInstance<IUserService>();
             this.userManager = userManager;
             this.roleManager = roleManager;
+            _hubContext = hubContext;
         }
 
         public async Task<IActionResult> UserManager(string keySearch, int page = 1, int pageSize = 5)
@@ -126,6 +131,10 @@ namespace Empyreal.Controllers.Manager
                     model.IsSuccess = true;
                     ModelState.Clear();
                     //return View(model);
+
+                    // Call SignalR update statistical
+                    await _hubContext.Clients.All.SendAsync("ReloadStatistical");
+
                     return RedirectToAction("AddUser", "User", new { isSuccess = true });
                 }
                 AddErrors(result);
@@ -259,6 +268,11 @@ namespace Empyreal.Controllers.Manager
             }
 
             return RedirectToAction("UserManager", "User");
+        }
+
+        public IActionResult TestTemplate()
+        {
+            return View();
         }
 
         private void AddErrors(IdentityResult result)

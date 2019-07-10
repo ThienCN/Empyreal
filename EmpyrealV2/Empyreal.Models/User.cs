@@ -15,6 +15,8 @@ namespace Empyreal.Models
             //AspNetUserRoles = new HashSet<AspNetUserRoles>();
             //AspNetUserTokens = new HashSet<AspNetUserTokens>();
             Product = new HashSet<Product>();
+            History = new HashSet<History>();
+
         }
 
         public string HoTen { get; set; }
@@ -22,11 +24,14 @@ namespace Empyreal.Models
         public DateTime BirthDate { get; set; }
         public string Sex { get; set; }
         public int? State { get; set; }
+        public DateTime CreateDate { get; set; }
 
         //public virtual ICollection<AspNetUserClaims> AspNetUserClaims { get; set; }
         //public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
         //public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
         //public virtual ICollection<AspNetUserTokens> AspNetUserTokens { get; set; }
         public virtual ICollection<Product> Product { get; set; }
+        public virtual ICollection<History> History { get; set; }
+
     }
 }

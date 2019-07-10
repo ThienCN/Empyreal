@@ -158,12 +158,12 @@
                         <div class="product-options">
                             <input type="hidden" id="12345" />
                             @*<ul class="color-option">
-                                <li><span class="titled">Màu sắc</span></li>
-                                <li class="active"><a href="#" style="background-color:#475984;"></a></li>
-                                <li><a href="#" style="background-color:#8A2454;"></a></li>
-                                <li><a href="#" style="background-color:#BF6989;"></a></li>
-                                <li><a href="#" style="background-color:#9A54D8;"></a></li>
-                            </ul>*@
+                                    <li><span class="titled">Màu sắc</span></li>
+                                    <li class="active"><a href="#" style="background-color:#475984;"></a></li>
+                                    <li><a href="#" style="background-color:#8A2454;"></a></li>
+                                    <li><a href="#" style="background-color:#BF6989;"></a></li>
+                                    <li><a href="#" style="background-color:#9A54D8;"></a></li>
+                                </ul>*@
 
                             <ul class="size-option" id="option-list">
                                 <li><span class="titled" style="line-height: 37px;">Kích thước</span></li>
@@ -195,7 +195,10 @@
                                 <button class="minus-button" id="minus-button" disabled><i class="fas fa-minus"></i></button>
                                 <input type="text" name="quantity" id="product-input-quantity" min="1" max="5" value="1">
                                 <button class="plus-button" id="plus-button"><i class="fas fa-plus"></i></button>
-                                <span id="product-quantity" class="product-quantity" style="margin-left: 10px;" data-quantity="@Model.Details.First().Quantity">@Model.Details.First().Quantity sản phẩm có sẵn</span>
+
+                                <span id="product-quantity" class="product-quantity" style="margin-left: 10px;" data-quantity="@Model.GroupBySize.First().First().Quantity">
+                                    @Model.GroupBySize.First().First().Quantity sản phẩm có sẵn
+                                </span>
                             </div>
                         </div>
                         <div class="buy-btns">
@@ -224,6 +227,8 @@
                         </div>
                     </div>
                 </div>
+
+                <ul id="messagesList"></ul>
 
                 <!-- Product Review -->
                 <div class="col-md-12">
@@ -295,7 +300,7 @@
                                                                 <span class="sr-only"></span>
                                                             </div>
                                                         </div>
-                                                        <span class="rating-num-total">@Model.RateList[i-1]</span>
+                                                        <span class="rating-num-total">@Model.RateList[i - 1]</span>
                                                     </div>
                                                 }
                                             </div>
@@ -423,7 +428,7 @@
                                         <div class="margin-row"></div>
                                     }
 
-                                    
+
                                     <div class="list-pager">
                                         <ul>
                                             <li>
@@ -675,4 +680,7 @@
     </div>
 </div>
 <!-- /section -->
-<script type="text/javascript" src="~/js/DisplayView/productHome.js"></script>
+@section Scripts {
+    <script type="text/javascript" src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script type="text/javascript" src="~/js/DisplayView/productHome.js"></script>
+}

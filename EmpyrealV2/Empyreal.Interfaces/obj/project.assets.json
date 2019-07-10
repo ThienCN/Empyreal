@@ -4393,11 +4393,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Interfaces\\Empyreal.Interfaces.csproj",
+      "projectUniqueName": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Interfaces\\Empyreal.Interfaces.csproj",
       "projectName": "Empyreal.Interfaces",
-      "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Interfaces\\Empyreal.Interfaces.csproj",
+      "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Interfaces\\Empyreal.Interfaces.csproj",
       "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-      "outputPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Interfaces\\obj\\",
+      "outputPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Interfaces\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -4416,8 +4416,8 @@
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj": {
-              "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj"
+            "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj": {
+              "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Models\\Empyreal.Models.csproj"
             }
           }
         }

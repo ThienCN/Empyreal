@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,9 +10,9 @@ using Empyreal.ServiceLocators;
 using Empyreal.Interfaces.Services;
 using Empyreal.ViewModels.Display;
 using Microsoft.AspNetCore.Identity;
-using System.Data.SqlClient;
-using System;
 using Microsoft.AspNetCore.Authorization;
+using System.Data.SqlClient;
+using Microsoft.AspNetCore.Routing;
 
 namespace Empyreal.Controllers
 {
@@ -52,84 +53,10 @@ namespace Empyreal.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            var listTopProdcuts = GetListProductViewModel(TOP_PRODUCT);
-            var listNewProdcuts = GetListProductViewModel(NEW_PRODUCT);
-            var listYourProdcuts = GetListProductViewModel(RAND_PRODUCT);
-            HomeViewModel homeView = new HomeViewModel()
-            {
-                TopProducts = listTopProdcuts,
-                NewProdcuts = listNewProdcuts,
-                YourProducts = listYourProdcuts
-            };
-
-            return View(homeView);
+            return View();
         }
 
-        public List<ProductBasicViewModel> GetListProductViewModel(string Mode)
-        {
-            List<ProductBasicViewModel> ListProductViewModel = new List<ProductBasicViewModel>();
-            List<Product> products = new List<Product>();
-            // Select Mode
-
-            if (Mode == TOP_PRODUCT)
-            {
-                products = productService.GetList(a => a.LastModifyDate, 12);
-            }   /// Product Top
-
-            else if (Mode == NEW_PRODUCT)
-            {
-                products = productService.GetList(a => a.CreateDate, 12);
-            }   ///  Product New
-
-            else
-            {
-                products = productService.GetList(a => a.Name, 12);
-            }   /// Product Random
-
-            if (products.Count == 0) return ListProductViewModel;
-
-            //Xử lý Product
-            foreach (var product in products)
-            {
-                // Product Detail
-                List<ProductDetail> listDetailProduct = productDetailService.GetList(product.Id);
-                ProductDetail detailProduct = new ProductDetail();
-                if (listDetailProduct.Count > 0)
-                    listDetailProduct.First();
-                // Xử lý khi Detail null
-                double? price = double.NaN; // Add to ViewModel
-                if (detailProduct != null)
-                {
-                    price = detailProduct.Price;
-                }
-
-                // Image
-                Image image = imageService.Get(product.Id);
-                ImageBasicViewModel imageViewModel = new ImageBasicViewModel(); // Add to ViewModel
-                // Xử lý khi Image null
-                if (image != null)
-                    imageViewModel.SetURL = image.Url;
-
-                List<ImageBasicViewModel> imagesTemp = new List<ImageBasicViewModel>();
-                imagesTemp.Add(imageViewModel);
-
-                ProductBasicViewModel productViewModel = new ProductBasicViewModel
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    //UserName
-                    //CatalogName
-                    PriceProduct = price,
-                    Images = imagesTemp
-                };
-
-                // Add product into ViewModel
-                ListProductViewModel.Add(productViewModel);
-
-            }
-
-            return ListProductViewModel;
-        }
+       
 
         [AllowAnonymous]
         public IActionResult Product(int productID)
@@ -211,7 +138,7 @@ namespace Empyreal.Controllers
             }
             for (int i = 0; i < 5; i++)
             {
-                if(string.IsNullOrEmpty(starRate[i]))
+                if (string.IsNullOrEmpty(starRate[i]))
                 {
                     starRate[i] = "0%";
                 }
@@ -222,7 +149,8 @@ namespace Empyreal.Controllers
             }
 
             model.PriceProduct = model.Details.First().PriceText; // Get price of first detail
-            model.AvgRate = Math.Round((double)totalRate / rates.Count, 2);
+            int conntRates = (rates.Count == 0) ? 1 : rates.Count;
+            model.AvgRate = Math.Round((double)totalRate / conntRates, 2);
             model.RateList = starRate;
             return View(model);
         }
@@ -234,9 +162,9 @@ namespace Empyreal.Controllers
             List<CartDetail> cartDetails; // Cart detail list of cart
             int productDetailID; // ID of product detail
             int productID; // ID of product
-            ProductDetailBasicViewModel productDetailBasicViewModel; // View model detail of product
+            //ProductDetailBasicViewModel productDetailBasicViewModel; // View model detail of product
             ProductDetail productDetail; // Model detail of product
-            ImageBasicViewModel imageViewModel; // View model image of product
+            //ImageBasicViewModel imageViewModel; // View model image of product
             string imageURL; // Model image of product
             Product product; // Get product in cart
             int priceID; // Get price ID of product detail
@@ -250,10 +178,10 @@ namespace Empyreal.Controllers
 
             // Get current user
             user = await userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return RedirectToAction("SignIn", "Login", new { returnUrl = Url.Action("Cart", "Home") });
-            }
+            //if (user == null)
+            //{
+            //    return RedirectToAction("SignIn", "Login", new { returnUrl = Url.Action("Cart", "Home") });
+            //}
 
             // Get cart of current user
             cart = cartService.Get(user.Id);
@@ -298,7 +226,7 @@ namespace Empyreal.Controllers
                 product = productService.Get(productID);
 
                 cartDetailViewModel = new CartDetailViewModel(product, productDetail,
-                    imageURL, item.Id);
+                    imageURL, item.Id, 0);
 
                 cartDetailViewModels.Add(cartDetailViewModel);
             }
@@ -307,7 +235,18 @@ namespace Empyreal.Controllers
             return View(model);
         }
 
+        //[HttpPost]
+        //public IActionResult Cart(CartViewModel cartViewModel)
+        //{   
+
+        //    if (cartViewModel.Cart.Count > 0)
+        //        return RedirectToAction("Shipping", "CheckOut", new RouteValueDictionary(cartViewModel));
+            
+        //    return View();
+        //}
+
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> AddToCart(int productDetailId, int quantity)
         {
             User user = await userManager.GetUserAsync(User); // Get current user

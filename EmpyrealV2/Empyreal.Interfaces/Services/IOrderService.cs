@@ -1,4 +1,5 @@
 ﻿using Empyreal.Models;
+using System.Collections.Generic;
 
 namespace Empyreal.Interfaces.Services
 {
@@ -6,6 +7,6 @@ namespace Empyreal.Interfaces.Services
     {
         Order GetOrderOfUser(string userID);
         Order Get(int orderID);
-        int Create(Order order);
+        Dictionary<int, string> Create(Order order);
     }
 }

@@ -692,11 +692,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Extensions\\Empyreal.Library.csproj",
+      "projectUniqueName": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Extensions\\Empyreal.Library.csproj",
       "projectName": "Empyreal.Library",
-      "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Extensions\\Empyreal.Library.csproj",
+      "projectPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Extensions\\Empyreal.Library.csproj",
       "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-      "outputPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\EmpyrealV2\\Empyreal.Extensions\\obj\\",
+      "outputPath": "D:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Extensions\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

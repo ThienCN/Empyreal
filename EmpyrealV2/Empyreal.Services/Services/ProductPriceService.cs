@@ -46,7 +46,7 @@ namespace Empyreal.Services.Services
                 // Commit transaction
                 return Result;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 _unitOfWork.Rollback();
                 return 0; // => Lỗi

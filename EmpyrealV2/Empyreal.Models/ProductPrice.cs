@@ -1,10 +1,9 @@
-﻿using Empyreal.Models.BaseModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Empyreal.Models
 {
-    public partial class ProductPrice: History
+    public partial class ProductPrice
     {
         public ProductPrice()
         {
@@ -19,6 +18,10 @@ namespace Empyreal.Models
         public int? ProductDetailId { get; set; }
         public double? Price { get; set; }
         public int? State { get; set; }
+        public DateTime? CreateDate { get; set; }
+        public string CreateByUser { get; set; }
+        public DateTime? LastModifyDate { get; set; }
+        public string LastModifyByUser { get; set; }
 
         public virtual ICollection<ProductDetail> ProductDetails { get; set; }
         public virtual ProductDetail ProductDetailNavigation { get; set; }

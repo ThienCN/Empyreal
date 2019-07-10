@@ -2,6 +2,7 @@
 using Empyreal.Interfaces.Services;
 using Empyreal.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Empyreal.Services.Services
@@ -15,25 +16,27 @@ namespace Empyreal.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public int Create(Order order)
+        public Dictionary<int, string> Create(Order order)
         {
+            Dictionary<int, string> keyValuePairs = new Dictionary<int, string>();
+            int result = 0;
+
             try
             {
-                int result = 0;
+                _unitOfWork.OrderRepository.Add(order);
 
-                _unitOfWork.OrderRepository.Add(order);                
+                // Commit transaction               
                 result = _unitOfWork.Commit();
-                // Commit transaction
-                if (result > 0)
-                {
-                    return order.Id; // => Return ID of new order
-                }
-                return 0; // => Lỗi
+
+                if (result > 0) keyValuePairs.Add(order.Id, ""); // => Return ID of new order
+                else keyValuePairs.Add(0, "Add fail"); // => Lỗi
+                return keyValuePairs;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 _unitOfWork.Rollback();
-                return 0; // => Lỗi
+                keyValuePairs.Add(0, e.Message); // => Lỗi
+                return keyValuePairs;
             }
         }
 
