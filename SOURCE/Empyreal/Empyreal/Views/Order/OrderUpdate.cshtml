@@ -1,0 +1,275 @@
+﻿@using Empyreal.ViewModels.Manager;
+@model OrderUpdateViewModel;
+@{
+    Layout = "_ManageLayout";
+    string title = "Cập nhật đơn hàng";
+    ViewData["Title"] = title;
+    int index = 0;
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a asp-controller="Dashboard" asp-action="Index">Admin</a></li>
+    <li><a asp-controller="Order" asp-action="OrderManager">Admin</a>Quản lý đơn hàng</li>
+    <li class="active"></li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="far fa-arrow-alt-circle-left"></span> @title #@Model.OrderID</h2>
+</div>
+<!-- END PAGE TITLE -->
+<!-- PAGE CONTENT WRAPPER -->
+@if (!Model.IsError)
+{
+    <div class="horizontal-padding">
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+            <strong>Success!</strong>
+            @title thành công
+        </div>
+        <div class="group">
+            <a class="btn btn-default" style="margin-right: 10px;" title="Danh sách đơn hàng" asp-controller="Order" asp-action="OrderManager"><i class="fas fa-chevron-circle-left"></i> Danh sách đơn hàng</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="page-content-wrap">
+        <div class="row">
+            <div class="col-md-12">
+                @if (!String.IsNullOrEmpty(Model.Message))
+                {
+                    <div class="horizontal-padding">
+                        <div class="alert alert-danger message" hidden>
+                            @title thất bại
+                            <div style="text-align: left; width: auto;">
+                                <a id="message" title="Error">@Model.Message</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                    <form class="product-form" method="post" asp-controller="Order" asp-action="UpdateOrder" id="OrderFormSubmit" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="OrderID" />
+                        <input type="hidden" asp-for="UserID" />
+                        <input type="hidden" asp-for="UserName" />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"><strong>Trạng thái đơn hàng</strong></h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group clearfix">
+                                            <label class="col-md-4 control-label">Trạng thái</label>
+                                            <div class="col-md-8">
+                                                <div class="input-wrap">
+                                                    <label class="form-control control-label" />
+                                                    @{
+                                                        switch (Model.State)
+                                                        {
+                                                            case 0:
+                                                                <span>Hủy</span>
+                                                                break;
+                                                            case 1:
+                                                                <span>Chờ xác nhận</span>
+                                                                break;
+                                                            case 2:
+                                                                <span>Đang giao</span>
+                                                                break;
+                                                            case 3:
+                                                                <span>Giao hàng thành công</span>
+                                                                break;
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group clearfix">
+                                            <label class="col-md-4 control-label">Tổng tiền thu</label>
+                                            <div class="col-md-8">
+                                                <div class="input-wrap">
+                                                    <label class="form-control control-label" />@Model.DisplayFinalPrice
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if (User.IsInRole("Shipper"))
+                                        {
+                                            <input type="hidden" class="form-control" asp-for="Shipper" readonly />
+                                        }
+                                        else
+                                        {
+                                            <div class="form-group clearfix">
+                                                <label class="col-md-4 control-label">Người giao hàng</label>
+                                                <div class="col-md-8">
+                                                    <div class="input-wrap">
+                                                        <select class="form-control select" data-live-search="true" asp-for="Shipper" asp-items="Model.CbbShipper" readonly></select>
+                                                        <span asp-validation-for="Shipper" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        <div class="form-group clearfix">
+                                            <label class="col-md-4 control-label">Hạn chót giao hàng</label>
+                                            <div class="col-md-8">
+                                                <div class="input-wrap">
+                                                    @if (User.IsInRole("Shipper"))
+                                                    {
+                                                        <input type="date" style="color: red" class="form-control select" asp-for="DeadlineShip" readonly />
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="date" class="form-control select" asp-for="DeadlineShip" />
+                                                    }
+                                                    <span asp-validation-for="DeadlineShip" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if (User.IsInRole("Shipper"))
+                                        {
+                                            <div class="form-group clearfix">
+                                                <label class="col-md-4 control-label">Ngày giao hàng</label>
+                                                <div class="col-md-8">
+                                                    <div class="input-wrap">
+                                                        <input type="date" class="form-control select" asp-for="ShippingDate" />
+                                                        <span asp-validation-for="ShippingDate" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="panel-body text-right">
+                                        @if (Model.State > 0 && Model.State < 3)
+                                        {
+                                            <div class="form-group">
+                                                <label class="col-md-4 control-label"></label>
+                                                <div class="col-md-8">
+                                                    <button class="btn btn-info" type="submit" id="btnSubmitOrderForm">
+                                                        @switch (Model.State + 1)
+                                                        {
+                                                            case 1:
+                                                                <span>Xác nhận</span>
+                                                                break;
+                                                            case 2:
+                                                                <span>Giao hàng</span>
+                                                                break;
+                                                            case 3:
+                                                                <span>Hoàn thành</span>
+                                                                break;
+                                                        }
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"><strong>Thông tin người nhận</strong></h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group clearfix">
+                                            <label class="col-md-4 control-label">Họ tên</label>
+                                            <div class="col-md-8">
+                                                <div class="input-wrap">
+                                                    <label class="form-control control-label" style="height:auto"/>@Model.ReceiverName
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group clearfix">
+                                            <label class="col-md-4 control-label">Số điện thoại</label>
+                                            <div class="col-md-8">
+                                                <div class="input-wrap">
+                                                    <label class="form-control control-label" style="height:auto" />@Model.ReceiverPhone
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group clearfix">
+                                            <label class="col-md-4 control-label">Địa chỉ</label>
+                                            <div class="col-md-8">
+                                                <div class="input-wrap">
+                                                    <label class="form-control control-label" style="height:auto" />@Model.ReceiverAddress
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        @if (!User.IsInRole("Shipper")) {
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3 style="padding-top: 10px;">Chi tiết sản phẩm</h3>
+                                    <div class="section-group">
+                                        <div class="table-responsive">
+                                            <table class="table-order right-end">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="15%">Mã sản phẩm</th>
+                                                        <th width="35%">Tên sản phẩm</th>
+                                                        <th width="10%">Kích cỡ</th>
+                                                        <th width="10%">Màu sắc</th>
+                                                        <th width="10%">Số lượng</th>
+                                                        <th width="10%">Đơn giá</th>
+                                                        <th width="10%">Thành tiền</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in Model.ProductDetail)
+                                                    {
+                                                        <tr>
+                                                            <td>@item.ProductID</td>
+                                                            <td>@item.ProductName</td>
+                                                            <td>@item.SizeText</td>
+                                                            <td>@item.ColorText</td>
+                                                            <td>@item.Quantity</td>
+                                                            <td>@item.DisplayPrice</td>
+                                                            <td>@item.DisplaySumPrice</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="6"><span>Tổng tạm tính</span></td>
+                                                        <td>@Model.DisplaySumPrice</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="6"><span>Phí vận chuyển</span></td>
+                                                        <td>@Model.DisplayShippingFee</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="6"><span>Tổng cộng</span></td>
+                                                        <td><h4>@Model.DisplayFinalPrice</h4></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                    </form>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+
+
+@section Scripts {
+    <script src="~/js/Manager/OrderUpdate.js"></script>
+    <script src="~/lib/ckeditor/ckeditor.js"></script>
+    <script src="~/lib/ckeditor/adapters/jquery.js"></script>
+    <script type="text/javascript" src="~/js/Plugins/bootstrap/bootstrap-select.js"></script>
+}

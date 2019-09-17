@@ -1,0 +1,154 @@
+﻿@using PagedList.Core
+@model Empyreal.ViewModels.Manager.UserManagerViewModel
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    Layout = "_ManageLayout";
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a asp-controller="Dashboard" asp-action="Index">Admin</a></li>
+    <li class="active">Quản lý người dùng</li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap horizontal-padding">
+
+    <div class="toast" id="snackbar"></div>
+
+    <!-- START TABLE -->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title-box">
+                <h3 style="font-size: 17px;">Danh sách người dùng</h3>
+                @*<span>Xem lịch sử</span>*@
+            </div>
+            <ul class="panel-controls" style="margin-top: 2px;">
+                <li><a href="#" class="panel-fullscreen"><span class="fas fa-expand"></span></a></li>
+                <li><a href="#" class="panel-refresh"><span class="fas fa-sync-alt"></span></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fas fa-cog"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" class="panel-collapse"><span class="fas fa-angle-up"></span> Collapse</a></li>
+                        <li><a href="#" class="panel-remove"><span class="fas fa-times"></span> Remove</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body panel-body-table">
+            <div class="row table-header-action">
+                <div class="col-sm-6">
+                    <form method="get" asp-controller="User" asp-action="UserManager">
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control" asp-for="Keyword" asp-route-keySearch="@Model.Keyword" value="@Model.Keyword" name="keySearch" placeholder="Search...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" title="Tìm kiếm" type="submit"><i class="fas fa-search"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <a class="btn btn-info" asp-controller="User" asp-action="AddUser"><i class="fas fa-plus"></i> Thêm người dùng</a>
+                </div>
+            </div>
+
+            @if (Model.PagedUserModel != null)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Id</th>
+                                <th>Họ tên</th>
+                                <th>Phân quyền</th>
+                                <th>Email</th>
+                                <th>SĐT</th>
+                                <th>Trạng thái</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        @{ int k = 1;
+                            <tbody>
+                                @foreach (var user in Model.PagedUserModel)
+                                {
+                                    <tr>
+                                        <td>@k </td>
+                                        <td>@user.ID</td>
+                                        <td>@user.HoTen</td>
+                                        <td>
+                                            @foreach (var role in user.Roles)
+                                            {
+                                                @role
+                                            }
+                                        </td>
+                                        <td>@user.Email</td>
+                                        <td>@user.PhoneNumber</td>
+                                        @if (user.State == 1)
+                                        {
+                                            <td><span class="label label-success">Hoạt động</span></td>
+                                        }
+                                        else
+                                        {
+                                            <td><span class="label label-danger">Ngưng hoạt động</span></td>
+                                        }
+
+                                        <td>
+                                            <a class="control-info table-controls" title="Chỉnh sửa người dùng" asp-controller="User" asp-action="UpdateUser" asp-route-id="@user.ID"><i class="far fa-edit"></i></a> |
+                                            @if (user.State == 1)
+                                            {
+                                                <button type="button" class="control-danger table-controls" title="Ngưng hoạt động" onclick="DisableUser($(this));"><i class="fas fa-lock"></i></button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="control-danger table-controls" title="Cho phép hoạt động" onclick="EnableUser($(this));"><i class="fas fa-unlock-alt"></i></button>
+                                            }
+                                        </td>
+                                    </tr>
+                                    k++;
+                                }
+
+                                <tr>
+                                    <td colspan="4">
+                                        <pager list="@Model.PagedUserModel"
+                                               asp-controller="User"
+                                               asp-action="UserManager"
+                                               asp-route-keySearch="@Model.Keyword" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        }
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+    <!-- END TABLE -->
+    <!-- Modal -->
+    <div class="modal fade" id="historyModal" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Lịch sử</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- END PAGE CONTENT WRAPPER -->
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/Manager/UserManager.js"></script>
+}

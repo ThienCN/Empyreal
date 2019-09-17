@@ -1,0 +1,5 @@
+Folder Database gồm 2 file:
+1: .bak dùng để Restore db
+2: script tạo database
+
+Hướng dẫn: Run 1 trong 2 file, nếu run Script thì phải đổi link tướng ứng với MS Sever trong máy

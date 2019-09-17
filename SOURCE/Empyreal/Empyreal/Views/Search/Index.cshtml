@@ -1,0 +1,30 @@
+﻿@using Empyreal.ViewModels.Display;
+
+
+<!-- section -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+
+        <!-- section title -->
+        <div class="col-md-12">
+            <div class="section-title">
+
+                <input hidden id="title" name="title" value="@ViewData["Title"]" />
+                <h3 class="title">Tìm kiếm: <i>@ViewData["Title"]</i></h3>
+
+            </div>
+        </div>
+        <!-- row -->
+        <div class="row" id="product-search">
+        </div>
+        <!-- /Product Slick -->
+    </div>
+    <!-- /row -->
+</div>
+<table id="OptionsOfSearch"></table>
+
+
+@section Scripts {
+    <script src="~/js/Search.js"></script>
+}

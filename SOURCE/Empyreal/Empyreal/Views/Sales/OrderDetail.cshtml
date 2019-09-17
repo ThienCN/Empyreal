@@ -1,0 +1,145 @@
+﻿@model Empyreal.ViewModels.Display.OrderDetailViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+    Layout = "_ManageLayout";
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a asp-controller="Sales" asp-action="Profile">User</a></li>
+    <li><a asp-controller="Sales" asp-action="Order">Đơn hàng của tôi</a></li>
+    <li class="active">Chi tiết đơn hàng</li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE TITLE -->
+<div class="page-title" style="width: 90%;">
+    <h3>
+        <span class="far fa-arrow-alt-circle-left"></span>
+        Chi tiết đơn hàng #@Model.Order.Id -
+        @{
+            switch (Model.Order.State)
+            {
+                case 0:
+                    <span style="font-weight: 600;">Đã hủy</span>
+                    break;
+                case 1:
+                    <span style="font-weight: 600;">Chờ xác nhận</span>
+                    break;
+                case 2:
+                    <span style="font-weight: 600;">Đang giao</span>
+                    break;
+                case 3:
+                    <span style="font-weight: 600;">Giao hàng thành công</span>
+                    break;
+                default:
+                    <span style="font-weight: 600;">Chờ xác nhận</span>
+                    break;
+            }
+        }
+    </h3>
+    <span class="book-order">Ngày đặt hàng: @Model.Order.CreateDate.GetValueOrDefault().ToString("dd/MM/yyyy HH:mm:ss")</span>
+</div>
+<!-- END PAGE TITLE -->
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap" style="width: 90%;">
+    <div class="row">
+        <div class="shipping-info">
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Địa chỉ người nhận</h3>
+                    </div>
+                    <div class="panel-body">
+                        <h4>@Model.Order.Name</h4>
+                        <p>Địa chỉ: @Model.Order.Address</p>
+                        <p>Điện thoại: @Model.Order.PhoneNumber</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Hình thức giao hàng</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>Giao hàng tiêu chuẩn (Dự kiến giao hàng @Model.DisplayDate)</p>
+                        <p>Phí vận chuyển: @Model.Order.DisplayShippingFee</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Hình thức thanh toán</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>Thanh toán tiền mặt khi nhận hàng <span style="opacity: 0;">Thanh toán tiền mặt khi nhận hàng</span></p>
+                        <p style="opacity: 0;">Hello</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="section-group">
+                <div class="table-responsive">
+                    <table class="table-order right-end">
+                        <thead>
+                            <tr>
+                                <th width="60%">Sản phẩm</th>
+                                <th width="15%">Giá</th>
+                                <th width="10%">Số lượng</th>
+                                <th width="15%">Tạm tính</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.ProductDetails.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <img src="@Model.Images[i].Url" width="80" height="100" alt="Image" style="float: left;" />
+                                        <div class="product-info">
+                                            <a class="name" asp-controller="Home" asp-action="Product" asp-route-productID="@Model.ProductDetails[i].ProductID">@Model.ProductDetails[i].ProductName</a>
+                                            <p>
+                                                <span>Cung cấp bởi</span><a href="#" class="link-blue"> Yame shop</a>,
+                                                <span class="item-size"> Size: @Model.ProductDetails[i].SizeText</span>,<span class="item-color"> Màu: @Model.ProductDetails[i].ColorText</span>
+                                            </p>
+                                        </div>
+                                    </td>
+                                    <td>@Model.ProductDetails[i].DisplayPrice</td>
+                                    <td>@Model.ProductDetails[i].Quantity</td>
+                                    <td>@String.Format(CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", Model.ProductDetails[i].Quantity * Model.ProductDetails[i].PriceText)</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"><span>Tổng tạm tính</span></td>
+                                <td>@Model.Order.DisplayPriceSum</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><span>Phí vận chuyển</span></td>
+                                <td>@Model.Order.DisplayShippingFee</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><span>Tổng cộng</span></td>
+                                <td><h4>@Model.Order.DisplayFinalPrice</h4></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 100px;">
+        <div class="back-to-list">
+            <a class="link-blue" asp-controller="Sales" asp-action="Order"><< Quay lại đơn hàng của tôi</a>
+        </div>
+        <div class="col-md-4">
+            <a class="btn btn-info">Theo dõi đơn hàng</a>
+        </div>
+    </div>
+</div>
+<!-- END PAGE CONTENT WRAPPER -->

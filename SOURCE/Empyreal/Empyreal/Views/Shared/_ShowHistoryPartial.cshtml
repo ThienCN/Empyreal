@@ -1,0 +1,62 @@
+﻿@using PagedList.Core
+@model Empyreal.ViewModels.History.PagedHistoryViewModel;
+@{
+    ViewData["Title"] = "Lịch sử";
+}
+
+
+<table class="table table-bordered table-hover" id="History">
+    <thead class="active">
+        <tr>
+            <th style="width: 40px; text-align: center;">STT</th>
+            <th style="width: 100px;text-align: center">Mã sản phẩm</th>
+            <th style="width: 100px;text-align: center">Hành động</th>
+            <th style="width: 120px;text-align: center">Mã sản phẩm</th>
+
+            <th style="width: 400px;text-align: center">Nội dung</th>
+            <th style="width: 100px;text-align: center">Ngày</th>
+            <th style="width: 150px;text-align: center">Nhân viên</th>
+        </tr>
+    </thead>
+    @{ int k = 1;
+        <tbody>
+            @foreach (var history in Model.PagedList)
+                {
+            <tr>
+                <td style="text-align: center">@k </td>
+                <td style="text-align: center"> 
+                </td>
+                <td style="text-align: center">
+                    @history.Summary
+                </td>
+                <td style="text-align: center">
+                    @history.DetailID
+                </td>
+                <td style="text-align: left">
+                    @Html.Raw(history.Content)
+
+                </td>
+                <td style="text-align: right">
+                    @history.CreateDate
+
+                </td>
+                <td style="text-align: center">
+                    @history.UserName
+                </td>
+
+            </tr>
+                k++;
+            }
+
+            <tr>
+                <td colspan="10">
+                    <pager list="@Model.PagedList"
+                           asp-controller="History"
+                           asp-action="HistoryManager"
+                           asp-route-detail="@Model.DetailID" />
+                </td>
+
+            </tr>
+        </tbody>
+    }
+</table>

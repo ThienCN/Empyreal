@@ -1,0 +1,330 @@
+﻿@model Empyreal.ViewModels.Display.OrderStateViewModel
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+    Layout = "_ManageLayout";
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a asp-controller="Sales" asp-action="Profile">User</a></li>
+    <li class="active">Đơn hàng của tôi</li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap" style="width: 96%;">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="order-tab">
+                <ul class="nav nav-tabs nav-justified">
+                    <li class="active"><a data-toggle="tab" href="#order-all">Tất cả</a></li>
+                    <li>
+                        <a data-toggle="tab" href="#order-accept">
+                            Chờ xác nhận
+                            @if (Model.AcceptOrders.Count > 0)
+                            {
+                                <span class="accept-notification">(@Model.AcceptOrders.Count)</span>
+                            }
+                        </a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#order-shipping">
+                            Đang giao
+                            @if (Model.ShippingOrders.Count > 0)
+                            {
+                                <span class="shipping-notification">(@Model.ShippingOrders.Count)</span>
+                            }
+                        </a>
+                    </li>
+                    <li><a data-toggle="tab" href="#order-done">Giao hàng thành công <span class="done-notification"></span></a></li>
+                    <li><a data-toggle="tab" href="#order-cancel">Hủy <span class="cancel-notification"></span></a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div id="order-all" class="tab-pane fade in active">
+                        <h3 style="margin-bottom: 20px;">Tất cả đơn hàng</h3>
+                        @{
+                            if (Model.Orders.Count > 0)
+                            {
+                                foreach (var order in Model.Orders)
+                                {
+                                    <div class="section-group">
+                                        <div class="table-responsive">
+                                            <table class="table-order">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="10%">Code</th>
+                                                        <th width="10%">Ngày mua</th>
+                                                        <th width="50%">Sản phẩm</th>
+                                                        <th width="15%">Tổng tiền</th>
+                                                        <th width="15%">Trạng thái đơn hàng</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><a asp-controller="Sales" asp-action="OrderDetail" asp-route-orderId="@order.Order.Id">@order.Order.Id</a></td>
+                                                        <td>@order.Order.CreateDate.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
+                                                        @{
+                                                            if (order.ProductDetails.Count > 1)
+                                                            {
+                                                                var quantity = order.ProductDetails.Count - 1;
+                                                                <td>@order.ProductDetails.First().ProductName... và @quantity sản phẩm khác</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@order.ProductDetails.First().ProductName</td>
+                                                            }
+                                                        }
+                                                        <td>@order.Order.DisplayFinalPrice</td>
+                                                        <td>
+                                                            @{
+                                                                switch (order.Order.State)
+                                                                {
+                                                                    case 0:
+                                                                        <span class="label label-danger">Đã hủy</span>
+                                                                        break;
+                                                                    case 1:
+                                                                        <span class="label label-primary">Chờ xác nhận</span>
+                                                                        break;
+                                                                    case 2:
+                                                                        <span class="label label-info">Đang giao</span>
+                                                                        break;
+                                                                    case 3:
+                                                                        <span class="label label-success">Giao hàng thành công</span>
+                                                                        break;
+                                                                    default:
+                                                                        <span class="label label-primary">Chờ xác nhận</span>
+                                                                        break;
+                                                                }
+                                                            }
+                                                        </td>
+                                                        @*<td class="shipping-state done">Giao hàng thành công</td>*@
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="section-group order-none">
+                                    <img src="~/images/order-state.jpg" alt="None" />
+                                    <h4>Hiện tại không có đơn hàng nào!</h4>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div id="order-accept" class="tab-pane fade">
+                        <h3 style="margin-bottom: 20px;">Đơn hàng chờ xác nhận</h3>
+                        @{
+                            if (Model.AcceptOrders.Count > 0)
+                            {
+                                foreach (var order in Model.AcceptOrders)
+                                {
+                                    <div class="section-group">
+                                        <div class="table-responsive">
+                                            <table class="table-order">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="10%">Code</th>
+                                                        <th width="10%">Ngày mua</th>
+                                                        <th width="50%">Sản phẩm</th>
+                                                        <th width="15%">Tổng tiền</th>
+                                                        <th width="15%">Trạng thái đơn hàng</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><a asp-controller="Sales" asp-action="OrderDetail" asp-route-orderId="@order.Order.Id">@order.Order.Id</a></td>
+                                                        <td>@order.Order.CreateDate.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
+                                                        @{
+                                                            if (order.ProductDetails.Count > 1)
+                                                            {
+                                                                var quantity = order.ProductDetails.Count - 1;
+                                                                <td>@order.ProductDetails.First().ProductName... và @quantity sản phẩm khác</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@order.ProductDetails.First().ProductName</td>
+                                                            }
+                                                        }
+                                                        <td>@order.Order.DisplayFinalPrice</td>
+                                                        <td><span class="label label-primary">Chờ xác nhận</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="section-group order-none">
+                                    <img src="~/images/order-state.jpg" alt="None" />
+                                    <h4>Hiện tại không có đơn hàng nào!</h4>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div id="order-shipping" class="tab-pane fade">
+                        <h3 style="margin-bottom: 20px;">Đơn hàng đang giao</h3>
+                        @{
+                            if (Model.ShippingOrders.Count > 0)
+                            {
+                                foreach (var order in Model.ShippingOrders)
+                                {
+                                    <div class="section-group">
+                                        <div class="table-responsive">
+                                            <table class="table-order">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="10%">Code</th>
+                                                        <th width="10%">Ngày mua</th>
+                                                        <th width="50%">Sản phẩm</th>
+                                                        <th width="15%">Tổng tiền</th>
+                                                        <th width="15%">Trạng thái đơn hàng</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><a asp-controller="Sales" asp-action="OrderDetail" asp-route-orderId="@order.Order.Id">@order.Order.Id</a></td>
+                                                        <td>@order.Order.CreateDate.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
+                                                        @{
+                                                            if (order.ProductDetails.Count > 1)
+                                                            {
+                                                                var quantity = order.ProductDetails.Count - 1;
+                                                                <td>@order.ProductDetails.First().ProductName... và @quantity sản phẩm khác</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@order.ProductDetails.First().ProductName</td>
+                                                            }
+                                                        }
+                                                        <td>@order.Order.DisplayFinalPrice</td>
+                                                        <td><span class="label label-info">Đang giao</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="section-group order-none">
+                                    <img src="~/images/order-state.jpg" alt="None" />
+                                    <h4>Hiện tại không có đơn hàng nào!</h4>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div id="order-done" class="tab-pane fade">
+                        <h3 style="margin-bottom: 20px;">Đơn hàng đã giao thành công</h3>
+                        @{
+                            if (Model.DoneOrders.Count > 0)
+                            {
+                                foreach (var order in Model.DoneOrders)
+                                {
+                                    <div class="section-group">
+                                        <div class="table-responsive">
+                                            <table class="table-order">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="10%">Code</th>
+                                                        <th width="10%">Ngày mua</th>
+                                                        <th width="50%">Sản phẩm</th>
+                                                        <th width="15%">Tổng tiền</th>
+                                                        <th width="15%">Trạng thái đơn hàng</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><a asp-controller="Sales" asp-action="OrderDetail" asp-route-orderId="@order.Order.Id">@order.Order.Id</a></td>
+                                                        <td>@order.Order.CreateDate.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
+                                                        @{
+                                                            if (order.ProductDetails.Count > 1)
+                                                            {
+                                                                var quantity = order.ProductDetails.Count - 1;
+                                                                <td>@order.ProductDetails.First().ProductName... và @quantity sản phẩm khác</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@order.ProductDetails.First().ProductName</td>
+                                                            }
+                                                        }
+                                                        <td>@order.Order.DisplayFinalPrice</td>
+                                                        <td><span class="label label-success">Giao hàng thành công</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="section-group order-none">
+                                    <img src="~/images/order-state.jpg" alt="None" />
+                                    <h4>Hiện tại không có đơn hàng nào!</h4>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div id="order-cancel" class="tab-pane fade">
+                        <h3 style="margin-bottom: 20px;">Đơn hàng đã hủy</h3>
+                        @{
+                            if (Model.CancelOrders.Count > 0)
+                            {
+                                foreach (var order in Model.CancelOrders)
+                                {
+                                    <div class="section-group">
+                                        <div class="table-responsive">
+                                            <table class="table-order">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="10%">Code</th>
+                                                        <th width="10%">Ngày mua</th>
+                                                        <th width="50%">Sản phẩm</th>
+                                                        <th width="15%">Tổng tiền</th>
+                                                        <th width="15%">Trạng thái đơn hàng</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><a asp-controller="Sales" asp-action="OrderDetail" asp-route-orderId="@order.Order.Id">@order.Order.Id</a></td>
+                                                        <td>@order.Order.CreateDate.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
+                                                        @{
+                                                            if (order.ProductDetails.Count > 1)
+                                                            {
+                                                                var quantity = order.ProductDetails.Count - 1;
+                                                                <td>@order.ProductDetails.First().ProductName... và @quantity sản phẩm khác</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@order.ProductDetails.First().ProductName</td>
+                                                            }
+                                                        }
+                                                        <td>@order.Order.DisplayFinalPrice</td>
+                                                        <td><span class="label label-danger">Đã hủy</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="section-group order-none">
+                                    <img src="~/images/order-state.jpg" alt="None" />
+                                    <h4>Hiện tại không có đơn hàng nào!</h4>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END PAGE CONTENT WRAPPER -->

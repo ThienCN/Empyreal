@@ -1,0 +1,98 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style>
+        th, td {
+            text-align: left;
+            padding: 7px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" style="border-bottom: 3px solid #22BCE5; padding: 0 15px;">
+            <a href="https://localhost:44335/" style="text-decoration: none; color: #F8694A;"><h1 style="margin-bottom: 10px;">Empyreal</h1></a>
+        </div>
+        <div class="user-info" style="padding: 0 15px;">
+            <h3 style="margin-bottom: 10px;">Cảm ơn quý khách {UserName} đã đặt hàng tại Empyreal,</h3>
+            <p style="margin-top: 0;">Empyreal rất vui thông báo đơn hàng #{OrderID} của quý khách đã được tiếp nhận và đang trong quá trình xử lý. Empyreal sẽ thông báo đến quý khách ngay khi hàng chuẩn bị được giao.</p>
+        </div>
+        <div class="order" style="padding: 0 15px;">
+            <div class="order-info" style="text-transform: uppercase; color: #F8694A; border-bottom: 1px solid #ccc;">
+                <h4 style="margin: 25px 0 5px 0;">Thông tin đơn hàng #{OrderID} ({OrderDate})</h4>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="width: 50%; float: left;">
+                    <div class="order-user" style="padding: 0px 15px 10px 15px;">
+                        <p><b>Thông tin thanh toán</b></p>
+                        <p>{UserName}</p>
+                        <p>{Email}</p>
+                        <p>{PhoneNumber}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="width: 50%; float: left;">
+                    <div class="order-shipping" style="padding: 0px 15px 10px 15px;">
+                        <p><b>Địa chỉ giao hàng</b></p>
+                        <p>{UserName}</p>
+                        <p>{ShippingAddress}</p>
+                        <p>T: {PhoneNumber}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-md-12">
+                    <div class="order-payment" style="padding: 10px 15px;">
+                        <p><b>Phương thức thanh toán:</b> Thanh toán tiền mặt khi nhận hàng</p>
+                        <p><b>Thời gian giao hàng dự kiến:</b> Dự kiến giao hàng {ShippingDate}</p>
+                        <p><b>Phí vận chuyển:</b> {ShippingFee}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="order-detail" style="padding: 0 15px;">
+            <div class="order-info" style="text-transform: uppercase; color: #F8694A; border-bottom: 1px solid #ccc;">
+                <h4 style="margin: 25px 0 5px 0;">Chi tiết đơn hàng</h4>
+            </div>
+            <div class="content">
+                <table style="width: 100%; margin-top: 10px;">
+                    <thead>
+                        <tr style="color: #fff; background: #22BCE5;">
+                            <th>Sản phẩm</th>
+                            <th>Đơn giá</th>
+                            <th>Số lượng</th>
+                            <th>Tổng tạm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Products}
+                        <tr style="background: #ffd;">
+                            <td colspan="2"></td>
+                            <td>Tổng tạm tính</td>
+                            <td>{TempSum}</td>
+                        </tr>
+                        <tr style="background: #ffd;">
+                            <td colspan="2"></td>
+                            <td>Phí vận chuyển</td>
+                            <td>{ShippingFee}</td>
+                        </tr>
+                        <tr style="background: #eee;">
+                            <td colspan="2"></td>
+                            <td><b>Tổng giá trị đơn hàng</b></td>
+                            <td><b>{Sum}</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="footer" style="margin-top: 30px; padding: 0 15px;">
+            <p><b>Một lần nữa Empyreal cảm ơn quý khách.</b></p>
+            <p style="text-align: right; color: #F8694A;"><b>Empyreal</b></p>
+        </div>
+    </div>
+</body>
+</html>

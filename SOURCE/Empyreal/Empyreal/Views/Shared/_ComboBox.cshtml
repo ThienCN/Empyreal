@@ -1,0 +1,14 @@
+﻿@using Empyreal.ViewModels;
+
+@model ComboBoxViewModel;
+
+<div class="col-md-5">
+    <label class="col-md-4 control-label">@Model.Tilte</label>
+    <div class="col-md-8">
+        <div class="select-wrap">
+            <select class="form-control select" data-live-search="true" id="@Model.Name" name="@Model.Name" asp-items="@Model.Items"></select>
+            <span asp-validation-for="@Model.Name" class="text-danger"></span>
+        </div>
+    </div>
+</div>
+

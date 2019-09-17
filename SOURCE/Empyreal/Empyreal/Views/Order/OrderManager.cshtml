@@ -1,0 +1,167 @@
+﻿@using PagedList.Core
+@model Empyreal.ViewModels.Manager.OrderManagerViewModel;
+@{
+    string title = "Quản lý đơn hàng";
+    ViewData["Title"] = title;
+    Layout = "_ManageLayout";
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a asp-controller="Dashboard" asp-action="Index">Admin</a></li>
+    <li class="active">@title</li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap horizontal-padding">
+    <!-- START TABLE -->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title-box">
+                <h3 style="font-size: 17px;">Danh sách đơn hàng</h3>
+                @*<span>Xem lịch sử</span>*@
+            </div>
+            <ul class="panel-controls" style="margin-top: 2px;">
+                <li><a href="#" class="panel-fullscreen"><span class="fas fa-expand"></span></a></li>
+                <li><a href="#" class="panel-refresh"><span class="fas fa-sync-alt"></span></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fas fa-cog"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" class="panel-collapse"><span class="fas fa-angle-up"></span> Collapse</a></li>
+                        <li><a href="#" class="panel-remove"><span class="fas fa-times"></span> Remove</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body panel-body-table">
+            <div class="row table-header-action">
+                <div class="col-sm-6">
+                    <form id="OrderSearch" method="get" asp-controller="Order" asp-action="OrderManager">
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control" asp-for="Keyword" asp-route-keySearch="@Model.Keyword" value="@Model.Keyword" name="KeyWord" placeholder="Search...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" title="Tìm kiếm" type="submit"><i class="fas fa-search"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+
+            </div>
+
+            @if (Model.PagedOrderModel != null)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th width="5%">STT</th>
+                                <th></th>
+                                <th width="10%">Mã đơn hàng</th>
+                                <th width="10%">Ngày đặt</th>
+                                <th width="15%">Người đặt</th>
+                                <th width="10%">Thành tiền</th>
+                                <th width="15%">Người giao</th>
+                                <th width="10%">Hạn chót</th>
+                                <th width="10%">Ngày giao</th>
+                                <th width="10%">Trạng thái</th>
+                                <th width="5%"></th>
+                            </tr>
+                        </thead>
+                        @{ int k = 1;
+                            <tbody>
+                                @foreach (var order in Model.PagedOrderModel)
+                                {
+                                <tr>
+                                    <td>@k </td>
+                                    <td></td>
+                                    <td style="text-align: center">@order.Id</td>
+                                    <td>@order.CreateDate.GetValueOrDefault().ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                    <td style="text-align: left">@order.UserName</td>
+                                    <td style="text-align: right">@order.PriceSumText</td>
+                                    <td>@order.ShipperName</td>
+                         
+                                    <td>
+                                        @if (order.DeadlineShip != null)
+                                        {
+                                            @order.DeadlineShip.GetValueOrDefault().ToString("dd/MM/yyyy HH:mm:ss")
+                                        }
+                                    </td>
+                                    
+                                    <td>
+                                        @if (order.ShippingDate != null)
+                                        {
+                                            @order.ShippingDate.GetValueOrDefault().ToString("dd/MM/yyyy HH:mm:ss")
+                                        }
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        @{
+                                            switch (order.State)
+                                            {
+                                                case 0:
+                                                    <span class="label label-danger">Hủy</span>
+                                                    break;
+                                                case 1:
+                                                    <span class="label label-primary">Chờ xác nhận</span>
+                                                    break;
+                                                case 2:
+                                                    <span class="label label-info">Đang giao</span>
+                                                    break;
+                                                case 3:
+                                                    <span class="label label-success">Giao hàng thành công</span>
+                                                    break;
+                                            }
+                                        }
+                                    </td>
+                                    <td>
+                                        <a class="control-info table-controls" title="Cập nhật" asp-controller="Order" asp-action="OrderUpdate" asp-route-orderID="@order.Id"><span class="fas fa-pencil-alt"></span></a>
+                                    </td>
+                                </tr>
+                                    k++;
+                                }
+
+                                <tr>
+                                    <td colspan="4">
+                                        <pager list="@Model.PagedOrderModel"
+                                               asp-controller="Order"
+                                               asp-action="OrderManager"
+                                               asp-route-KeyWord="@Model.Keyword" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        }
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+    <!-- END TABLE -->
+    <!-- Modal -->
+    <div class="modal fade" id="historyModal" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Lịch sử</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- END PAGE CONTENT WRAPPER -->
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/Manager/OrderManager.js"></script>
+    <script type="text/javascript" src="~/js/Plugins/bootstrap/bootstrap-select.js"></script>
+}

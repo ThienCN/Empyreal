@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.4.0" />
+    <PackageReference Include="EPPlus" Version="4.5.3.2" />
+    <PackageReference Include="ExpressiveAnnotationsCore" Version="0.1.0" />
+    <PackageReference Include="ExpressiveAnnotationsCore.dll" Version="0.1.0" />
+    <PackageReference Include="jQuery" Version="3.3.1" />
+    <PackageReference Include="jQuery.Validation" Version="1.17.0" />
+    <PackageReference Include="Microsoft.AspNet.SignalR.Client" Version="2.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="PagedList.Core.Mvc" Version="1.2.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Empyreal.Entities\Empyreal.Entities.csproj" />
+    <ProjectReference Include="..\Empyreal.Extensions\Empyreal.Library.csproj" />
+    <ProjectReference Include="..\Empyreal.ServiceLocators\Empyreal.ServiceLocators.csproj" />
+    <ProjectReference Include="..\Empyreal.Services\Empyreal.Services.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Views\Shared\Combobox\" />
+  </ItemGroup>
+
+</Project>

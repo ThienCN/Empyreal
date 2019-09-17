@@ -1,0 +1,160 @@
+﻿@model Empyreal.ViewModels.Display.ProfileViewModel
+@{
+    ViewData["Title"] = "Thông tin tài khoản";
+    Layout = "_ManageLayout";
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a asp-controller="Sales" asp-action="Profile">User</a></li>
+    <li class="active">Thông tin tài khoản</li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE CONTENT WRAPPER -->
+@if (Model.IsSuccess)
+{
+<div class="horizontal-padding">
+    <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+        <strong>Success!</strong>
+        Thông tin tài khoản của bạn đã được cập nhật
+    </div>
+</div>
+}
+
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+
+            <form class="form-horizontal" method="post" asp-controller="Sales" asp-action="Profile" asp-route-returnurl="@ViewData["ReturnUrl"]">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><strong>Thông tin tài khoản</strong></h3>
+                        <ul class="panel-controls">
+                            <li><a href="#" class="panel-remove"><span class="fa fa-times"></span></a></li>
+                        </ul>
+                    </div>
+                    <div class="panel-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label">Họ tên</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="input-wrap">
+                                    <input class="form-control" asp-for="HoTen" placeholder="Nhập họ tên" />
+                                    <span asp-validation-for="HoTen" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label" asp-for="PhoneNumber">Số điện thoại</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="input-wrap">
+                                    <input class="form-control" asp-for="PhoneNumber" placeholder="Nhập số điện thoại" readonly />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label" asp-for="Email">Email</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="input-wrap">
+                                    <input type="email" class="form-control" asp-for="Email" placeholder="Nhập email" readonly />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label">Giới tính</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="input-wrap">
+                                    <div class="row">
+                                        @foreach (var item in Model.SexList)
+                                        {
+                                        <label class="col-md-3 check">
+                                            @item.Text
+                                            <input type="radio" class="iradio" asp-for="Sex" value="@item.Value" />
+                                        </label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label">Ngày sinh</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="input-wrap">
+                                    <div class="birthday-picker">
+                                        <div class="col-md-4">
+                                            <select class="form-control select" data-live-search="true" asp-for="DateOfBirth" asp-items="Model.Dates"></select>
+                                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-control select" data-live-search="true" asp-for="MonthOfBirth" asp-items="Model.Months"></select>
+                                            <span asp-validation-for="MonthOfBirth" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-control select" data-live-search="true" asp-for="YearOfBirth" asp-items="Model.Years"></select>
+                                            <span asp-validation-for="YearOfBirth" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label"></label>
+                            <div class="col-md-4 col-xs-12">
+                                <label class="check" id="is-change-pass">
+                                    <input type="checkbox" class="icheckbox" name="is-change-pass" data-animation="0" />Thay đổi mật khẩu
+                                </label>
+                            </div>
+                        </div>
+                        <div class="password-group" id="password-change">
+                            <input type="hidden" asp-for="IsChangePass" />
+                            <div class="form-group">
+                                <label class="col-md-4 col-xs-12 control-label" asp-for="CurrentPassword">Mật khẩu hiện tại</label>
+                                <div class="col-md-4 col-xs-12">
+                                    <div class="input-wrap">
+                                        <input class="form-control" asp-for="CurrentPassword" placeholder="Nhập mật khẩu hiện tại" data-val="false" />
+                                        <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-4 col-xs-12 control-label" asp-for="NewPassword">Mật khẩu mới</label>
+                                <div class="col-md-4 col-xs-12">
+                                    <div class="input-wrap">
+                                        <input class="form-control" asp-for="NewPassword" placeholder="Mật khẩu từ 6 đến 32 ký tự" data-val="false" />
+                                        <span asp-validation-for="NewPassword" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-4 col-xs-12 control-label" asp-for="ConfirmNewPassword">Nhập lại</label>
+                                <div class="col-md-4 col-xs-12">
+                                    <div class="input-wrap">
+                                        <input class="form-control" asp-for="ConfirmNewPassword" placeholder="Nhập lại mật khẩu mới" data-val="false" />
+                                        <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label"></label>
+                            <div class="col-md-4 col-xs-12">
+                                <button class="btn btn-info" type="submit">Cập nhật</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+<!-- END PAGE CONTENT WRAPPER -->
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/Plugins/bootstrap/bootstrap-select.js"></script>
+    <script type="text/javascript" src="~/js/Sales/Profile.js"></script>
+}

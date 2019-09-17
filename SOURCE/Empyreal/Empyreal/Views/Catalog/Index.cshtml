@@ -1,0 +1,10 @@
+﻿@model List<Empyreal.ViewModels.CatalogViewModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+@foreach(var catalog in Model)
+{
+    <p>@catalog.Name</p>
+}
+

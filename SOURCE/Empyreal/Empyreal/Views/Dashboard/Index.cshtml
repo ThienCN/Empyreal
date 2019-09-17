@@ -1,0 +1,215 @@
+﻿@{
+    ViewData["Title"] = "Empyreal - Admin";
+    Layout = "_ManageLayout";
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a asp-controller="Dashboard" asp-action="Index">Admin</a></li>
+    <li class="active">Tổng quan</li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+
+    <!-- START WIDGETS -->
+    <div class="row">
+        <div class="col-md-3">
+
+            <!-- START WIDGET MESSAGES -->
+            <div class="widget widget-default widget-item-icon" onclick="location.href='pages-messages.html';">
+                <div class="widget-item-left">
+                    <span class="fas fa-wallet color-blue">
+                    </span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count" id="stats-revenue">48</div>
+                    <div class="widget-title">Doanh thu</div>
+                    <div class="widget-subtitle">Hôm nay</div>
+                </div>
+                <div class="widget-controls">
+                    <a href="#" class="widget-control-right widget-remove" data-toggle="tooltip" data-placement="top" title="Remove Widget"><span class="fa fa-times"></span></a>
+                </div>
+            </div>
+            <!-- END WIDGET MESSAGES -->
+
+        </div>
+        <div class="col-md-3">
+
+            <!-- START WIDGET MESSAGES -->
+            <div class="widget widget-default widget-item-icon" onclick="location.href='pages-messages.html';">
+                <div class="widget-item-left">
+                    <span class="fas fa-cart-arrow-down color-yellow"></span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count" id="stats-orders">48</div>
+                    <div class="widget-title">Đơn đặt hàng</div>
+                    <div class="widget-subtitle">Trong ngày</div>
+                </div>
+                <div class="widget-controls">
+                    <a href="#" class="widget-control-right widget-remove" data-toggle="tooltip" data-placement="top" title="Remove Widget"><span class="fa fa-times"></span></a>
+                </div>
+            </div>
+            <!-- END WIDGET MESSAGES -->
+
+        </div>
+        <div class="col-md-3">
+
+            <!-- START WIDGET REGISTRED -->
+            <div class="widget widget-default widget-item-icon" onclick="location.href='pages-address-book.html';">
+                <div class="widget-item-left">
+                    <span class="fas fa-user color-pink"></span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count" id="stats-newuser">375</div>
+                    <div class="widget-title">Khách hàng mới</div>
+                    <div class="widget-subtitle">Hôm nay</div>
+                </div>
+                <div class="widget-controls">
+                    <a href="#" class="widget-control-right widget-remove" data-toggle="tooltip" data-placement="top" title="Remove Widget"><span class="fa fa-times"></span></a>
+                </div>
+            </div>
+            <!-- END WIDGET REGISTRED -->
+
+        </div>
+        <div class="col-md-3">
+
+            <!-- START WIDGET CLOCK -->
+            <div class="widget widget-info widget-padding-sm">
+                <div class="widget-big-int plugin-clock">00:00</div>
+                <div class="widget-subtitle plugin-date">Loading...</div>
+                <div class="widget-controls">
+                    <a href="#" class="widget-control-right widget-remove" data-toggle="tooltip" data-placement="left" title="Remove Widget"><span class="fa fa-times"></span></a>
+                </div>
+                <div class="widget-buttons widget-c3">
+                    <div class="col">
+                        <a href="#"><span class="far fa-clock"></span></a>
+                    </div>
+                    <div class="col">
+                        <a href="#"><span class="far fa-bell"></span></a>
+                    </div>
+                    <div class="col">
+                        <a href="#"><span class="far fa-calendar-alt"></span></a>
+                    </div>
+                </div>
+            </div>
+            <!-- END WIDGET CLOCK -->
+
+        </div>
+    </div>
+    <!-- END WIDGETS -->
+
+    <div class="row">
+        <div class="col-md-6">
+
+            <!-- START USERS ACTIVITY BLOCK -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title-box">
+                        <h3>Đơn đặt hàng</h3>
+                        <span>Hàng tháng</span>
+                    </div>
+                    <ul class="panel-controls" style="margin-top: 2px;">
+                        <li><a href="#" class="panel-fullscreen"><span class="fas fa-expand"></span></a></li>
+                        <li><a href="#" class="panel-refresh"><span class="fas fa-sync-alt"></span></a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fas fa-cog"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" class="panel-collapse"><span class="fas fa-angle-up"></span> Collapse</a></li>
+                                <li><a href="#" class="panel-remove"><span class="fas fa-times"></span> Remove</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-body padding-0" id="chart-parent2">
+                    
+                </div>
+            </div>
+            <!-- END USERS ACTIVITY BLOCK -->
+
+        </div>
+        <div class="col-md-6">
+
+            <!-- START VISITORS BLOCK -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title-box">
+                        <h3>Doanh thu</h3>
+                        <span>Hàng tháng</span>
+                    </div>
+                    <ul class="panel-controls" style="margin-top: 2px;">
+                        <li><a href="#" class="panel-fullscreen"><span class="fas fa-expand"></span></a></li>
+                        <li><a href="#" class="panel-refresh"><span class="fas fa-sync-alt"></span></a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fas fa-cog"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" class="panel-collapse"><span class="fas fa-angle-up"></span> Collapse</a></li>
+                                <li><a href="#" class="panel-remove"><span class="fas fa-times"></span> Remove</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-body padding-0" id="chart-parent1">
+                    
+                </div>
+            </div>
+            <!-- END VISITORS BLOCK -->
+
+        </div>
+        
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <!-- START VISITORS BLOCK -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title-box">
+                        <h3>Sản phẩm bán chạy</h3>
+                        <span>Trong ngày</span>
+                    </div>
+                    <ul class="panel-controls" style="margin-top: 2px;">
+                        <li><a href="#" class="panel-fullscreen"><span class="fas fa-expand"></span></a></li>
+                        <li><a href="#" class="panel-refresh"><span class="fas fa-sync-alt"></span></a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fas fa-cog"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" class="panel-collapse"><span class="fas fa-angle-up"></span> Collapse</a></li>
+                                <li><a href="#" class="panel-remove"><span class="fas fa-times"></span> Remove</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-body padding-0" id="chart-parent3">
+
+                </div>
+            </div>
+            <!-- END VISITORS BLOCK -->
+
+        </div>
+    </div>
+
+
+    <!-- START DASHBOARD CHART -->
+    <div class="chart-holder" id="dashboard-area-1" style="height: 200px;"></div>
+    <div class="block-full-width">
+
+    </div>
+    <!-- END DASHBOARD CHART -->
+
+</div>
+<!-- END PAGE CONTENT WRAPPER -->
+
+@section Scripts {
+    <!-- THIS PAGE PLUGINS -->
+    <script type="text/javascript" src="~/js/Plugins/morris/raphael-min.js"></script>
+    <script type="text/javascript" src="~/js/Plugins/morris/morris.min.js"></script>
+    <script type="text/javascript" src="~/js/Plugins/moment.min.js"></script>
+    <script type="text/javascript" src="~/js/Plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- END PAGE PLUGINS -->
+    <!-- START TEMPLATE -->
+    <script type="text/javascript" src="~/js/Chart.min.js"></script>
+    <script type="text/javascript" src="~/js/Dashboard/demo_dashboard.js"></script>
+    <!-- END TEMPLATE -->
+}

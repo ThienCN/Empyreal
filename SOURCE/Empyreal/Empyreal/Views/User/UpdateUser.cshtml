@@ -1,0 +1,143 @@
+﻿@model Empyreal.ViewModels.Manager.UserUpdateViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa người dùng";
+    Layout = "_ManageLayout";
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a asp-controller="Dashboard" asp-action="Index">Admin</a></li>
+    <li><a asp-controller="User" asp-action="UserManager">Quản lý người dùng</a></li>
+    <li class="active">Chỉnh sửa người dùng</li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="far fa-arrow-alt-circle-left"></span> Chỉnh sửa người dùng</h2>
+</div>
+<!-- END PAGE TITLE -->
+<!-- PAGE CONTENT WRAPPER -->
+@if (Model.IsSuccess)
+{
+    <div class="horizontal-padding">
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+            <strong>Success!</strong>
+            Chỉnh sửa người dùng thành công
+        </div>
+        <div class="group">
+            <a class="btn btn-default" style="margin-right: 10px;" title="Quay lại" asp-controller="User" asp-action="UserManager"><i class="fas fa-chevron-circle-left"></i> Quay lại</a>
+            <a class="btn btn-info" title="Thêm mới" asp-controller="User" asp-action="AddUser"><i class="fas fa-plus-circle"></i> Thêm người dùng</a>
+        </div>
+    </div>
+}
+
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+
+            <form class="form-horizontal" method="post" asp-controller="User" asp-action="UpdateUser" asp-route-returnurl="@ViewData["ReturnUrl"]">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><strong>Chỉnh sửa người dùng</strong></h3>
+                        <ul class="panel-controls">
+                            <li><a href="#" class="panel-remove"><span class="fa fa-times"></span></a></li>
+                        </ul>
+                    </div>
+                    <div class="panel-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label">Họ tên</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="input-wrap">
+                                    <input class="form-control" asp-for="HoTen" placeholder="Nhập họ tên" />
+                                    <span asp-validation-for="HoTen" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label" asp-for="PhoneNumber">Số điện thoại</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="input-wrap">
+                                    <input class="form-control" asp-for="PhoneNumber" placeholder="Nhập số điện thoại" readonly />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label" asp-for="Email">Email</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="input-wrap">
+                                    <input type="email" class="form-control" asp-for="Email" placeholder="Nhập email" readonly />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label">Phân quyền</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="user-role">
+                                    <select class="form-control select" asp-for="UserRole" asp-items="Model.UserRoles"></select>
+                                    <span asp-validation-for="UserRole" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label">Giới tính</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="input-wrap">
+                                    <div class="row">
+                                        @foreach (var item in Model.SexList)
+                                        {
+                                            <label class="col-xs-3 check">
+                                                @item.Text
+                                                <input type="radio" class="iradio" asp-for="Sex" value="@item.Value" />
+                                            </label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label">Ngày sinh</label>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="input-wrap">
+                                    <div class="birthday-picker">
+                                        <div class="col-md-4">
+                                            <select class="form-control select" data-live-search="true" asp-for="DateOfBirth" asp-items="Model.Dates"></select>
+                                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-control select" data-live-search="true" asp-for="MonthOfBirth" asp-items="Model.Months"></select>
+                                            <span asp-validation-for="MonthOfBirth" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-control select" data-live-search="true" asp-for="YearOfBirth" asp-items="Model.Years"></select>
+                                            <span asp-validation-for="YearOfBirth" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 col-xs-12 control-label"></label>
+                            <div class="col-md-4 col-xs-12">
+                                <button class="btn btn-info" type="submit">Cập nhật</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+<!-- END PAGE CONTENT WRAPPER -->
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/Plugins/bootstrap/bootstrap-select.js"></script>
+}

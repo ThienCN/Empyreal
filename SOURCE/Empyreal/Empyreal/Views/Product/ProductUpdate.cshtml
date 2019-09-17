@@ -1,0 +1,232 @@
+﻿@using Empyreal.ViewModels.Manager;
+@model ProductUpdateViewModel;
+@{
+    Layout = "_ManageLayout";
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a asp-controller="Dashboard" asp-action="Index">Admin</a></li>
+    <li><a asp-controller="Product" asp-action="ProductManager">Admin</a>Quản lý sản phẩm</li>
+    <li class="active">@ViewData["Title"]</li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="far fa-arrow-alt-circle-left"></span> @ViewData["Title"]</h2>
+</div>
+<!-- END PAGE TITLE -->
+<!-- PAGE CONTENT WRAPPER -->
+@if (!Model.IsError)
+{
+    <div class="horizontal-padding">
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+            <strong>Success!</strong>
+            @ViewData["Title"] thành công
+        </div>
+        <div class="group">
+            <a class="btn btn-default" style="margin-right: 10px;" title="Quay lại" asp-controller="Product" asp-action="ProductManager"><i class="fas fa-chevron-circle-left"></i> Quay lại</a>
+            <a class="btn btn-info" title="Thêm mới" asp-controller="Product" asp-action="ProductUpdate" asp-route-isUpdate="False"><i class="fas fa-plus-circle"></i> Thêm sản phẩm</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="page-content-wrap">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="horizontal-padding">
+                    <div class="alert alert-danger message" hidden>
+                        @ViewData["Title"] thất bại
+                        <div style="text-align: left; width: auto;">
+                            <a id="message" title="Error">@Model.Message</a>
+                        </div>
+                    </div>
+                </div>
+                <form class="product-form" method="post" asp-controller="Product" asp-action="UpdateProduct" id="ProductFormSubmit" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6">                            
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title"><strong>Thông tin cơ bản</strong></h3>
+                                    <ul class="panel-controls">
+                                        <li>
+                                            <button type="button" class="btn btn-default" id="historyPopup"><i class="fas fa-search"></i> Lịch sử</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="panel-body">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" asp-for="ProductId" />
+                                    <input type="hidden" asp-for="UserID" />
+                                    <input type="hidden" asp-for="UserName" />
+                                    <input type="hidden" asp-for="IsUpdate" />
+                                    <input type="hidden" asp-for="IsError" />
+                                    <input type="hidden" asp-for="ProductOld" />
+
+                                    <div class="form-group clearfix">
+                                        <label class="col-md-3 control-label" asp-for="ProductName">Tên sản phẩm</label>
+                                        <div class="col-md-8">
+                                            <div class="input-wrap">
+                                                <input class="form-control" asp-for="ProductName" placeholder="Nhập tên sản phẩm" />
+                                                <span asp-validation-for="ProductName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group clearfix">
+                                        <label class="col-md-3 control-label">Danh mục</label>
+                                        <div class="col-md-8">
+                                            <div class="input-wrap">
+                                                <div class="birthday-picker">
+                                                    <select class="form-control select" data-live-search="true" asp-for="Catalog" asp-items="Model.Catalogs"></select>
+                                                    <span asp-validation-for="Catalog" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-12 control-label" asp-for="Description">Mô tả sản phẩm</label>
+                                        <div class="col-md-12" style="padding-right: 0;">
+                                            <textarea class="form-control" asp-for="Description" placeholder="Mô tả sản phẩm ở đây" rows="5"></textarea>
+                                            <span asp-validation-for="Description" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title"><strong>Thông tin chi tiết</strong></h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="add-product-detail ">
+                                        <div class="product-detail ">
+
+                                            @foreach (var item in Model.ProductDetails)
+                                            {
+
+                                                <div class="product-detail-group">
+                                                    <div class="detail-group row">
+                                                        <input type="hidden" asp-for="@item.ID" id="ID" name="ProductDetailID" />
+                                                        <div class="col-md-5">
+                                                            <label class="col-md-4 control-label">Kích cỡ</label>
+                                                            <div class="col-md-8">
+                                                                <div class="select-wrap">
+                                                                    <select class="form-control" asp-for="@item.Size" id="Size" name="Size" asp-items="Model.Sizes"></select>
+                                                                    <span asp-validation-for="@item.Size" class="text-danger"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <label class="col-md-4 control-label">Màu sắc</label>
+                                                            <div class="col-md-8">
+                                                                <div class="select-wrap">
+                                                                    <select class="form-control" asp-for="@item.Color" id="Color" name="Color" asp-items="Model.Colors"></select>
+                                                                    <span asp-validation-for="@item.Color" class="text-danger"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="icon-padding col-md-2">
+                                                            <button class="table-controls control-danger icon-btn-delete-detail" id="btnDeteleDetail" title="Xóa chi tiết sản phẩm" type="button" onclick="ProductUpdate.DeleteDetail(this)" ><i class="fas fa-minus"></i></button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="quantity-group row">
+                                                        <div class="col-md-5">
+                                                            <label class="col-md-4 control-label">Số lượng</label>
+                                                            <div class="col-md-8">
+                                                                <div class="select-wrap">
+                                                                    <input type="number" class="form-control" asp-for="@item.Quantity" id="Quantity" name="Quantity" value="@item.Quantity" />
+                                                                    <span asp-validation-for="@item.Quantity" class="text-danger"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <label class="col-md-4 control-label">Đơn giá</label>
+                                                            <div class="col-md-8">
+                                                                <div class="select-wrap">
+                                                                    <input type="number" class="form-control" asp-for="@item.PriceText" id="PriceText" name="PriceText" onkeyup="splitInDots(this)" />
+                                                                    <span asp-validation-for="@item.PriceText" class="text-danger"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2 price-text">(đồng)</div>
+                                                        <input type="hidden" class="form-control" asp-for="@item.PriceID" id="PriceID" name="PriceID" />
+                                                    </div>
+                                                </div>
+                                            }
+
+                                        </div>
+                                        <div class="form-group btn-right">
+                                            <button type="button" class="btn btn-default active" id="btnDetail" title="Thêm chi tiết sản phẩm"><i class="fas fa-plus"></i> Thêm chi tiết sản phẩm</button>
+                                        </div>
+                                        <div class="form-group">
+                                            <p class="large-label text-center"><strong>Hình ảnh sản phẩm</strong></p>
+                                            <div class="input-wrap">
+                                                <div class="gallery-index row">
+                                                    @foreach (var img in Model.Images)
+                                                    {
+                                                        <div class="galleryused col-md-3">
+                                                            <img src="@img.Url" />
+                                                            <button value="@img.ID" class="table-controls control-danger icon-btn-edit-image-small" title="Xóa hình ảnh" type="button"><i class="fas fa-times"></i></button>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="image-add">
+                                                    <h4 class="title-shadow">Thêm hình ảnh</h4>
+                                                    <div class="galleryindex row">
+                                                        <input type="file" multiple class="form-control" asp-for="Files" accept="image/gif,image/png,image/jpg,image/jpeg" />
+                                                        <div class="gallery"></div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body text-right">
+                                    <div class="form-group">
+                                        <button class="btn btn-info" type="button" id="btnSubmitProductForm">@ViewData["Title"]</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="historyModal" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Lịch sử</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script src="~/js/Manager/ProductUpdate.js"></script>
+    <script src="~/lib/ckeditor/ckeditor.js"></script>
+    <script src="~/lib/ckeditor/adapters/jquery.js"></script>
+    <script>
+        $("#Description").ckeditor();
+    </script>
+    <script type="text/javascript" src="~/js/Plugins/bootstrap/bootstrap-select.js"></script>
+}

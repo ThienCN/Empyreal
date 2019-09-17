@@ -1,0 +1,14 @@
+{
+  "ProjectFilePath": "d:\\BoJiJi\\KLTN\\Project\\EmpyrealV2\\Empyreal.Services\\Empyreal.Services.csproj",
+  "TargetFramework": "netcoreapp2.2",
+  "TagHelpers": [],
+  "Configuration": {
+    "ConfigurationName": "UnsupportedRazor",
+    "LanguageVersion": "1.0",
+    "Extensions": [
+      {
+        "ExtensionName": "UnsupportedRazorExtension"
+      }
+    ]
+  }
+}
